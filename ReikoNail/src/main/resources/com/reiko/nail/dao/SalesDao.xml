@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTO Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.reiko.nail.dao.SalesDao">
+
+	<resultMap id="BaseMap" type="com.reiko.nail.entity.SalesEntity">
+		<id column="SALES_ID" property="salesId" />
+		<result column="DENPYO_NO" property="denpyoNo" />
+		<result column="SHOHIN_CD" property="shohinCd" />
+		<result column="KOUNYU_DATE" property="kounyuDate" />
+		<result column="CUSTOMER_CD" property="customerCd" />
+		<result column="CREATE_DATE" property="createDate" />
+	</resultMap>
+
+	<insert id="registryMeisai" parameterType="java.util.List">
+		INSERT INTO N_SALES(
+			DENPYO_NO,
+			SHOHIN_CD,
+			KOUNYU_DATE,
+			CUSTOMER_CD,
+			CREATE_DATE
+		) VALUES 
+	   <foreach collection="salesList" item="meisai" separator=",">
+	        (#{meisai.denpyoNo},
+	         #{meisai.shohinCd},
+	         #{meisai.kounyuDate},
+	         #{meisai.customerCd},
+	         CURRENT_TIMESTAMP)
+	   </foreach>
+	</insert>
+	
+</mapper>

@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/rnail
+    username: root
+    password: reiko0928
+  sql:
+    init:
+      mode: always
+logging:
+  level:
+    com:
+      reiko:
+        nail: DEBUG

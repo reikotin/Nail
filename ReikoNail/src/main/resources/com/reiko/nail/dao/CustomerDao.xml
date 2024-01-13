@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTO Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.reiko.nail.dao.CustomerDao">
+
+	<resultMap id="BaseMap" type="com.reiko.nail.entity.CustomerEntity">
+		<id column="CUSTOMER_CD" property="customerCd" />
+		<result column="CUSTOMER_SEI" property="customerSei" />
+		<result column="CUSTOMER_MEI" property="customerMei" />
+		<result column="SEI_FURIGANA" property="seiFurigana" />
+		<result column="MEI_FURIGANA" property="meiFurigana" />
+		<result column="YUBIN_NO" property="yubinNo" />
+		<result column="PREFECTURE_CITY" property="prefectureCity" />
+		<result column="STREET_NO" property="streetNo" />
+		<result column="KOUNYU_KAISU" property="kounyuKaisu" />
+		<result column="RUIKEI_KOUNYU_KINGAKU" property="ruikeiKounyuKingaku" />
+		<result column="CREATE_DATE" property="createDate" />
+		<result column="UPDATE_DATE" property="updateDate" />
+	</resultMap>
+	
+	<select id="findByCustomer" resultType="int">
+		SELECT 
+			COUNT(*)
+		FROM 
+			CUSTOMER
+		WHERE 
+			SEI = #{customerSei}
+		AND 
+			MEI = #{customerMei}
+	</select>
+	
+	<insert id="insertCustomer" parameterType="com.reiko.nail.entity.CustomerEntity">
+		INSERT INTO CUSTOMER
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+		  <if test="customerCd != null">
+			CUSTOMER_CD, 
+		  </if>
+		  <if test="customerSei != null">
+            "CUSTOMER_SEI,
+		 </if>
+		 <if test="customerMei != null">
+            "CUSTOMER_MEI,
+         </if>
+         <if test="yubinNo != null">
+            YUBIN_NO,
+         </if>
+         <if test="prefectureCity != null">
+            PREFECTURE_CITY,
+          </if>
+          <if test="streetNo != null">
+            STREET_NO,
+          </if>
+          <if test="ruikeiKounyuKingaku != null">
+            RUIKEI_KOUNYU_KINGAKU,
+          </if>
+            KOUNYU_KAISU,
+            CREATE_DATE,
+            UPDATE_DATE
+		</trim>
+		VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+          <if test="customerCd != null">
+            #{customerCd},
+          </if>
+          <if test="customerSei != null">
+            #{customerSei},
+          </if>
+          <if test="customerMei != null">
+            #{customerMei},
+          </if>
+          <if test="yubinNo != null">
+            #{yubinNo},
+         </if>
+         <if test="prefectureCity != null">
+            #{prefectureCity},
+          </if>
+          <if test="streetNo != null">
+            #{streetNo},
+          </if>
+          <if test="ruikeiKounyuKingaku != null">
+            #{ruikeiKounyuKingaku},
+         </if>
+            '1',
+            CURRENT_TIMESTAMP,
+            CURRENT_TIMESTAMP
+       </trim>
+	</insert>
+
+</mapper>

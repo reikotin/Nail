@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTO Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.reiko.nail.dao.ShohinDao">
+	<resultMap id="BaseMap" type="com.reiko.nail.entity.ShohinEntity">
+		<id column="SHOHIN_CD" property="shohinCd" />
+		<result column="COLOR" property="color" />
+		<result column="ZEINUKIGAKU" property="zeinukiGaku" />
+		<result column="ZEIGAKU" property="zeiGaku" />
+		<result column="ZEIKOMIGAKU" property="zeikomiGaku" />
+		<result column="MAKE_TIME" property="makeTime" />
+		<result column="ZAIRYO_MEMO" property="zairyoMemo" />
+		<result column="SHOHIN_MEMO" property="shohinMemo" />
+		<result column="DELETE_FLAG" property="deleteFlag" />
+		<result column="CREATE_DATE" property="createDate" />
+		<result column="UPDATE_DATE" property="updateDate" />
+	</resultMap>
+
+	<select id="selectAllShohinList" resultMap="BaseMap">
+		SELECT * 
+		FROM 
+			N_SHOHIN 
+		WHERE 
+			DELETE_FLAG = '0'
+		ORDER BY
+			UPDATE_DATE DESC
+	</select>
+	
+	<select id="selectByShohinKingaku">
+		SELECT
+			ZEINUKIGAKU,
+			ZEIGAKU,
+			ZEIKOMIGAKU
+		FROM 
+			N_SHOHIN
+		WHERE
+			SHOHIN_CD = #{shohinCd}
+		AND DELETE_FLAG = '0'
+	</select>
+	
+	<select id="searchItemList" resultMap="BaseMap">
+		SELECT *
+		FROM 
+			N_SHOHIN
+		WHERE 
+			DELETE_FLAG = '0'
+		<if test="shohinCd != null">
+			AND SHOHIN_CD = #{shohinCd}
+		</if>
+	    <if test="color != null">
+	        AND COLOR = #{color}
+	    </if>
+	  
+	</select>
+	
+	<select id="findByLastShohinCd" resultType="string">
+		SELECT 
+			SHOHIN_CD
+		FROM
+			N_SHOHIN
+		WHERE 
+			COLOR = #{color}
+		ORDER BY 
+			SHOHIN_CD DESC
+		LIMIT 1
+	</select>
+	
+	<insert id="insertNewItem">
+		INSERT INTO N_SHOHIN
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="shohinCd != null">
+				SHOHIN_CD,
+			</if>
+			<if test="color != null">
+				COLOR,
+			</if>
+			<if test="zeinukiGaku != null">
+				ZEINUKIGAKU,
+			</if>
+			<if test="zeiGaku != null">
+				ZEIGAKU,
+			</if> 
+			<if test="zeikomiGaku != null">
+				ZEIKOMIGAKU,
+			</if>
+			<if test="makeTime != null">
+				MAKE_TIME,
+			</if>
+			<if test="zairyoMemo != null">
+				ZAIRYO_MEMO,
+			</if>
+			<if test="shohinMemo != null">
+				SHOHIN_MEMO,
+			</if>
+			DELETE_FLAG,
+			CREATE_DATE,
+			UPDATE_DATE
+		</trim>
+		VALUES
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="shohinCd != null">
+				#{shohinCd},
+			</if>
+			<if test="color != null">
+				#{color},
+			</if>
+			<if test="zeinukiGaku != null">
+				#{zeinukiGaku},
+			</if>
+			<if test="zeiGaku !=null ">
+				#{zeiGaku},
+			</if>
+			<if test="zeikomiGaku != null">
+				#{zeikomiGaku},
+			</if>
+			<if test="makeTime != null">
+				#{makeTime},
+			</if>
+			<if test="zairyoMemo != null">
+				#{zairyoMemo},
+			</if>
+			<if test="shohinMemo != null">
+				#{shohinMemo},
+			</if>
+			'0',
+            CURRENT_TIMESTAMP,
+            CURRENT_TIMESTAMP
+		</trim>
+	</insert>
+	
+	<update id="deleteShohin">
+		UPDATE N_SHOHIN
+		SET
+			DELETE_FLAG = '1'	
+		WHERE 
+			SHOHIN_CD = #{shohinCd}
+		AND DELETE_FLAG = '0'
+	</update>
+	
+	<select id="findByShohin" resultMap="BaseMap">
+		SELECT *
+		FROM
+			N_SHOHIN
+		WHERE 
+			SHOHIN_CD = #{shohinCd}
+		AND DELETE_FLAG = '0'
+	</select>
+	
+	<update id="updateShohin">
+		UPDATE N_SHOHIN
+		SET
+		<trim suffixOverrides=",">
+			<if test="zeinukiGaku != null">
+				ZEINUKIGAKU = #{zeinukiGaku},
+			</if>
+			<if test="zeiGaku != null">
+				ZEIGAKU = #{zeiGaku},
+			</if> 
+			<if test="zeikomiGaku != null">
+				ZEIKOMIGAKU = #{zeikomiGaku},
+			</if>
+			<if test="makeTime != null">
+				MAKE_TIME = #{makeTime},
+			</if>
+			<if test="zairyoMemo != null">
+				ZAIRYO_MEMO = #{zairyoMemo},
+			</if>
+			<if test="shohinMemo != null">
+				SHOHIN_MEMO = #{shohinMemo},
+			</if>
+		</trim>
+		,
+		UPDATE_DATE = CURRENT_TIMESTAMP
+		WHERE
+			SHOHIN_CD = #{shohinCd}
+		AND DELETE_FLAG = '0'
+	</update>
+</mapper>

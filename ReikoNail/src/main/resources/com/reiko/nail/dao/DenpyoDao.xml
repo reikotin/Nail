@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTO Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.reiko.nail.dao.DenpyoDao">
+
+	<resultMap id="BaseMap" type="com.reiko.nail.entity.DenpyoEntity">
+		<id column="DENPYO_NO" property="denpyoNo" />
+		<id column="CUSTOMER_CD" property="customerCd" />
+		<result column="KOUNYU_DATE" property="kounyuDate" />
+		<result column="ZEINUKIGAKU" property="zeinukiGaku" />
+		<result column="ZEIGAKU" property="zeiGaku" />
+		<result column="ZEIKOMIGAKU" property="zeikomiGaku" />
+		<result column="DENPYO_HAKKOZUMI_FLAG" property="denpyoHakkozumiFlag" />
+		<result column="BIKO" property="biko" />
+		<result column="CREATE_DATE" property="createDate" />
+		<result column="UPDATE_DATE" property="updateDate" />
+	</resultMap>
+
+	<select id="selectByAllDenpyoList" resultMap="BaseMap">
+		SELECT * FROM N_DENPYO
+	</select>
+	
+	<select id="countDenpyoMaisu" resultType="int">
+		SELECT 
+			COUNT(*) 
+		FROM 
+			N_DENPYO
+		WHERE 
+			KOUNYU_DATE = #{kounyuDate}
+	</select>
+	
+	<insert id="insertDenpyo">
+		INSERT INTO N_DENPYO (
+			  DENPYO_NO
+			, CUSTOMER_CD
+			, KOUNYU_DATE
+			, ZEINUKIGAKU
+			, ZEIGAKU
+			, ZEIKOMIGAKU
+			, DENPYO_HAKKOZUMI_FLAG
+			, BIKO
+			, CREATE_DATE
+			, UPDATE_DATE
+		) VALUES (
+			  #{denpyoNo}
+			, #{customerCd}
+			, #{kounyuDate}
+			, #{zeinukiGaku}
+			, #{zeiGaku}
+			, #{zeikomiGaku}
+			, '0'
+			, #{biko}
+			, CURRENT_TIMESTAMP
+			, CURRENT_TIMESTAMP
+		)
+	</insert>
+	
+</mapper>

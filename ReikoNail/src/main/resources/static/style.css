@@ -1,0 +1,19 @@
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css");
+
+.mp-reset {
+  margin: 0;
+  padding: 0;
+}
+
+.r-w {
+  max-width: 1400px;
+}
+
+.he-1 {
+  height: 100vh;
+}
+
+.dddddd {
+  width: 60%;
+  margin: auto;
+}
