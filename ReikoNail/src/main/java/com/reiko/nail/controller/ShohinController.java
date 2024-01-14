@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.reiko.nail.dto.BunruiNameDto;
 import com.reiko.nail.dto.ShohinDto;
+import com.reiko.nail.entity.ShiireEntity;
 import com.reiko.nail.service.ShohinService;
 
 import lombok.RequiredArgsConstructor;
@@ -44,7 +46,17 @@ public class ShohinController {
 			return ResponseEntity.ok(null);
 		}
 		
+		
 		return new ResponseEntity<List<BunruiNameDto>>(shoBunruiList, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/Valid", method = {RequestMethod.POST})
+	public ResponseEntity<ShiireEntity> valid(@RequestBody ShiireEntity shiireEntity){
+		System.out.println("test");
+		shiireEntity.setItemName("上書き");
+		System.out.println(shiireEntity);
+		
+		return new ResponseEntity<ShiireEntity>(shiireEntity, HttpStatus.OK);
 	}
 
 }

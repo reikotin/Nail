@@ -13,13 +13,13 @@ public class ShiireEntity {
 	
 	private String itemName;
 	
-	private int zeinukiGaku;
+	private String zeinukiGaku;
 	
-	private int zeigaku;
+	private String zeigaku;
 	
-	private int zeikomiGaku;
+	private String zeikomiGaku;
 	
-	private LocalDate shiireDate;
+	private String shiireDate;
 	
 	private LocalDate createDate;
 	
