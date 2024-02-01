@@ -28,4 +28,18 @@ public class ShohinRepository {
 		}
 	}
 
+	// ネクスト商品コードの末尾２桁の生成
+	public int getNextCdThemeAndSeason(String themeType, String seasonCd) {
+		
+		String lastShohinCd = shohinDao.findThemeAndSeason(themeType, seasonCd);
+		
+		if(StringUtils.isNotEmpty(lastShohinCd)) {
+			int nextNumber = Integer.parseInt(lastShohinCd.substring(7));
+			return nextNumber;
+		} else {
+			return 0;
+		}
+		
+	}
+
 }

@@ -28,39 +28,62 @@
                 <h2 class="h2">伝票登録</h2>
               </div>
               <div id="formContainer">
-                <div class="mb-3 col-sm-2">
-                  <div class="col">
+                <div class="d-flex row mb-3">
+                  <div class="col-sm-3">
                     <label for="formGroupExampleInput" class="form-label">登録日</label>
-                    <input type="Date" class="form-control" name=kounyuDate required="true">
+                    <input type="Date" class="form-control" id="kounyuDate" name=kounyuDate required="true">
                   </div>
+                  <div class="col-sm-3">
+					<label for="formGroupExampleInput" class="form-label">お客様氏名</label>
+					<select class="form-select" th:field="*{customerCd}" required="true">
+						<option value="" selected>---</option>
+						<option th:each="customer : ${customerList}" 
+								th:value="${customer.customerCd}" 
+								th:text="${customer.customerSei + customer.customerMei}" />
+					</select>
+				  </div>
+				  
+				  <div class="col customerJohoHenshu">
+                    <div class="form-check">
+                      <input type="checkbox" id="johoHenshu" class="form-check-input" 
+                      th:field="*{customerJohoHenshu}" >
+                      <label class="form-check-label">お客様情報修正</label>
+                    </div>
+				  </div>
                 </div>
                 
-                <div class="row g-3 mb-3">
+                <div class="row mb-3">
                   <div class="col-sm-2">
                     <label for="formGroupExampleInput" class="form-label">郵便番号</label>
-                    <input type="text" class="form-control" th:field="*{yubinNo}">
+                    <input type="text" class="form-control" th:field="*{yubinNo}" readonly>
                   </div>
                   <div class="col">
                     <label for="formGroupExampleInput" class="form-label">住所1</label>
-                    <input type="text" class="form-control" th:field="*{prefectureCity}">
+                    <input type="text" class="form-control" th:field="*{prefectureCity}" readonly>
                   </div>
                   <div class="col">
                     <label for="formGroupExampleInput" class="form-label">住所2</label>
-                    <input type="text" class="form-control" th:field="*{streetNo}">
+                    <input type="text" class="form-control" th:field="*{streetNo}" readonly>
                   </div>
                 </div>
-                <div class="row g-3 mb-3">
-                  <div class="col-sm-2">
-                    <label for="formGroupExampleInput" class="form-label">お客様CD</label>
-                    <input type="text" class="form-control" th:field="*{customerCd}" required="true">
+                <div class="row mb-3">
+                  <div class="col-sm-3">
+                    <label for="formGroupExampleInput" class="form-label">氏</label>
+                    <input type="text" class="form-control" th:field="*{customerNameSei}" readonly>
                   </div>
                   <div class="col-sm-3">
-                    <label for="formGroupExampleInput" class="form-label">お客様 : 姓</label>
-                    <input type="text" class="form-control" th:field="*{customerNameSei}" required="true">
+                    <label for="formGroupExampleInput" class="form-label">氏(フリガナ)</label>
+                    <input type="text" class="form-control" th:field="*{seiFurigana}" readonly>
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-sm-3">
+                    <label for="formGroupExampleInput" class="form-label">名</label>
+                    <input type="text" class="form-control" th:field="*{customerNameMei}" readonly>
                   </div>
                   <div class="col-sm-3">
-                    <label for="formGroupExampleInput" class="form-label">お客様 : 名</label>
-                    <input type="text" class="form-control" th:field="*{customerNameMei}" required="true">
+                    <label for="formGroupExampleInput" class="form-label">名(フリガナ)</label>
+                    <input type="text" class="form-control" th:field="*{meiFurigana}" readonly>
                   </div>
                 </div>
                 <div id="dynamicElementContainer">
@@ -106,11 +129,11 @@
                   </div>
                 </div>
                 <div class="mb-3">
-                  <label for="formGroupExampleInput" class="form-label">備考</label>
+                  <label for="formGroupExampleInput" class="form-label">備考<span class="ms-2 anyInput">任意</span></label>
                   <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" th:field="*{biko}"></textarea>
                 </div>
                 <div class="col mb-3">
-					<button type="submit" class="btn btn-primary btn-lg">登録</button>
+					<button type="submit" class="btn btn-primary">登録</button>
 				</div>
               </div>
             </div>
@@ -199,6 +222,30 @@
 				 $(this).val(0);
 			}
 	    });
+        
+	    $('#johoHenshu').change(function(){
+			if ($(this).prop('checked')) {
+			
+				$('#yubinNo').prop('readonly', false);
+				$('#prefectureCity').prop('readonly', false);
+				$('#streetNo').prop('readonly', false);
+				$('#customerNameSei').prop('readonly', false);
+				$('#customerNameMei').prop('readonly', false);
+				$('#seiFurigana').prop('readonly', false);
+				$('#meiFurigana').prop('readonly', false);
+				console.log($(this).val());
+			} else {
+				
+				$('#yubinNo').prop('readonly', true);
+				$('#prefectureCity').prop('readonly', true);
+				$('#streetNo').prop('readonly', true);
+				$('#customerNameSei').prop('readonly', true);
+				$('#customerNameMei').prop('readonly', true);
+				$('#seiFurigana').prop('readonly', true);
+				$('#meiFurigana').prop('readonly', true);
+				console.log($(this).val());
+			}
+		});
 	    
       });
 	  function updateClock() {
@@ -206,11 +253,7 @@
 	      var formattedTime = now.toLocaleString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
 	      document.getElementById('clock').innerText = formattedTime;
 	  }
-	
-	  // 初回実行
 	  updateClock();
-	
-	  // 1秒ごとに時計を更新
 	  setInterval(updateClock, 1000);
   </script>
   

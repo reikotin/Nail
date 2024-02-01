@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTO Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.reiko.nail.dao.RirekiDao">
+	<resultMap id="BaseMap" type="com.reiko.nail.entity.ShiireRirekiEntity">
+		<id column="RIREKI_ID" property="rirekiId" />
+		<result column="SHIIRE_ID" property="shiireId" />
+		<result column="SHIIRE_DATE" property="shiireDate" />
+		<result column="SURYO" property="suryo" />
+		<result column="CREATE_DATE" property="createDate" />
+	</resultMap>
+	
+	<insert id="insertShiireRireki">
+		INSERT INTO SHIIRE_RIREKI(
+			SHIIRE_ID,
+			SHIIRE_DATE,
+			SURYO,
+			CREATE_DATE
+		) VALUES (
+			#{shiireId},
+			#{shiireDate},
+			#{suryo},
+			CURRENT_TIMESTAMP
+		)
+	</insert>
+</mapper>

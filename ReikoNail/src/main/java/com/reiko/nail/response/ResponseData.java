@@ -4,6 +4,8 @@ import lombok.Data;
 
 @Data
 public class ResponseData<T> {
+	
+	private boolean hasShiire = false;
 
 	private boolean hasError = false;
 	

@@ -18,11 +18,16 @@ import com.reiko.nail.dto.BunruiDto;
 import com.reiko.nail.dto.BunruiNameDto;
 import com.reiko.nail.dto.DenpyoDto;
 import com.reiko.nail.dto.SearchItemDto;
+import com.reiko.nail.dto.SearchShiireDto;
+import com.reiko.nail.dto.ShiireDto;
 import com.reiko.nail.dto.ShohinDto;
+import com.reiko.nail.entity.CustomerEntity;
 import com.reiko.nail.entity.DenpyoEntity;
 import com.reiko.nail.entity.ShiireEntity;
 import com.reiko.nail.entity.ShohinEntity;
 import com.reiko.nail.enums.DaiBunruiEnum;
+import com.reiko.nail.enums.SeasonEnum;
+import com.reiko.nail.enums.ThemeTypeEnum;
 import com.reiko.nail.response.ResponseData;
 import com.reiko.nail.service.CustomerService;
 import com.reiko.nail.service.NailService;
@@ -54,9 +59,11 @@ public class NailController {
 	public String newDenpyo(Model model) {
 		
 		List<ShohinEntity> shohinList = nailService.getShohinList();
+		List<CustomerEntity> customerList = customerService.getAllCustomer();
 		
 		DenpyoDto denpyoDto = new DenpyoDto();
 		
+		model.addAttribute("customerList", customerList);
 		model.addAttribute("shohinList", shohinList);
 		model.addAttribute("denpyoDto", denpyoDto);
 		
@@ -64,29 +71,39 @@ public class NailController {
 	}
 	
 	@RequestMapping(value = "/Save", method = {RequestMethod.POST})
-	public String saveDenpyo(@ModelAttribute DenpyoDto denpyoDto) {
+	public String saveDenpyo(@ModelAttribute DenpyoDto denpyoDto, Model model) {
 		
-		int result = customerService.findByCustomer(denpyoDto.getCustomerNameSei(), denpyoDto.getCustomerNameMei());
-		
-		if(result == 0) {
-			customerService.insertNewCustomer(denpyoDto);
+		if(denpyoDto.isCustomerJohoHenshu()) {
+			customerService.updateCustomerJoho(denpyoDto);
 		}
-		
+//		int result = customerService.findByCustomer(denpyoDto.getCustomerNameSei(), denpyoDto.getCustomerNameMei());
+//		if(result == 0) {
+//			customerService.insertNewCustomer(denpyoDto);
+//		}
 		nailService.saveDenpyo(denpyoDto);
-		 
-		return "redirect:/";
+		
+		String message = "登録完了しました。";
+		model.addAttribute("url", "NewDenpyo");
+		model.addAttribute("message", message);
+		return "kanryo";
 	}
 	
 	@RequestMapping(value = "/ItemIndex", method = {RequestMethod.GET})
 	public String itemIndex(Model model){
 
-		List<ShohinEntity> shohinList = new ArrayList<>();
-		List<ShohinEntity> shohinCdList = nailService.getShohinList();
+		List<String> themeList = new ArrayList<>();
+		for(ThemeTypeEnum theme	 : ThemeTypeEnum.values()) {
+			themeList.add(theme.getKey());
+		}
+		themeList.add(0, "");
+		
+		
+//		List<ShohinEntity> shohinCdList = nailService.getShohinList();
 //		List<ShohinEntity> shohinList = studyService.getShohinList();
 		SearchItemDto searchItem = new SearchItemDto();
-		model.addAttribute("shohinCdList", shohinCdList);
+//		model.addAttribute("shohinCdList", shohinCdList);
+		model.addAttribute("themeList", themeList);
 		model.addAttribute("searchItem", searchItem);
-		model.addAttribute("shohinList", shohinList);
 
 		return "ItemIndex";
 	}
@@ -123,30 +140,36 @@ public class NailController {
 	@RequestMapping(value = "/NewItem", method = {RequestMethod.GET})
 	public String newItem(Model model) {
 		
+		List<ShiireEntity> shiireList = shohinService.getColorAndPartsShiireList();
+		
+//		Map<String, List<ShiireEntity>> groupedByDaiBunrui = shiireList.stream()
+//		        .collect(Collectors.groupingBy(ShiireEntity::getDaiBunruiName));
+//		
+//		List<ShiireEntity> partsList = groupedByDaiBunrui.get(DaiBunruiEnum.PARTS.getKey());
+//		List<ShiireEntity> colorList = groupedByDaiBunrui.get(DaiBunruiEnum.COLOR.getKey());
+//		
+//		model.addAttribute("partsList", partsList);
+//		model.addAttribute("colorList", colorList);
+		model.addAttribute("shiireList", shiireList);
+		
+		
+		model.addAttribute("themTypeList", ThemeTypeEnum.values());
+		model.addAttribute("seasonList", SeasonEnum.values());
 		model.addAttribute("shohin", new ShohinDto());	
 		
 		return "NewItem";
 	}
 	
 	@RequestMapping(value = "/SaveItem", method = {RequestMethod.POST})
-	public String saveItem(@ModelAttribute ShohinDto shohinDto, RedirectAttributes redirectAttributes){
-		String message = null;
+	public String saveItem(@ModelAttribute ShohinDto shohinDto, Model model){
+
+		String result = shohinService.registryNewItem(shohinDto);
 		
-		if(shohinDto.getZeinukiGaku() == 0) {
-			message = "税抜額は、0円で登録できません";
-			redirectAttributes.addFlashAttribute("message", message);
-			return "redirect:/NewItem";
-		}
-		String newItemCd = shohinService.registryNewItem(shohinDto);
-		if(StringUtils.isNotEmpty(newItemCd)) {
-			message = "商品コード「" + newItemCd + "」で登録しました";
-		} else {
-			message = "登録中にエラーが発生しました";
-		}
+		model.addAttribute("headMessage", "正常に登録できました。");
+		model.addAttribute("itemMessage", "商品コード : " + result);
+		model.addAttribute("url", "/NewItem");
 		
-		redirectAttributes.addFlashAttribute("message", message);
-		
-		return "redirect:/ItemIndex";
+		return "Kanryo";
 	}
 	
 	@RequestMapping(value = "ItemIndex/{shohinCd}", method = {RequestMethod.GET})
@@ -164,13 +187,15 @@ public class NailController {
 		String message = null;
 		int result = shohinService.deleteItem(shohinCd);
 		
-		if(result == 1) {
-			message = "商品コード「" + shohinCd + "」を削除しました";
-		} else {
-			message = "商品コード「" + shohinCd + "」はすでに削除済みです";
-		}
+//		if(result == 1) {
+//			message = "商品コード「" + shohinCd + "」を削除しました";
+//		} else {
+//			message = "商品コード「" + shohinCd + "」はすでに削除済みです";
+//		}
+		message = "商品コード「" + shohinCd + "」を削除しました";
 		redirectAttributes.addFlashAttribute("message", message);
 		return "redirect:/ItemIndex";
+
 	}
 	
 	@RequestMapping(value = "/Update", method = {RequestMethod.POST})
@@ -216,18 +241,68 @@ public class NailController {
 		
 		List<BunruiNameDto> daiBunruiList = nailService.getDaiBunrui();
 		
-		model.addAttribute("shiireEntity", new ShiireEntity());
+		String minDateByCalender = nailService.minDate();
+		
+		model.addAttribute("minDate", minDateByCalender);
+		model.addAttribute("shiireDto", new ShiireDto());
 		model.addAttribute("daiBunruiList", daiBunruiList);
 		model.addAttribute("shoBunruiList", null);
 		
 		return "NewShiire";
 	}
 	
-	@RequestMapping(value = "/SaveShiire", method = {})
-	public String saveShiire(ShiireEntity shiireEntity) {
+	
+	@RequestMapping(value = "/SaveShiire", method = {RequestMethod.POST})
+	public String saveShiire(@ModelAttribute ShiireDto shiireDto, Model model) {
 		
-		System.out.println(shiireEntity);
-		return "redirect:/NewShiire";
+		ResponseData<ShiireEntity> result = shohinService.saveShiireItem(shiireDto);
+		
+		if(result.isHasShiire()) {
+			// 送信されてきた仕入情報
+			model.addAttribute("postShiireDto", shiireDto);
+			// 送信されてきた品番が、すでに登録されており、その仕入情報
+			model.addAttribute("shiireEntity", result.getData());
+			
+			model.addAttribute("shiireDto", new ShiireDto());
+			return "Kakunin";
+		}
+		
+		model.addAttribute("headMessage", result.getMessage());
+		model.addAttribute("itemMessage", "品名 : " + result.getData().getItemName());
+		model.addAttribute("url", "/NewShiire");
+		
+		return "Kanryo";
+	}
+	
+	@RequestMapping(value = "/IndexShiire", method = {RequestMethod.GET})
+	public String indexShiire(Model model) {
+		
+		List<BunruiNameDto> daiBunruiList = nailService.getDaiBunrui();
+		
+		model.addAttribute("searchShiire", new SearchShiireDto());
+		model.addAttribute("daiBunruiList", daiBunruiList);
+		
+		return "IndexShiire";
+	}
+
+	@RequestMapping(value = "/IndexShiire", method = {RequestMethod.POST})
+	public String searchShiire(SearchShiireDto searchShiireDto, RedirectAttributes redirectAttributes, Model model) {
+		String message = null;
+		boolean isAfterResult = shohinService.dayService(searchShiireDto.getStartDate(), searchShiireDto.getEndDate());
+		if(isAfterResult) {
+			message = "日付の範囲が不正です。";
+			redirectAttributes.addFlashAttribute("message", message);
+			return "redirect:/IndexShiire";
+		}
+		List<BunruiNameDto> daiBunruiList = nailService.getDaiBunrui();
+		List<ShiireEntity> shiireList = shohinService.searchShiireList(searchShiireDto);
+		
+		model.addAttribute("count", "検索結果 : " + shiireList.size() + "件");
+		model.addAttribute("shiireList", shiireList);
+		model.addAttribute("searchShiire", new SearchShiireDto());
+		model.addAttribute("daiBunruiList", daiBunruiList);
+		redirectAttributes.addFlashAttribute("message", message);
+		return "IndexShiire";
 	}
 	
 }

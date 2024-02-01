@@ -23,9 +23,13 @@
 		FROM 
 			CUSTOMER
 		WHERE 
-			SEI = #{customerSei}
+			CUSTOMER_SEI = #{customerSei}
 		AND 
-			MEI = #{customerMei}
+			CUSTOMER_MEI = #{customerMei}
+	</select>
+	
+	<select id="selectByAllCustomer" resultMap="BaseMap">
+		SELECT * FROM CUSTOMER
 	</select>
 	
 	<insert id="insertCustomer" parameterType="com.reiko.nail.entity.CustomerEntity">
@@ -35,10 +39,16 @@
 			CUSTOMER_CD, 
 		  </if>
 		  <if test="customerSei != null">
-            "CUSTOMER_SEI,
+            CUSTOMER_SEI,
 		 </if>
 		 <if test="customerMei != null">
-            "CUSTOMER_MEI,
+            CUSTOMER_MEI,
+         </if>
+         <if test="seiFurigana != null">
+         	SEI_FURIGANA,
+         </if>
+         <if test="meiFurigana != null">
+         	MEI_FURIGANA,
          </if>
          <if test="yubinNo != null">
             YUBIN_NO,
@@ -49,9 +59,7 @@
           <if test="streetNo != null">
             STREET_NO,
           </if>
-          <if test="ruikeiKounyuKingaku != null">
             RUIKEI_KOUNYU_KINGAKU,
-          </if>
             KOUNYU_KAISU,
             CREATE_DATE,
             UPDATE_DATE
@@ -67,6 +75,12 @@
           <if test="customerMei != null">
             #{customerMei},
           </if>
+          <if test="seiFurigana != null">
+          	#{seiFurigana},
+          </if>
+          <if test="meiFurigana != null">
+          	#{meiFurigana},
+          </if>
           <if test="yubinNo != null">
             #{yubinNo},
          </if>
@@ -76,13 +90,29 @@
           <if test="streetNo != null">
             #{streetNo},
           </if>
-          <if test="ruikeiKounyuKingaku != null">
-            #{ruikeiKounyuKingaku},
-         </if>
-            '1',
+            '0'
+            '0',
             CURRENT_TIMESTAMP,
             CURRENT_TIMESTAMP
        </trim>
 	</insert>
+	
+	<update id="updateCustomer">
+		UPDATE 
+			CUSTOMER
+		SET
+			CUSTOMER_SEI = #{customerSei},
+			CUSTOMER_MEI = #{customerMei},
+			SEI_FURIGANA = #{seiFurigana},
+			MEI_FURIGANA = #{meiFurigana},
+			YUBIN_NO = #{yubinNo},
+			PREFECTURE_CITY = #{prefectureCity},
+			STREET_NO = #{streetNo},
+			KOUNYU_KAISU = KOUNYU_KAISU + 1,
+			RUIKEI_KOUNYU_KINGAKU = RUIKEI_KOUNYU_KINGAKU + #{ruikeiKounyuKingaku},
+			UPDATE_DATE = CURRENT_TIMESTAMP
+		WHERE
+			CUSTOMER_CD = #{customerCd}
+	</update>
 
 </mapper>

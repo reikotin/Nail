@@ -16,4 +16,7 @@ public class Constants {
 	public static final String GOLD = "GO";
 	public static final String SILVER = "SI";
 	public static final String VARIOUS = "VA";
+	
+	public static final String ALL = "全て";
+	public static final String HENSHUARI = "1";
 }

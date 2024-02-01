@@ -29,8 +29,27 @@
 	            <div class="col mt-3 mb-3 d-flex justify-content-end">
 					<form method="POST" th:action="@{/Delete}" th:object="${entity}">
 						<input type="hidden" th:value="${shohinCd}" name="shohinCd">
-					    <button type="submit" class="btn btn-danger" id="delete"><i class="bi bi-trash3"></i></button>
-					</form>
+					    <button type="button" id="deleteForm" class="btn btn-danger"  data-bs-toggle="modal" data-bs-target="#staticBackdrop"><i class="bi bi-trash3"></i></button>
+				        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+				          <div class="modal-dialog">
+				            <div class="modal-content">
+				              <div class="modal-header">
+				                <h1 class="modal-title fs-5" id="staticBackdropLabel">本当に削除しますか？</h1>
+				                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				              </div>
+				              <div class="modal-body">
+								商品コード: <span id="setShohinCd" class="me-2"></span><br>
+				                カラー　　:<span id="setColor" class="me-2"></span><br>
+				                税抜額　　:<span id="setZeinukiGaku"></span>
+							  </div>
+				              <div class="modal-footer">
+				                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+				                <button type="submit" class="btn btn-danger" id="delete">削除</button>
+				              </div>
+				            </div>
+				          </div>
+				       </div>
+				    </form>
 				</div>
 			</div>
             <form th:object="${entity}" method="POST" th:action="@{/Update}">
@@ -41,6 +60,12 @@
                   <div class="col">
                     <label for="formGroupExampleInput" class="form-label">商品コード</label>
                     <input type="text" th:field="*{shohinCd}" class="form-control" readonly>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <div class="col">
+                    <label for="formGroupExampleInput" class="form-label">カラー</label>
+                    <input type="text" th:field="*{color}" class="form-control" readonly>
                   </div>
                 </div>
                 <div class="mb-3">
@@ -67,7 +92,7 @@
                   <textarea class="form-control" rows="3" th:field="*{shohinMemo}"></textarea>
                 </div>
                 <div class="col mb-3">
-                  <button type="submit" class="btn btn-primary btn-lg">更新</button>
+                  <button type="submit" class="btn btn-primary">更新</button>
                 </div>
               </div>
             </form>
@@ -80,9 +105,12 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js" integrity="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS" crossorigin="anonymous"></script>
     <script th:inline="javascript">
 		$(document).ready(function () {
+			var shohinCd = $('#shohinCd').val();
+			var color = $('#color').val();
+			var zeinukiGaku = $('#zeinukiGaku').val();
+			// 商品の削除
 			$('#delete').on('click', function(){
 				const shohinCd = $('#shohinCd').val();
-				
 				$.ajax({
 					url: '/Delete',
 					type: 'POST',
@@ -95,8 +123,20 @@
 					}
 				});
 			});
-			
-			
+			// 削除前の確認
+			$('#deleteForm').on('click', function(){
+				$('#setShohinCd').text(shohinCd);
+				$('#setColor').text(color);
+				$('#setZeinukiGaku').text(zeinukiGaku);
+			});
+			// 数値以外の入力制御および全角数値の制御
+            $('#zeinukiGaku').on('input', function() {
+               let inputValue = $(this).val().replace(/[^0-9０-９]/g, '');
+               inputValue = inputValue.replace(/[０-９]/g, function(s) {
+                 return String.fromCharCode(s.charCodeAt(0) - 0xFEE0);
+               });
+               $(this).val(inputValue);
+            });
 		});
 
 	    function updateClock() {
@@ -104,17 +144,14 @@
 	        var formattedTime = now.toLocaleString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
 	        document.getElementById('clock').innerText = formattedTime;
 	    }
-	    // 初回実行
 	    updateClock();
-	    // 1秒ごとに時計を更新
 	    setInterval(updateClock, 1000);
-	    
-		  var message = $('#message-container');
-		  if(message.innerText !== ''){
-	            setTimeout(function () {
-	                message.empty(); // メッセージをクリア
-	            }, 5000);
-		  }
+		var message = $('#message-container');
+		if(message.innerText !== ''){
+			setTimeout(function () {
+				message.empty(); 
+				}, 5000);
+		}
 	</script>
 </body>
 </html>

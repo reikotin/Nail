@@ -17,3 +17,119 @@
   width: 60%;
   margin: auto;
 }
+
+.anyInput {
+	display: inline;
+    padding: 0 5px;
+    border: solid skyblue;
+    border-radius: 5px;
+    font-size: 14px;
+    color: skyblue;
+}
+
+.bubunitti {
+	color: skyblue;
+	display: inline;
+	padding:0 5px;
+	border-radius: 5px;
+	font-size: 14px;
+	border: solid skyblue;
+	
+}
+
+.customerJohoHenshu {	
+    align-items: end;
+    display: flex;
+    padding-bottom: 5px;
+
+}
+
+
+.form-control-plaintext:focus{
+  color: #212529;
+  background-color: #fff;
+  border-color: #86b7fe;
+  outline: none;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25); 
+}
+
+.text-white{
+	color: white;
+}
+
+.searchWindoq {
+	width: 50%;
+	margin: auto;
+}
+
+.end-rounted {
+	border-radius: 0 5px 5px 0;
+}
+
+.start-rounted {
+	border-radius: 5px 0 0 5px;
+}
+
+.left-top-rounted {
+	border-radius: 5px 0 0 0 ;
+}
+
+.left-bottom-rounted {
+	border-radius: 0 0 0 5px;
+}
+
+.all-rounted {
+	border-radius: 5px;
+}
+
+.bg_test {
+    background: linear-gradient(to top, rgba(217, 175, 217, 0.7) 0%, rgba(151, 217, 225, 0.7) 100%),url(/reikonailblue.png);  /* 背景画像指定 */
+    background-repeat:  no-repeat;  /* 背景の繰り返し設定 */
+    background-position: center;    /* 背景の位置指定 */
+}
+
+.kanryoTitle {
+	border-radius: 15px;
+	height: 20rem; 
+	width: 40rem;
+}
+
+.mtmb-2{
+	margin: 2rem 0;
+}
+
+input[type=date] {
+  position: relative;
+  color: white;
+  text-align: center;
+}
+input[type=date]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+input[type=date]::-webkit-clear-button {
+  -webkit-appearance: none;
+}
+input[type=date]::-webkit-calendar-picker-indicator {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.boot-btn{
+	font-size: calc(1.375rem + 1.5vw);
+	
+}
+
+.shiire-label{
+	width: 20%;
+	display: flex;
+	justify-content: center;
+}
+
+.addZairyo {
+	font-size: 13px;
+}
+
+

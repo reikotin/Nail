@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTO Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.reiko.nail.dao.ShiireDao">
+	<resultMap id="BaseMap" type="com.reiko.nail.entity.ShiireEntity">
+		<id column="SHIIRE_ID" property="shiireId" />
+		<result column="DAI_BUNRUI_NAME" property="daiBunruiName" />
+		<result column="SHO_BUNRUI_NAME" property="shoBunruiName" />
+		<result column="ITEM_NAME" property="itemName" />
+		<result column="ZEINUKIGAKU" property="zeinukiGaku" />
+		<result column="ZEIGAKU" property="zeiGaku" />
+		<result column="ZEIKOMIGAKU" property="zeikomiGaku" />
+		<result column="SHIIRE_SAKI" property="shiireSaki" />
+		<result column="SHIIRE_MAKER" property="shiireMaker" />
+		<result column="ITEM_SIZE" property="itemSize" />
+		<result column="JAN_CD" property="janCd" />
+		<result column="DELETE_FLAG" property="deleteFlag" />
+		<result column="CREATE_DATE" property="createDate" />
+		<result column="UPDATE_DATE" property="updateDate" />
+	</resultMap>
+
+	<insert id="insertShiireItem">
+		INSERT INTO N_SHIIRE(
+			SHIIRE_ID,
+			DAI_BUNRUI_NAME,
+			SHO_BUNRUI_NAME,
+			ITEM_NAME,
+			ZEINUKIGAKU,
+			ZEIGAKU,
+			ZEIKOMIGAKU,
+		<if test="shiireSaki != null">
+			SHIIRE_SAKI,
+		</if>
+		<if test="shiireSaki != null">
+		  	SHIIRE_MAKER,
+		</if>
+		<if test="itemSize != null">
+		  	ITEM_SIZE,
+		</if>
+		<if test="janCd != null">
+		    JAN_CD,
+		</if>
+			DELETE_FLAG,
+			CREATE_DATE,
+			UPDATE_DATE
+		) VALUES (
+			#{shiireId},
+			#{daiBunruiName},
+			#{shoBunruiName},
+			#{itemName},
+			#{zeinukiGaku},
+			#{zeiGaku},
+			#{zeikomiGaku},
+		  <if test="shiireSaki != null">
+			#{shiireSaki},
+		  </if>
+		  <if test="shiireMaker != null">
+		  	#{shiireMaker},
+		  </if>
+		  <if test="itemSize != null">
+		  	#{itemSize},
+		  </if>
+		  <if test="janCd != null">
+		    #{janCd},
+		  </if>
+			'0',
+            CURRENT_TIMESTAMP,
+            CURRENT_TIMESTAMP
+		) ON DUPLICATE KEY UPDATE 
+	        DAI_BUNRUI_NAME = VALUES(DAI_BUNRUI_NAME),
+	        SHO_BUNRUI_NAME = VALUES(SHO_BUNRUI_NAME),
+	        ITEM_NAME = VALUES(ITEM_NAME),
+	        ZEINUKIGAKU = VALUES(ZEINUKIGAKU),
+	        ZEIGAKU = VALUES(ZEIGAKU),
+	        ZEIKOMIGAKU = VALUES(ZEIKOMIGAKU),
+	        SHIIRE_SAKI = VALUES(SHIIRE_SAKI),
+	        SHIIRE_MAKER = VALUES(SHIIRE_MAKER),
+	        ITEM_SIZE = VALUES(ITEM_SIZE),
+	        UPDATE_DATE = VALUES(UPDATE_DATE);
+	</insert>
+	<!--  
+	<select id="searchShiireItemList" resultMap="BaseMap">
+		SELECT 
+			n.*
+		FROM 
+		(
+		SELECT 
+			S.SHIIRE_ID AS SHIIRE_ID,
+			S.DAI_BUNRUI_NAME AS DAI_BUNRUI_NAME,
+			S.SHO_BUNRUI_NAME AS SHO_BUNRUI_NAME,
+			MAX(R.SHIIRE_DATE) AS SHIIRE_DATE,
+			S.ITEM_NAME AS ITEM_NAME,
+			S.ZEINUKIGAKU AS ZEINUKIGAKU,
+			S.ZEIGAKU AS ZEIGAKU,
+			S.ZEIKOMIGAKU AS ZEIKOMIGAKU,
+			S.SHIIRE_SAKI AS SHIIRE_SAKI,
+			S.SHIIRE_MAKER AS SHIIRE_MAKER,
+			S.ITEM_SIZE AS ITEM_SIZE,
+			S.JAN_CD AS JAN_CD,
+		FROM 
+			N_SHIIRE S
+		INNER JOIN
+			SHIIRE_RIREKI R
+		ON 
+			S.SHIIRE_ID = R.SHIIRE_ID
+		GROUP BY 
+			JAN_CD
+		) AS n
+		WHERE
+			n.DELETE_FLAG = '0'
+		  <if test="daiBunruiName != null">
+			AND n.DAI_BUNRUI_NAME = '${daiBunruiName}'
+		  </if>
+		  <if test="shoBunruiName != null">
+		    AND n.SHO_BUNRUI_NAME = '${shoBunruiName}'
+		  </if>
+		  <if test="itemName != null">
+		    AND n.ITEM_NAME LIKE CONCAT('%','${itemName}' '%')
+		  </if>
+		  <if test="startDate != null">
+		    AND n.UPDATE_DATE <![CDATA[ >= ]]> '${startDate}'
+		  </if>
+		  <if test="endDate != null">
+		    AND n.UPDATE_DATE <![CDATA[ <= ]]> '${endDate}'
+		  </if>
+		  <if test="janCd != null">
+		    AND n.JAN_CD = '${janCd}'
+		  </if>
+	
+	</select>-->
+	<select id="searchShiireItemList" resultMap="BaseMap">
+		SELECT 
+			SHIIRE_ID,
+			JAN_CD,
+			DAI_BUNRUI_NAME,
+			SHO_BUNRUI_NAME,
+			ITEM_NAME,
+			SHIIRE_SAKI,
+			SHIIRE_MAKER,
+			ITEM_SIZE,
+			ZEIKOMIGAKU,
+			UPDATE_DATE
+		FROM
+			N_SHIIRE
+		WHERE
+			DELETE_FLAG = '0'
+		  <if test="janCd != null">
+		  	AND JAN_CD = #{janCd}
+		  </if>
+		  <if test="daiBunruiName != null">
+		    AND DAI_BUNRUI_NAME = #{daiBunruiName}
+		  </if>
+		  <if test="shoBunruiName != null">
+		    AND SHO_BUNRUI_NAME = #{shoBunruiName}
+		  </if>
+		  <if test="itemName != null">
+		    AND ITEM_NAME LIKE CONCAT('%','${itemName}' '%')
+		  </if>
+		  <if test="startDate != null">
+		    AND UPDATE_DATE <![CDATA[ >= ]]> '${startDate}'
+		  </if>
+		  <if test="endDate != null">
+		    AND UPDATE_DATE <![CDATA[ <= ]]> '${endDate}'
+		  </if>
+	
+	</select>
+	<select id="countId" resultType="int">
+		SELECT 
+			COUNT(*)
+		FROM 
+			N_SHIIRE
+	</select>
+	
+	<select id="findShiireJohoByJanCd" resultMap="BaseMap">
+		SELECT 
+			*
+		FROM
+			N_SHIIRE
+		WHERE 
+			JAN_CD = #{janCd}
+		AND
+			DELETE_FLAG = '0'
+	</select>
+	
+	<select id="selectByColorAndPartsShiireList" resultMap="BaseMap">
+		SELECT 
+			*
+		FROM
+			N_SHIIRE
+		WHERE
+			DELETE_FLAG = '0'
+		AND
+	        DAI_BUNRUI_NAME IN (
+	        #{color}, #{parts}
+        )
+	</select>
+	
+	<select id="selectByItemNameList" resultMap="BaseMap">
+		SELECT
+			SHIIRE_ID,
+			ITEM_NAME
+		FROM
+			N_SHIIRE
+		WHERE
+			DELETE_FLAG = '0'
+		AND
+			DAI_BUNRUI_NAME = #{daiBunruiName}
+		<if test="shoBunruiName != null">
+			AND	SHO_BUNRUI_NAME = #{shoBunruiName}	
+		</if>
+			
+	</select>
+
+</mapper>

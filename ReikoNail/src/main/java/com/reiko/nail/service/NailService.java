@@ -1,5 +1,6 @@
 package com.reiko.nail.service;
 
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,12 +77,12 @@ public class NailService {
 		
 		List<SalesEntity> salesList = new ArrayList<>();
 		for(ShohinDto shohin : denpyoDto.getShohinDto()) {
-			SalesEntity entity = new SalesEntity();
-			entity.setDenpyoNo(denpyoNo);
-			entity.setShohinCd(shohin.getShohinCd());
-			entity.setKounyuDate(denpyoDto.getKounyuDate());
-			entity.setCustomerCd(denpyoDto.getCustomerCd());
-			salesList.add(entity);
+//			SalesEntity entity = new SalesEntity();
+//			entity.setDenpyoNo(denpyoNo);
+//			entity.setShohinCd(shohin.getShohinCd());
+//			entity.setKounyuDate(denpyoDto.getKounyuDate());
+//			entity.setCustomerCd(denpyoDto.getCustomerCd());
+//			salesList.add(entity);
 		}
 		
 		salesDao.registryMeisai(salesList);
@@ -153,5 +154,20 @@ public class NailService {
 		}
 		
 		return daiBunruiList;
+	}
+	
+	public String minDate() {
+		// 本日の日付
+	    LocalDate today = LocalDate.now();
+
+	    // 一週間前の日付を計算
+	    LocalDate oneWeekAgo = today.minusWeeks(2);
+
+	    // フォーマットしてHTMLの形式に変換
+	    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	    String minDate = oneWeekAgo.format(formatter);
+	    
+	    return minDate;
+	    		
 	}
 }

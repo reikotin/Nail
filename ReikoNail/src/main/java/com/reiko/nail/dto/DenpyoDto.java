@@ -32,4 +32,6 @@ public class DenpyoDto {
 	private String streetNo;
 	/** 備考 */
 	private String biko;
+	/** お客様情報修正区分 */
+	private boolean customerJohoHenshu;
 }

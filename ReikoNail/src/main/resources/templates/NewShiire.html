@@ -17,87 +17,186 @@
         <main class="col-md-9 ml-sm-auto col-lg-10 bg-light">
           <div class="container r-w">
             <div class="d-flex justify-content-between align-items-center border-bottom border-dark mt-3">
-              <h1 class="h1">R-ネイル</h1><div id="message-container"><span th:if="${message}" th:text="${message}"></span></div>
+              <h1 class="h1">R-ネイル : 仕入登録</h1><div id="message-container"><span th:if="${message}" th:text="${message}"></span></div>
               <h6 class="">システム日付 : <span id="clock"></span></h6>
             </div>
           </div>
-          <div class="container">
-            <div class="mt-3 mb-3">
-              <h2 class="h2">仕入登録</h2>
-            </div>
-            <form th:object="${shiireEntity}" th:action="@{/SaveShiire}" method="POST">
-              <div id="formContainer" style="
-              width: 35%;
-              margin: auto;">
-                <div class="mb-3">
-					<div class="col">
-						<label for="formGroupExampleInput" class="form-label">仕入日</label>
-						<input type="Date" class="form-control" name=shiireDate id="shiireDate" required="true">
-					</div>
+          <div class="d-flex mt-3 mb-3 justify-content-between container r-w">
+	        <div class="mt-3 mb-3">
+              <button type="submit" id="shiireSearch" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                仕入検索 <i class="bi bi-search"></i>
+              </button>    
+	        </div>
+          </div>
+          <div class="container r-w">
+			<form th:object="${shiireDto}" th:action="@{/SaveShiire}" method="POST">
+				<input type="hidden" th:field="*{shiireId}">
+				<div class="col-4 d-flex mb-3">
+					<div class="col-3 d-flex align-items-center justify-content-center 
+					border border-secondary bg-secondary text-white start-rounted">仕入日</div>
+					<input type="Date" name=shiireDate th:min="${minDate}" class="form-control-plaintext border border-secondary pe-2 text-center end-rounted">
 				</div>
-                <div class="mb-3">
-					<div class="col">
-						<label for="formGroupExampleInput" class="form-label">大分類</label>
-                        <select th:field="*{daiBunruiName}" class="form-select">
-							<option value="">選択してください</option>
-							<option th:each="bunrui : ${daiBunruiList}" th:value="${bunrui.bunruiName}" th:text="${bunrui.bunruiName}"/>
-						</select>
-					</div>
-				</div>
-               
-                <div class="mb-3">
-                  <div class="col">
-                    <label for="shoBunruiName" class="form-label">小分類</label>
-                    <select th:field="*{shoBunruiName}" class="form-select">
+				<div>分類情報</div>
+				<div class="d-flex mb-3">
+				  <div class="col-4 d-flex">
+					<div class="col-3 px-2 d-flex align-items-center justify-content-center 
+					border border-secondary bg-secondary text-white start-rounted">大分類</div>
+					<select th:field="*{daiBunruiName}" class="form-control-plaintext border border-secondary text-center" required="true">
+						<option value="">　</option>
+						<option th:each="daiBunrui : ${daiBunruiList}" th:value="${daiBunrui.bunruiName}" th:text="${daiBunrui.bunruiName}" />
+						<!--<input type="text" th:field="*{daiBunruiName}" class="form-control-plaintext border border-secondary text-center">-->
+					</select>
+				  </div>
+				  <div class="col-4 d-flex">
+					<div class="col-3 px-2 d-flex align-items-center justify-content-center border border-secondary bg-secondary text-white">小分類</div>
+					<select th:field="*{shoBunruiName}" class="form-control-plaintext border border-secondary text-center end-rounted" disabled="true">
+						<option value=""> </option>
 						<option th:each="shoBunrui : ${shoBunruiList}" th:value="${shoBunrui.bunruiName}" th:text="${shoBunrui.bunruiName}"/>
 					</select>
-                  </div>
-                </div>
-                <div class="mb-3">
-                  <div class="col">
-                    <label for="formGroupExampleInput" class="form-label">商品名</label>
-                    <input type="text" class="form-control" th:field="*{itemName}">
-                  </div>
-                </div>
-                <div class="mb-3">
-                  <div class="col">
-                    <label for="formGroupExampleInput" class="form-label">税抜額</label>
-                    <input type="text" class="form-control text-end" th:field="*{zeinukiGaku}">
-                  </div>
-                </div>
-                  
-                <div class="mb-3">
-                  <label for="formGroupExampleInput" class="form-label">税込額</label>
-                  <input type="text" class="form-control text-end"  th:field="*{zeikomiGaku}"></input>
-                </div>
-
-                <button type="button" id="registerBtn" class="btn btn-primary col mb-3" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                  登録
-                </button>
+					<!--<input type="text" th:field="*{shoBunruiName}" class="form-control-plaintext border border-secondary text-center end-rounted">-->
+				  </div>
+				</div>
+				<div>商品情報</div>
+				<div class="d-flex mb-3">
+				  <div class="col-4 d-flex">
+					<div class="col-3 px-2 d-flex align-items-center justify-content-center 
+					border border-secondary bg-secondary text-white start-rounted">品　名</div>
+					<input type="text" th:field="*{itemName}" class="form-control-plaintext border border-secondary text-center">
+				  </div>
+				  <div class="col-4 d-flex">
+					<div class="col-3 px-2 d-flex align-items-center justify-content-center border border-secondary bg-secondary text-white">品　番</div>
+					<input type="text" th:field="*{janCd}" class="form-control-plaintext border border-secondary text-center end-rounted">
+				  </div>
+				</div>
+				<div class="d-flex mb-3">
+				  <div class="col-4 d-flex">
+					<div class="col-3 px-2 d-flex align-items-center justify-content-center 
+					border border-secondary bg-secondary text-white start-rounted">仕入先</div>
+					<input type="text" th:field="*{shiireSaki}" class="form-control-plaintext border border-secondary text-center">
+				  </div>
+				  <div class="col-4 d-flex">
+					<div class="col-3 px-2 d-flex align-items-center justify-content-center border border-secondary bg-secondary text-white">メーカー</div>
+					<input type="text" th:field="*{shiireMaker}" class="form-control-plaintext border border-secondary text-center">
+				  </div>
+				  <div class="col-4 d-flex">
+					<div class="col-3 px-2 d-flex align-items-center justify-content-center border border-secondary bg-secondary text-white">サイズ</div>
+					<input type="text" th:field="*{itemSize}" class="form-control-plaintext border border-secondary text-center end-rounted">
+				  </div>
+				</div>
+				<div>金額情報</div>
+				<div class="d-flex">
+	 				<div class="form-check me-3">
+					  <input class="form-check-input" type="radio"  value="0" id="zeinukiMode">
+					  <label class="form-check-label" for="zeinukiMode">
+					    税抜モード
+					  </label>
+					</div>
+	 				<div class="form-check">
+					  <input class="form-check-input" type="radio"  value="1" id="zeikomiMode" checked>
+					  <label class="form-check-label" for="zeikomiMode">
+					    税込モード
+					  </label>
+					</div>
+				</div>
+	            <div class="col-4">
+					<div class="col d-flex border border-secondary left-top-rounted">
+						<div class="col-3 px-2 d-flex align-items-center justify-content-center 
+						border-end border-secondary bg-secondary text-white left-top-rounted">税抜額</div>
+						<input type="text" th:field="*{zeinukiGaku}" class="form-control-plaintext text-end pe-2" readonly>
+					</div>
+					<div class="col d-flex border-start border-end border-secondary">
+						<div class="col-3 px-2 d-flex align-items-center justify-content-center border-top border-bottom border-white bg-secondary text-white">税　額</div>
+						<input type="text" th:field="*{zeiGaku}" class="form-control-plaintext  text-end pe-2" readonly>
+					</div>
+	            </div>
+				<div class="d-flex mb-3">
+					<div class="col-4">
+						<div class="col d-flex border border-secondary left-bottom-rounted">
+							<div class="col-3 px-2 d-flex align-items-center justify-content-center 
+							border-end border-secondary bg-secondary text-white left-bottom-rounted">税込額</div>
+							<input type="text" th:field="*{zeikomiGaku}" class="form-control-plaintext  text-end pe-2">
+						</div>
+					</div>
+					<div class="col-4">
+					  <div class="col d-flex border border-secondary end-rounted">
+				  	    <div class="col-3 px-2 d-flex align-items-center justify-content-center 
+				  	    border-end border-secondary bg-secondary text-white">数　量</div>
+			      	    <input type="text" th:field="*{suryo}" class="form-control-plaintext text-end pe-2">
+					  </div>
+					</div>
+				</div>
+				<div class="col-4">
+				  	<div>
+					    <button type="button" id="keisan" class="all-rounted">計算</button>
+				    </div>
+				</div>
+				<div class="d-flex justify-content-end">
+					<div class="mt-3 mb-3">
+              			<button type="submit" id="registerShiire" class="btn btn-primary">登録</button>    
+            		</div>
+				</div>
+			</form>
 				<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-				  <div class="modal-dialog">
+				  <div class="modal-dialog modal-fullscreen">
 				    <div class="modal-content">
 				      <div class="modal-header">
-				        <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
-				        <button type="button" id="closeBtn1" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				        <h1 class="modal-title" id="staticBackdropLabel">仕入検索</h1>
+				        <button type="button" class="btn-close boot-btn" data-bs-dismiss="modal" aria-label="Close"></button>
 				      </div>
 				      <div class="modal-body">
-						仕入日 : <span id="setShiireDate"></span><br>
-				        大分類 : <span id="setDaiBunrui"></span><br>
-				        小分類 : <span id="setShoBunrui"></span><br>
-				        商品名 : <span id="setItemName"></span><br>
-				        税抜額 : <span id="setZeinukiGaku"></span><br>
-				        税込額 : <span id="setZeikomiGaku"></span>
+						<div>
+							<button type="button" class="btn btn-secondary" id="kensaku">検索</button>
+						</div>
+						<div class="d-flex searchWindoq">
+							<div class="input-group mb-3">
+							  <span class="input-group-text">品番／JAN</span>
+							  <input type="text" id="searchJan" class="form-control" aria-describedby="basic-addon1">
+							</div>
+							<div class="input-group mb-3">
+							  <span class="input-group-text" id="basic-addon1">仕入商品名</span>
+							  <input type="text" id="searchItemName" class="form-control" placeholder="部分一致" aria-describedby="basic-addon1">
+							</div>
+						</div>
+						<div class="d-flex searchWindoq">
+							<div class="input-group mb-3">
+	  							<label class="input-group-text" for="inputGroupSelect01">　大分類　</label>
+	  							<select class="form-select" id="searchDaiBunrui">
+									  <option value=''></option>
+									  <option th:each="daiBunrui : ${daiBunruiList}" th:value="${daiBunrui.bunruiName}" th:text="${daiBunrui.bunruiName}" />
+								 </select>
+							</div>
+							<div class="input-group mb-3">
+	  							<label class="input-group-text" for="inputGroupSelect01">　小分類　</label>
+	  							<select class="form-select" id="searchShoBunrui" disabled="true">
+								</select>
+							</div>
+						</div>
+			           <table class="table table-bordered text-center">
+			              <thead>
+			                  <tr>
+								  <th>選択</th>
+								  <th>品番/JAN</th>
+			                      <th>大分類名</th>
+			                      <th>小分類名</th>
+			                      <th>品名</th>
+								  <th>仕入先</th>
+			                      <th>メーカー</th>
+			                      <th>サイズ</th>
+			                      <th>税込額</th>
+			                      <th>最終仕入日</th>
+			                      <th style="display: none;">仕入ID</th>
+			                  </tr>
+			              </thead>
+			              <tbody id="searchBody">
+			              </tbody>
+			            </table>
 				      </div>
 				      <div class="modal-footer">
-				        <button type="button" id="closeBtn2" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-				        <button type="submit" id="save" class="btn btn-primary">Understood</button>
+				        <button type="button" class="btn btn-primary btn-lg" id="resultOk" data-bs-dismiss="modal">OK</button>
 				      </div>
 				    </div>
 				  </div>
 				</div>
-              </div>
-            </form>
           </div>          
         </main>
     </div>
@@ -117,18 +216,144 @@
 		var message = $('#message-container');
 		if(message.innerText !== ''){
 	          setTimeout(function () {
-	              message.empty(); // メッセージをクリア
+	              message.empty(); 
 	          }, 5000);
 		}
 		
 		$(document).ready(function () {
+			$('input[type=date]').on('change', function() {
+                // 入力がある場合は文字色を黒に、入力がない場合は白に変更
+                $(this).css('color', $(this).val() ? 'black' : 'white');
+            });
+            
+            var selectedKeisanMode = '1';
+			
+            $('#zeinukiMode, #zeikomiMode').on('change', function () {
+				selectedKeisanMode = $(this).val();
+				console.log(selectedKeisanMode);
+				if(selectedKeisanMode === '0'){
+					$('#zeinukiMode').prop('checked', true);
+					$('#zeikomiMode').prop('checked', false);
+					$('#zeikomiGaku').prop('readonly', true);
+					$('#zeinukiGaku').prop('readonly', false);
+				} else {
+					$('#zeinukiMode').prop('checked', false);
+					$('#zeikomiMode').prop('checked', true);
+					$('#zeikomiGaku').prop('readonly', false);
+					$('#zeinukiGaku').prop('readonly', true);
+				}
+				
+            });
+			
+			$('#keisan').on('click', function(){
+				if(selectedKeisanMode === '1'){
+					
+				  var zeikomiGaku = $('#zeikomiGaku').val();
+				  var zeinukiGaku = Math.round(zeikomiGaku / 1.1);
+				  $('#zeiGaku').val(zeikomiGaku - zeinukiGaku);
+				  $('#zeinukiGaku').val(zeinukiGaku);
+				} else {
+					var zeinukiGaku = $('#zeinukiGaku').val();
+					var zeikomiGaku = Math.floor(zeinukiGaku * 1.1);
+					$('#zeikomiGaku').val(zeikomiGaku);
+					$('#zeiGaku').val(zeikomiGaku - zeinukiGaku);
+				}
+
+			});
+			
+			
+			$('#kensaku').on('click', function(){
+				
+				var searchJan =  $('#searchJan').val();
+				var searchItemName = $('#searchItemName').val();
+				var searchDaiBunrui = $('#searchDaiBunrui').val();
+				var searchShoBunrui = $('#searchShoBunrui').val();
+				
+				var searchShiireDto = {
+					janCd: searchJan,
+					itemName: searchItemName,
+					daiBunruiName: searchDaiBunrui,
+					shoBunruiName: searchShoBunrui
+				};
+				
+				$.ajax({
+					url: '/SearchShiireItem',
+					type: 'GET',
+					contentType: "application/json; charset=utf-8",
+					dataType: "json",
+					data: searchShiireDto,
+					success: function(response){
+						var tbody = $('#searchBody');
+						tbody.empty();
+						for(var i = 0; i < response.length; i++){
+							var data = response[i];
+							
+							var newRow = $('<tr>');
+							
+							var radioCell = $('<td>').html('<input type="radio" name="selectRow" value="' + i + '">').attr('id', 'radioCell_' + i);
+							newRow.append(radioCell);
+							newRow.append($('<td>').text(data.janCd).attr('id', 'setJanCd_' + i));
+							newRow.append($('<td>').text(data.daiBunruiName).attr('id', 'setDaiBunrui_' + i));
+							newRow.append($('<td>').text(data.shoBunruiName).attr('id', 'setShoBunrui_' + i));
+							newRow.append($('<td>').text(data.itemName).attr('id', 'setItemName_' + i));
+							newRow.append($('<td>').text(data.shiireSaki).attr('id', 'setShiireSaki_' +i));
+							newRow.append($('<td>').text(data.shiireMaker).attr('id', 'setMaker_' + i));
+							newRow.append($('<td>').text(data.itemSize).attr('id', 'setSize_' +i));
+							newRow.append($('<td>').text(data.zeikomiGaku).attr('id', 'setZeikomiGaku_' +i));
+							newRow.append($('<td>').text(data.shiireDate).attr('id', 'setShiireDate_' +i));
+							newRow.append($('<td>').text(data.shiireId).attr('id', 'setShiireId_' +i).css('display', 'none'));	
+							tbody.append(newRow);
+						}
+					}
+				});
+			});
+			
+			$('#resultOk').on('click', function(){
+				
+				var index = $('input[name="selectRow"]:checked').val();
+				
+				var dai = $('#setDaiBunrui_' + index).text();
+				var sho = $('#setShoBunrui_' + index).text();
+				var item = $('#setItemName_' + index).text();
+				var jan = $('#setJanCd_' + index).text();
+				var saki = $('#setShiireSaki_' + index).text();
+				var maker = $('#setMaker_' + index).text();
+				var inchi = $('#setSize_' + index).text();
+				var zeikomiText = $('#setZeikomiGaku_' + index).text();
+				var zeikomi = parseInt(zeikomiText, 10);
+				
+				var zeinuki = Math.round(zeikomi / 1.1);
+				var zei = zeikomi - zeinuki;
+				var shiireId = $('#setShiireId_' + index).text();
+				
+				$('#daiBunruiName').val(dai);
+				$('#shoBunruiName').val(sho);
+				$('#itemName').val(item);
+				$('#janCd').val(jan);
+				$('#shiireSaki').val(saki);
+				$('#shiireMaker').val(maker);
+				$('#itemSize').val(inchi);
+				$('#zeinukiGaku').val(zeinuki);
+				$('#zeiGaku').val(zei);
+				$('#zeikomiGaku').val(zeikomi);
+				$('#shiireId').val(shiireId);
+				
+			});
+			
 			$('#daiBunruiName').on('change', function(){
 				var selectDaiBunruiName = $(this).val();
-				
+				if(selectDaiBunruiName === ''){
+					$('#shoBunruiName').prop('disabled', true);
+					$('#shoBunruiName').val('');
+					return;
+				}
 				$.ajax({
 					url: '/GetShoBunrui',
 					type: 'GET',
-					data: {daiBunruiName : selectDaiBunruiName},
+					data: {
+						daiBunruiName : selectDaiBunruiName,
+						searchKbn: '1'
+						},
 					success: function(data){
 						updateShoBunruiOptions(data);
 					},error: function(){
@@ -139,72 +364,25 @@
 			
 			function updateShoBunruiOptions(shoBunruiList) {
 				var selectBox = $('#shoBunruiName');
-                selectBox.empty();  // Clear existing options
-
+                selectBox.empty();
+                if(shoBunruiList.length > 0){
+					$('#shoBunruiName').prop('disabled', false);
+				}
+				
                 for (var i = 0; i < shoBunruiList.length; i++) {
 					var option = $('<option>').val(shoBunruiList[i].bunruiName).text(shoBunruiList[i].bunruiName);
                     selectBox.append(option);
                 }
              }
+			// 数値以外の入力制御および全角数値の制御
+            $('#zeikomiGaku').on('input', function() {
+               let inputValue = $(this).val().replace(/[^0-9０-９]/g, '');
+               inputValue = inputValue.replace(/[０-９]/g, function(s) {
+                 return String.fromCharCode(s.charCodeAt(0) - 0xFEE0);
+               });
+               $(this).val(inputValue);
+            });
              
-			$('#registerBtn').on('click', function(){
-				var daiBunruiName = $('#daiBunruiName option:selected').text();
-				var	shoBunruiName = $('#shoBunruiName option:selected').text();
-				var	itemName = $('#itemName').val();
-				var	zeinukiGaku = $('#zeinukiGaku').val();
-				var	zeikomiGaku = $('#zeikomiGaku').val();
-				var	shiireDate = $('#shiireDate').val();
-				
-				$('#setShiireDate').css('color', 'black').text(shiireDate);
-				$('#setDaiBunrui').css('color', 'black').text(daiBunruiName);
-				$('#setShoBunrui').css('color', 'black').text(shoBunruiName);
-				$('#setItemName').css('color', 'black').text(itemName);
-				$('#setZeinukiGaku').css('color', 'black').text(zeinukiGaku);
-				$('#setZeikomiGaku').css('color', 'black').text(zeikomiGaku);
-				
-				var isError = false;
-				const hissuInput = "を入力して下さい。";
-				if(shiireDate === ''){
-					$('#setShiireDate').css('color', 'red').text("仕入日" + hissuInput);
-					isError = true;
-				} 
-				if(daiBunruiName === '選択してください'){
-					$('#setDaiBunrui').css('color', 'red').text("大分類を選んでください。");
-					isError = true;
-				}
-				if(shoBunruiName === ''){
-					$('#setShoBunrui').css('color', 'red').text("小分類" + hissuInput);
-					isError = true;
-				}
-				if(itemName === ''){
-					$('#setItemName').css('color', 'red').text("商品名" + hissuInput);
-					isError = true;
-				}
-				if(zeinukiGaku === ''){
-					$('#setZeinukiGaku').css('color', 'red').text("税抜額" + hissuInput);
-					isError = true;
-				}
-				if(zeikomiGaku === ''){
-					$('#setZeikomiGaku').css('color', 'red').text("税込額" + hissuInput);
-					isError = true;
-				}
-				
-				if(isError){
-					$('#save').css('display', 'none');
-				} else {
-					$('#save').css('display', 'inline');
-				}
-				
-			});
-			
-			$('#closeBtn1', '#closeBtn2').on('click', function(){
-				$('#setShiireDate').text('');
-				$('#setItemName').text('');
-				$('#setDaiBunrui').text('');
-				$('#setShoBunrui').text('');
-				$('#setZeinukiGaku').text('');
-				$('#setZeikomiGaku').text('');
-			});
 		});
 	</script>
 

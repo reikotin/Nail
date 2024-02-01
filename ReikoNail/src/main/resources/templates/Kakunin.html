@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="style.css" rel="stylesheet" type="text/css">
+    <title>R-ネイル | 修正登録</title>
+  </head>
+<body>
+    <div class="container-fluid">
+      <div class="row he-1">
+          <div class="container ps-3 pe-3">
+            <div class="d-flex justify-content-between align-items-center border-bottom border-dark mt-3">
+              <h1 class="h1">R-ネイル : 修正登録</h1><div id="message-container"><span th:if="${message}" th:text="${message}"></span></div>
+              <h6 class="">システム日付 : <span id="clock"></span></h6>
+            </div>
+            <header class="d-flex justify-content-between">
+				<div class="mt-3 mb-3">
+					<h3>品番が同じものを仕入登録しようとしています</h3>
+				</div>
+				<div class="d-flex align-items-center">
+					<button type="button">登録中止</button>
+				</div>
+			</header>
+            <div class="d-flex">
+				<div class="col pe-3">
+					<h5 class="mt-3">現在保存されている仕入情報</h5>
+					<div class="card">
+         				<div class="card-body" th:object="${shiireEntity}">
+							 <input type="hidden" id="base-Id" th:value="${shiireEntity.shiireId}">
+             				<div>
+								<div class="input-group">
+	  								<span class="input-group-text shiire-label">品　番</span>
+	  								<input class="form-control bg-light" id="base-janCd" th:value="${shiireEntity.janCd}" type="text" disabled>
+								</div>
+								<div class="input-group">
+	  								<span class="input-group-text shiire-label">大分類</span>
+	  								<input class="form-control bg-light" id="base-daiBunrui" th:value="${shiireEntity.daiBunruiName}" type="text" disabled>
+								</div>
+								<div class="input-group">
+	  								<span class="input-group-text shiire-label">小分類</span>
+	  								<input class="form-control bg-light" id="base-shoBunrui" th:value="${shiireEntity.shoBunruiName}" type="text" disabled>
+								</div>
+								<div class="input-group">
+	  								<span class="input-group-text shiire-label">品　名</span>
+	  								<input class="form-control bg-light" id="base-itemName" th:value="${shiireEntity.itemName}" type="text" disabled>
+								</div>
+								<div class="input-group">
+	  								<span class="input-group-text shiire-label">仕入先</span>
+	  								<input class="form-control bg-light" id="base-shiireSaki" th:value="${shiireEntity.shiireSaki}" type="text" disabled>
+								</div>
+								<div class="input-group">
+	  								<span class="input-group-text shiire-label">メーカー</span>
+	  								<input class="form-control bg-light" id="base-maker" th:value="${shiireEntity.shiireMaker}" type="text" disabled>
+								</div>
+								<div class="input-group">
+	  								<span class="input-group-text shiire-label" >サイズ</span>
+	  								<input class="form-control bg-light" id="base-size" th:value="${shiireEntity.itemSize}" type="text" disabled>
+								</div>
+								<div class="input-group">
+	  								<span class="input-group-text shiire-label" >税抜額</span>
+	  								<input class="form-control bg-light" id="base-zeinuki" th:value="${shiireEntity.zeinukiGaku}" type="text" disabled>
+								</div>
+								<div class="input-group">
+	  								<span class="input-group-text shiire-label">税　額</span>
+	  								<input class="form-control bg-light" id="base-zei" th:value="${shiireEntity.zeiGaku}" type="text" disabled>
+								</div>
+								<div class="input-group">
+	  								<span class="input-group-text shiire-label">税込額</span>
+	  								<input class="form-control bg-light" id="base-zeikomi" th:value="${shiireEntity.zeikomiGaku}" type="text" disabled>
+								</div>
+							</div>
+						</div>
+						<div class="card-footer d-flex">
+							<div class="input-group">
+	  							<span class="input-group-text">最終仕入日</span>
+	  							<input class="form-control" th:value="${shiireEntity.updateDate}" type="text" disabled>
+							</div>
+						</div>
+     				</div>
+				</div>
+				<div class="col ps-3">
+					<h5 class="mt-3">入力された仕入情報</h5>
+					<div class="card">
+         				<div class="card-body" th:object="${postShiireDto}">
+             				<div>
+								<div class="input-group">
+	  								<span class="input-group-text shiire-label">品　番</span>
+	  								<input class="form-control" id="p-janCd" th:value="${postShiireDto.janCd}" type="text">
+								</div>
+								<div class="input-group">
+	  								<span class="input-group-text shiire-label">大分類</span>
+	  								<input class="form-control" id="p-daiBunruiName" th:value="${postShiireDto.daiBunruiName}" type="text">
+								</div>
+								<div class="input-group">
+	  								<span class="input-group-text shiire-label" id="basic-addon1">小分類</span>
+	  								<input class="form-control" id="p-shoBunruiName" th:value="${postShiireDto.shoBunruiName}" type="text">
+								</div>
+								<div class="input-group">
+	  								<span class="input-group-text shiire-label" id="basic-addon1">品　名</span>
+	  								<input class="form-control" id="p-itemName" th:value="${postShiireDto.itemName}" type="text">
+								</div>
+								<div class="input-group">
+	  								<span class="input-group-text shiire-label" id="basic-addon1">仕入先</span>
+	  								<input class="form-control" id="p-shiireSaki" th:value="${postShiireDto.shiireSaki}" type="text">
+								</div>
+								<div class="input-group">
+	  								<span class="input-group-text shiire-label" id="basic-addon1">メーカー</span>
+	  								<input class="form-control" id="p-shiireMaker" th:value="${postShiireDto.shiireMaker}" type="text">
+								</div>
+								<div class="input-group">
+	  								<span class="input-group-text shiire-label" id="basic-addon1">サイズ</span>
+	  								<input class="form-control" id="p-itemSize" th:value="${postShiireDto.itemSize}" type="text">
+								</div>
+								<div class="input-group">
+	  								<span class="input-group-text shiire-label" id="basic-addon1">税抜額</span>
+	  								<input class="form-control" id="p-zeinukiGaku" th:value="${postShiireDto.zeinukiGaku}" type="text">
+								</div>
+								<div class="input-group">
+	  								<span class="input-group-text shiire-label" id="basic-addon1">税　額</span>
+	  								<input class="form-control" id="p-zeiGaku" th:value="${postShiireDto.zeiGaku}" type="text">
+								</div>
+								<div class="input-group">
+	  								<span class="input-group-text shiire-label" id="basic-addon1">税込額</span>
+	  								<input class="form-control" id="p-zeikomiGaku" th:value="${postShiireDto.zeikomiGaku}" type="text">
+								</div>
+							</div>
+						</div>
+						<div class="card-footer d-flex">
+							<div class="input-group">
+	  							<span class="input-group-text">仕入日</span>
+	  							<input class="form-control" id="p-shiireDate" th:value="${postShiireDto.shiireDate}" type="text" disabled>
+							</div>
+							<div class="input-group">
+	  							<span class="input-group-text">数量</span>
+	  							<input class="form-control" id="p-suryo" th:value="${postShiireDto.suryo}" type="text" disabled>
+							</div>
+						</div>
+     				</div>
+				</div>
+			</div>
+			<footer class="d-flex justify-content-end">
+				<div class="mt-3 mb-3">
+					<button type="button" class="btn btn-primary btn-lg mt-3" id="updateShiire" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+						更新して登録
+					</button>
+					<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+				  		<div class="modal-dialog">
+							<div class="modal-content">
+								<div class="modal-header">
+				        			<h1 class="modal-title fs-3 text-danger" id="staticBackdropLabel"><i class="bi bi-exclamation-circle"></i></h1>
+				        			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+								</div>
+								<div class="modal-body">
+									以前のデータに上書きされます。<br>
+									本当に登録していいですか？
+								</div>
+								<form th:object="${shiireDto}" th:action="@{/SaveShiire}" method="POST">
+									<input type="hidden" th:field="*{shiireId}">
+									<input type="hidden" th:field="*{janCd}">
+									<input type="hidden" th:field="*{daiBunruiName}">
+									<input type="hidden" th:field="*{shoBunruiName}">
+									<input type="hidden" th:field="*{itemName}">
+									<input type="hidden" th:field="*{shiireSaki}">
+									<input type="hidden" th:field="*{shiireMaker}">
+									<input type="hidden" th:field="*{itemSize}">
+									<input type="hidden" th:field="*{zeinukiGaku}">
+									<input type="hidden" th:field="*{zeiGaku}">
+									<input type="hidden" th:field="*{zeikomiGaku}">
+									<input type="hidden" th:field="*{shiireDate}">
+									<input type="hidden" th:field="*{suryo}">
+					      			<div class="modal-footer">
+					        			<button type="submie" class="btn btn-primary" id="resultOk" data-bs-dismiss="modal">登録</button>
+					      			</div>
+								</form>
+
+							</div>
+						 </div>
+					</div>
+				</div>
+			</footer>
+          </div>
+      </div>
+    </div>
+	<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js" integrity="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS" crossorigin="anonymous"></script>
+    <script th:inline="javascript">
+	    function updateClock() {
+	        var now = new Date();
+	        var formattedTime = now.toLocaleString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+	        document.getElementById('clock').innerText = formattedTime;
+	    }
+	    updateClock();
+	    setInterval(updateClock, 1000);
+		
+		$(document).ready(function () {
+			var shiireId = $('#base-Id').val();
+			var janCd = $('#p-janCd').val();
+			var daiBunruiName = $('#p-daiBunruiName').val();
+			var shoBunruiName = $('#p-shoBunruiName').val();
+			var itemName = $('#p-itemName').val();
+			var shiireSaki = $('#p-shiireSaki').val();
+			var shiireMaker = $('#p-shiireMaker').val();
+			var itemSize = $('#p-itemSize').val();
+			var zeinukiGaku = $('#p-zeinukiGaku').val();
+			var zeiGaku = $('#p-zeiGaku').val();
+			var zeikomiGaku = $('#p-zeikomiGaku').val();
+			var shiireDate = $('#p-shiireDate').val();
+			var suryo = $('#p-suryo').val();
+			
+			var shiireJoho = {
+				shiireId: shiireId,
+				daiBunruiName: daiBunruiName,
+				shoBunruiName: shoBunruiName,
+				itemName: itemName,
+				shiireSaki: shiireSaki,
+				shiireMaker: shiireMaker,
+				janCd: janCd,
+				itemSize: itemSize,
+				zeinukiGaku: zeinukiGaku,
+				zeiGaku: zeiGaku,
+				zeikomiGaku: zeikomiGaku
+			};
+			
+			
+			$('#updateShiire').on('click', function(){
+				
+				$('#shiireId').val(shiireId);
+				$('#janCd').val(janCd);
+				$('#daiBunruiName').val(daiBunruiName);
+				$('#shoBunruiName').val(shoBunruiName);
+				$('#itemName').val(itemName);
+				$('#shiireSaki').val(shiireSaki);
+				$('#shiireMaker').val(shiireMaker);
+				$('#itemSize').val(itemSize);
+				$('#zeinukiGaku').val(zeinukiGaku);
+				$('#zeiGaku').val(zeiGaku);
+				$('#zeikomiGaku').val(zeikomiGaku);
+				$('#shiireDate').val(shiireDate);
+				$('#suryo').val(suryo);
+				
+			});
+			
+		});
+	</script>
+
+</body>
+</html>

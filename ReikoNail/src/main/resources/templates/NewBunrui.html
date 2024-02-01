@@ -80,11 +80,12 @@
 				        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				      </div>
 				      <div class="modal-body">
-				        大分類:<span id="setDaiBunrui" class="me-2"></span>小分類:<span id="setShoBunrui"></span>
+				        大分類:<span id="setDaiBunrui" class="me-2"></span><br>
+				        小分類:<span id="setShoBunrui"></span>
 				      </div>
 				      <div class="modal-footer">
-				        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">修正する</button>
-				        <button type="submit" class="btn btn-primary" id="save">登録する</button>
+				        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">修正</button>
+				        <button type="submit" class="btn btn-primary" id="save">登録</button>
 				      </div>
 				    </div>
 				  </div>
@@ -120,15 +121,29 @@
 		$('#registerBtn').on('click', function(){
 			var daiBunruiName = $('#daiBunrui option:selected').text();
 			var shoBunruiName = $('#shoBunrui').val();
-			if(daiBunruiName === '選択してください' || shoBunruiName === ''){
-				$('#staticBackdropLabel').text("大分類もしくは小分類を正しく入力してください");
+			if(daiBunruiName !== '選択してください' && shoBunruiName !== ''){
+				$('#staticBackdropLabel').text("下記の内容で登録しますか？");
+				$('#setDaiBunrui').css('color', 'black').text(daiBunruiName);
+				$('#setShoBunrui').css('color', 'black').text(shoBunruiName);
+				$('#save').css('display', 'inline');
+			} else if(daiBunruiName === '選択してください' && shoBunruiName !== '') {
+				$('#staticBackdropLabel').text("大分類を選択して下さい。");
+				$('#setDaiBunrui').css('color', 'red').text(daiBunruiName);
+				$('#setShoBunrui').css('color', 'black').text(shoBunruiName);
+				$('#save').css('display', 'none');
+			} else if(daiBunruiName !== '選択してください' && shoBunruiName === ''){
+				$('#staticBackdropLabel').text("小分類を入力して下さい。");
+				$('#setDaiBunrui').css('color', 'black').text(daiBunruiName);
+				$('#setShoBunrui').css('color', 'red').text(shoBunruiName);
 				$('#save').css('display', 'none');
 			} else {
-				$('#staticBackdropLabel').text("下記の内容で登録しますか？");
-				$('#save').css('display', 'inline');
+				$('#staticBackdropLabel').text("大分類と小分類を正しく入力して下さい。");
+				$('#setDaiBunrui').css('color', 'red').text(daiBunruiName);
+				$('#setShoBunrui').css('color', 'red').text(shoBunruiName);
+				$('#save').css('display', 'none');
 			}
-			$('#setDaiBunrui').text(daiBunruiName);
-			$('#setShoBunrui').text(shoBunruiName);
+			
+			
 		})
 		
 	</script>

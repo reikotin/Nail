@@ -9,7 +9,6 @@ import com.reiko.nail.dto.DenpyoDto;
 import com.reiko.nail.dto.ShohinDto;
 import com.reiko.nail.entity.CustomerEntity;
 
-
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -40,6 +39,21 @@ public class CustomerService {
 		
 	}
 	
+	public void updateCustomerJoho(DenpyoDto denpyoDto) {
+		CustomerEntity customerEntity = new CustomerEntity();
+		customerEntity.setCustomerCd(denpyoDto.getCustomerCd());
+		customerEntity.setCustomerSei(denpyoDto.getCustomerNameSei());
+		customerEntity.setCustomerMei(denpyoDto.getCustomerNameMei());
+		customerEntity.setSeiFurigana(denpyoDto.getSeiFurigana());
+		customerEntity.setMeiFurigana(denpyoDto.getMeiFurigana());
+		customerEntity.setYubinNo(denpyoDto.getYubinNo());
+		customerEntity.setPrefectureCity(denpyoDto.getPrefectureCity());
+		customerEntity.setStreetNo(denpyoDto.getStreetNo());
+		customerEntity.setRuikeiKounyuKingaku(sumPrice(denpyoDto.getShohinDto()));
+		
+		customerDao.updateCustomer(customerEntity);
+	}
+	
 	// 購入金額の計算
 	private Long sumPrice(List<ShohinDto> shohinDto) {
 		Long total = 0L;
@@ -49,6 +63,11 @@ public class CustomerService {
 		}
 		
 		return total;
+	}
+	
+	// 全てのお客様情報を取得
+	public List<CustomerEntity> getAllCustomer(){
+		return customerDao.selectByAllCustomer();
 	}
 
 }

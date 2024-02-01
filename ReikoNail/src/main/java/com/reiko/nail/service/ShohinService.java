@@ -1,23 +1,34 @@
 package com.reiko.nail.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.reiko.nail.dao.BunruiDao;
+import com.reiko.nail.dao.ShiireDao;
 import com.reiko.nail.dao.ShohinDao;
 import com.reiko.nail.dto.BunruiNameDto;
 import com.reiko.nail.dto.SearchItemDto;
+import com.reiko.nail.dto.SearchShiireDto;
+import com.reiko.nail.dto.ShiireDto;
 import com.reiko.nail.dto.ShohinDto;
+import com.reiko.nail.dto.ShohinIdDto;
+import com.reiko.nail.entity.ShiireEntity;
 import com.reiko.nail.entity.ShohinEntity;
+import com.reiko.nail.enums.DaiBunruiEnum;
+import com.reiko.nail.enums.SeasonEnum;
+import com.reiko.nail.enums.ThemeTypeEnum;
+import com.reiko.nail.repository.ShiireRepository;
 import com.reiko.nail.repository.ShohinRepository;
 import com.reiko.nail.response.ResponseData;
 import com.reiko.nail.util.Constants;
 
 import lombok.RequiredArgsConstructor;
-
+@Transactional
 @Service
 @RequiredArgsConstructor
 public class ShohinService {
@@ -27,6 +38,10 @@ public class ShohinService {
 	private final ShohinRepository shohinRepository;
 	
 	private final BunruiDao bunruiDao;
+	
+	private final ShiireDao shiireDao;
+	
+	private final ShiireRepository shiireRepository;
 
 	// 商品の情報取得
 	public ShohinDto getShohinKingaku(String shohinCd) {
@@ -43,13 +58,7 @@ public class ShohinService {
 	public ResponseData<SearchItemDto> searchItemList(SearchItemDto searchItemDto) {
 		ResponseData<SearchItemDto> res = new ResponseData<SearchItemDto>();
 		
-		if(StringUtils.equals(searchItemDto.getColor(), "0")) {
-			searchItemDto.setColor(null);
-		}
-
-		if(StringUtils.equals(searchItemDto.getShohinCd(), "0")) {
-			searchItemDto.setShohinCd(null);
-		}
+	
 		
 		res.setData(searchItemDto);
 		return res;
@@ -62,81 +71,61 @@ public class ShohinService {
 
 	// 新商品の登録
 	public String registryNewItem(ShohinDto shohinDto) {
-		// 商品コードの番号生成
-		int lastShohinCd = shohinRepository.findByLastShohinCd(jpColorHenkan(shohinDto.getColor()));
-		String shohinNo = String.format("%03d", lastShohinCd + 1);
+		// P-WI24-O1
 		
+		ThemeTypeEnum themeType = shohinDto.getThemeType();
+		SeasonEnum season = shohinDto.getSeason();
+		int nowYear = LocalDate.now().getYear();
+		String seasonCd = season.getValue() + Integer.toString(nowYear).substring(2);
+		
+    	//商品コードの生成
+		String newShohinCd = createNewShohinCd(themeType, seasonCd);
 		// 税額、税込額計算
 		int zeinukiGaku = shohinDto.getZeinukiGaku();
 		int zeiGaku = calcZeigaku(zeinukiGaku);
 		
-		// カラーコードを漢字に変換
-		String jpColor = jpColorHenkan(shohinDto.getColor());
+		String shiireIdList = null;
+		if(shohinDto.getIdList().size() > 0 ){
+			shiireIdList = createIdList(shohinDto.getIdList());
+		}
 		
 		// 登録商品の情報をセット
 		ShohinEntity entity = new ShohinEntity();
-		entity.setShohinCd(shohinDto.getColor() + shohinNo);
-		entity.setColor(jpColor);
-		entity.setZeinukiGaku(shohinDto.getZeinukiGaku());
+		entity.setShohinCd(newShohinCd);
+		entity.setThemeType(themeType.getKey());
+		entity.setSeason(seasonCd);
+		entity.setZeinukiGaku(zeinukiGaku);
 		entity.setZeiGaku(zeiGaku);
 		entity.setZeikomiGaku(zeiGaku + zeinukiGaku);
+		entity.setShiireIdList(shiireIdList);
 		entity.setMakeTime(StringUtils.isEmpty(shohinDto.getMakeTime()) ? null : shohinDto.getMakeTime());
-		entity.setZairyoMemo(StringUtils.isEmpty(shohinDto.getZairyoMemo()) ? null : shohinDto.getZairyoMemo());
 		entity.setShohinMemo(StringUtils.isEmpty(shohinDto.getShohinMemo()) ? null : shohinDto.getShohinMemo());
 		shohinDao.insertNewItem(entity);
 		
-		return  shohinDto.getColor() + shohinNo;
+		return  newShohinCd;
+				
 	}
-	
-	// カラーコードを漢字に変換
-	private String jpColorHenkan(String color) {
-		String jpColor = null;
-		
-		switch (color) {
-		case Constants.PINK:
-			jpColor = "桃";
-			break;
-		case Constants.BLUE:
-			jpColor = "青";
-			break;
-		case Constants.DEEP_BLUES:
-			jpColor = "紺";
-			break;
-		case Constants.RED:
-			jpColor = "赤";
-			break;
-		case Constants.YELLOW:
-			jpColor = "黄";
-			break;
-		case Constants.GREEN:
-			jpColor = "緑";
-			break;
-		case Constants.VIOLET:
-			jpColor = "紫";
-			break;
-		case Constants.BLACK:
-			jpColor = "黒";
-			break;
-		case Constants.WHITE:
-			jpColor = "白";
-			break;
-		case Constants.ORANGE:
-			jpColor = "橙";
-			break;
-		case Constants.BROWN:
-			jpColor = "茶";
-			break;
-		case Constants.GOLD:
-			jpColor = "金";
-			break;
-		case Constants.SILVER:
-			jpColor = "銀";
-			break;
-		case Constants.VARIOUS:
-			jpColor = "その他";
-			break;
-		}
-		return jpColor;
+	// 新しい商品コードの生成
+	private String createNewShohinCd(ThemeTypeEnum themeType, String seasonCd) {
+
+		int nowNumber = shohinRepository.getNextCdThemeAndSeason(themeType.getKey(), seasonCd);
+		String nextNumber = String.format("%02d", nowNumber + 1);
+		String newCd = themeType.getValue() + "-" + seasonCd + "-" + nextNumber;	
+		return newCd;
+	}
+	// IDリストを文字列に変換
+	private String createIdList(List<ShohinIdDto> idList) {
+		StringBuilder ids = new StringBuilder();
+	    for (int i = 0; i < idList.size(); i++) {
+	    	String id = idList.get(i).getId();
+	    	if(StringUtils.isNotEmpty(id)) {
+	    		ids.append(id);
+		    	if (i < idList.size() - 1) {
+		    		ids.append("_");
+		    	}
+	    	}
+	    }
+		return ids.toString();
 	}
 	
 	// 税額計算
@@ -167,6 +156,96 @@ public class ShohinService {
 	
 	
 	public List<BunruiNameDto> getShoBunruiList(String daiBunruiName) {
-		return bunruiDao.relationByDaiBunrui(daiBunruiName);
+		
+		List<BunruiNameDto> dtoList = bunruiDao.relationByDaiBunrui(daiBunruiName);
+		BunruiNameDto dto = new BunruiNameDto();
+		dto.setBunruiName(Constants.ALL);
+		dtoList.add(0, dto);
+		return dtoList;
+	}
+	
+	// 仕入商品情報の保存
+	public ResponseData<ShiireEntity> saveShiireItem(ShiireDto shiireDto) {
+		
+		ResponseData<ShiireEntity> response = new ResponseData<>();
+		
+		// 仕入IDがある場合は更新処理
+		if(StringUtils.isNotEmpty(shiireDto.getShiireId())) {
+			
+			response = shiireRepository.registoryShiire(shiireDto);
+			
+			return response;
+		} 
+		ShiireEntity entity = shiireDao.findShiireJohoByJanCd(shiireDto.getJanCd());
+		// 仕入IDがないが、登録済みのJAN_CDがある場合
+		if(ObjectUtils.isNotEmpty(entity)) {
+				
+			response.setHasShiire(true);
+			response.setData(entity);
+			response.setMessage("品番が同じ仕入情報があります。");
+			return response;
+			
+		// 仕入IDもJAN_CDでも同じものがない場合(新規仕入情報登録となる)
+		} else {
+			String newShiireId = String.format("%05d", shiireDao.countId() + 1);
+			shiireDto.setShiireId(newShiireId);
+			response = shiireRepository.registoryShiire(shiireDto);
+			return response;
+		}
+		
+	}
+	
+	private int calcZeikomiToZeigaku(int zeikomiGaku) {
+		return (int) (zeikomiGaku / 1.1);
+	}
+	
+	public boolean dayService(LocalDate startDate, LocalDate endDate) {
+		boolean isAfter = false;
+		
+		if(startDate == null && endDate == null) {
+			return isAfter;
+		} else if(startDate != null && endDate != null) {
+			isAfter = startDate.isAfter(endDate);
+		} 
+		
+		return isAfter;
+	}
+	
+	// 仕入情報検索
+	public List<ShiireEntity> searchShiireList(SearchShiireDto searchShiireDto) {
+		if(StringUtils.isEmpty(searchShiireDto.getDaiBunruiName())) {
+			searchShiireDto.setDaiBunruiName(null);
+		}
+		
+		if(StringUtils.isEmpty(searchShiireDto.getJanCd())) {
+			searchShiireDto.setJanCd(null);
+		}
+		
+		if(StringUtils.equals(searchShiireDto.getShoBunruiName(), Constants.ALL) 
+				|| StringUtils.isEmpty(searchShiireDto.getShoBunruiName())){
+			searchShiireDto.setShoBunruiName(null);
+		}
+		
+		return shiireDao.searchShiireItemList(searchShiireDto);
+	}
+	
+	// 仕入情報取得（大分類がカラーと、パーツのみを取得）
+	public List<ShiireEntity> getColorAndPartsShiireList(){
+		List<ShiireEntity> resultList = 
+				shiireDao.selectByColorAndPartsShiireList(DaiBunruiEnum.COLOR.getKey(), DaiBunruiEnum.PARTS.getKey());
+		
+		return resultList;
+	}
+	
+	// 仕入品名リストの取得
+	public List<ShiireEntity> getItemNameList(String daiBunruiName, String shoBunruiName){
+		
+		if(StringUtils.equals(shoBunruiName, Constants.ALL)) {
+			shoBunruiName = null;
+		}
+				
+		List<ShiireEntity> itemNameList = shiireDao.selectByItemNameList(daiBunruiName, shoBunruiName);
+		
+		return itemNameList;
 	}
 }

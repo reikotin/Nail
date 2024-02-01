@@ -65,5 +65,13 @@ public interface ShohinDao {
 	 * @return
 	 */
 	int updateShohin(ShohinEntity shohinEntity);
+
+	/**
+	 * 次の商品コードの末尾を生成するため、最新の末尾取得
+	 * @param themType
+	 * @param seasonCd
+	 * @return
+	 */
+	String findThemeAndSeason(@Param("themeType") String themeType, @Param("seasonCd") String seasonCd);
 	
 }

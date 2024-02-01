@@ -1,12 +1,11 @@
-package com.reiko.nail.entity;
+package com.reiko.nail.dto;
 
 import java.time.LocalDate;
 
 import lombok.Data;
 
 @Data
-public class ShiireEntity {
-	
+public class ShiireDto {
 	/** 仕入ID */
 	private String shiireId;
 	/** 大分類名 */
@@ -33,10 +32,4 @@ public class ShiireEntity {
 	private String itemSize;
 	/** 数量 */
 	private int suryo;
-	/** 削除フラグ */
-	private String deleteFlag;
-	/** 登録日 */
-	private LocalDate createDate;
-	/** 更新日 */
-	private LocalDate updateDate;
 }

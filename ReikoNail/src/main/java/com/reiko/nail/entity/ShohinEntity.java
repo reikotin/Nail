@@ -8,19 +8,21 @@ import lombok.Data;
 public class ShohinEntity {
 
 	/** 商品コード */
-	private String shohinCd;
-	/** テーマカラー */
-	private String color;
+	private String shohinCd; // P G C U N 
+	/** テーマタイプ */
+	private String themeType; // かわいい、かっこいい、ニュアンス、うるうる、きらきら
+	/** 季節 */
+	private String season;
 	/** 税抜額 */
 	private int zeinukiGaku;
 	/** 税額 */
 	private int zeiGaku;
 	/** 税込額 */
 	private int zeikomiGaku;
-	/** 作成所要時間 */
+	/** 作成時間 */
 	private String makeTime;
-	/** 材料メモ */
-	private String zairyoMemo;
+	/** 仕入IDリスト */
+	private String shiireIdList;
 	/** 商品メモ */
 	private String shohinMemo;
 	/** 削除フラグ */
