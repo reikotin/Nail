@@ -10,7 +10,7 @@ import com.reiko.nail.entity.CustomerEntity;
 @Mapper
 public interface CustomerDao {
 
-	int findByCustomer(@Param("customerSei") String customerSei, @Param("customerMei") String customerMei);
+	CustomerEntity findByCustomer(@Param("customerCd") String customerCd);
 
 	void insertCustomer(CustomerEntity customerEntity);
 	

@@ -224,12 +224,12 @@
 			        if (currentNum > num) {
 			            var newNum = currentNum - 1;
 			            $(this).attr('id', 'zairyoBox_' + newNum);
-			             $('#zairyoDelete_' + currentNum).attr('id', 'zairyoDelete_' + newNum);
+			            $('#zairyoDelete_' + currentNum).attr('id', 'zairyoDelete_' + newNum);
 			            $('#deleteZairyo_' + currentNum).attr('id', 'deleteZairyo_' + newNum);
 			
 			            // idList の順番もずらす
-			            $('#idList_' + currentNum).attr('id', 'idList_' + newNum);
-			            $('#idList_' + currentNum).attr('name', 'idList[' + newNum + '].id');
+			            $('#idList_' + currentNum).attr('id', 'idList_' + newNum).attr('name', 'idList[' + newNum + '].id');
+			            //$('#idList_' + currentNum).attr('name', 'idList[' + newNum + '].id');
 			        }
 			    });
 			});

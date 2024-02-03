@@ -55,7 +55,7 @@ public class NailController {
 	
 		return "Home";
 	}
-	
+
 	@RequestMapping(value = "/NewDenpyo", method = {RequestMethod.GET})
 	public String newDenpyo(Model model) {
 		
@@ -77,15 +77,12 @@ public class NailController {
 		if(denpyoDto.isCustomerJohoHenshu()) {
 			customerService.updateCustomerJoho(denpyoDto);
 		}
-//		int result = customerService.findByCustomer(denpyoDto.getCustomerNameSei(), denpyoDto.getCustomerNameMei());
-//		if(result == 0) {
-//			customerService.insertNewCustomer(denpyoDto);
-//		}
+		//System.out.println(denpyoDto);
 		nailService.saveDenpyo(denpyoDto);
 		
-		String message = "登録完了しました。";
-		model.addAttribute("url", "NewDenpyo");
-		model.addAttribute("message", message);
+		String message = "伝票登録完了しました。";
+		model.addAttribute("url", "/NewDenpyo");
+		model.addAttribute("headMessage", message);
 		return "kanryo";
 	}
 	

@@ -100,7 +100,7 @@
 
 input[type=date] {
   position: relative;
-  color: white;
+ 
   text-align: center;
 }
 input[type=date]::-webkit-inner-spin-button {

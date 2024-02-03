@@ -13,9 +13,9 @@ public class DenpyoDto {
 	/** お客様CD */
 	private String customerCd;
 	/** お客様　姓 */
-	private String customerNameSei;
+	private String customerSei;
 	/** お客様 名 */
-	private String customerNameMei;
+	private String customerMei;
 	/** 姓（フリガナ） */
 	private String seiFurigana;
 	/** 名（フリガナ） */

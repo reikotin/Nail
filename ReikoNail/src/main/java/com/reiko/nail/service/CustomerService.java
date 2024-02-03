@@ -18,9 +18,8 @@ public class CustomerService {
 	private final CustomerDao customerDao;
 	
 	// 既存のお客様検索
-	public int findByCustomer(String customerNameSei, String customerNameMei) {
-		return customerDao.findByCustomer(customerNameSei, customerNameMei);
-		
+	public CustomerEntity findByCustomer(String customerCd) {
+		return customerDao.findByCustomer(customerCd);
 	}
 
 	// 新規お客様登録
@@ -28,22 +27,21 @@ public class CustomerService {
 		
 		CustomerEntity customerEntity = new CustomerEntity();
 		customerEntity.setCustomerCd(denpyoDto.getCustomerCd());
-		customerEntity.setCustomerSei(denpyoDto.getCustomerNameSei());
-		customerEntity.setCustomerMei(denpyoDto.getCustomerNameMei());
+		customerEntity.setCustomerSei(denpyoDto.getCustomerSei());
+		customerEntity.setCustomerMei(denpyoDto.getCustomerMei());
 		customerEntity.setYubinNo(denpyoDto.getYubinNo());
 		customerEntity.setPrefectureCity(denpyoDto.getPrefectureCity());
 		customerEntity.setStreetNo(denpyoDto.getStreetNo());
 		customerEntity.setRuikeiKounyuKingaku(sumPrice(denpyoDto.getShohinDto()));
 		
 		customerDao.insertCustomer(customerEntity);
-		
 	}
-	
+	// お客様情報更新
 	public void updateCustomerJoho(DenpyoDto denpyoDto) {
 		CustomerEntity customerEntity = new CustomerEntity();
 		customerEntity.setCustomerCd(denpyoDto.getCustomerCd());
-		customerEntity.setCustomerSei(denpyoDto.getCustomerNameSei());
-		customerEntity.setCustomerMei(denpyoDto.getCustomerNameMei());
+		customerEntity.setCustomerSei(denpyoDto.getCustomerSei());
+		customerEntity.setCustomerMei(denpyoDto.getCustomerMei());
 		customerEntity.setSeiFurigana(denpyoDto.getSeiFurigana());
 		customerEntity.setMeiFurigana(denpyoDto.getMeiFurigana());
 		customerEntity.setYubinNo(denpyoDto.getYubinNo());

@@ -91,7 +91,7 @@
                   <td th:text="${shiire.daiBunruiName}"></td>
                   <td th:text="${shiire.shoBunruiName}"></td>
                   <td th:text="${shiire.itemName}"></td>
-                  <td th:text="${shiire.zeikomiGaku}"></td>
+                  <td th:text="${#numbers.formatInteger(shiire.zeikomiGaku, 3, 'COMMA')}"></td>
                   <td th:text="${shiire.shiireSaki}"></td>
                   <td th:text="${shiire.updateDate}"></td>
                 </tr>

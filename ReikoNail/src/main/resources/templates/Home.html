@@ -26,7 +26,7 @@
 			<div class="mt-3 mb-3">
               <h2 class="h2">伝票一覧</h2>
             </div>
-				<table class="table">
+				<table class="table table-bordered text-center">
 					<thead>
 						<tr>
 							<th>伝票番号</th>
@@ -45,9 +45,9 @@
 							<td th:text="${denpyo.denpyoNo}"></td>
 							<td th:text="${denpyo.customerCd}"></td>
 							<td th:text="${denpyo.kounyuDate}"></td>
-							<td th:text="${denpyo.zeinukiGaku}"></td>
-							<td th:text="${denpyo.zeiGaku}"></td>
-							<td th:text="${denpyo.zeikomiGaku}"></td>
+							<td th:text="${#numbers.formatInteger(denpyo.zeinukiGaku, 3, 'COMMA')}"></td>
+							<td th:text="${#numbers.formatInteger(denpyo.zeiGaku, 3, 'COMMA')}"></td>
+							<td th:text="${#numbers.formatInteger(denpyo.zeikomiGaku, 3, 'COMMA')}"></td>
 							<td th:text="${denpyo.denpyoHakkozumiFlag}"></td>
 							<td th:text="${denpyo.createDate}"></td>
 							<td th:text="${denpyo.updateDate}"></td>

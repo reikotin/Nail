@@ -17,15 +17,13 @@
 		<result column="UPDATE_DATE" property="updateDate" />
 	</resultMap>
 	
-	<select id="findByCustomer" resultType="int">
+	<select id="findByCustomer" resultMap="BaseMap">
 		SELECT 
-			COUNT(*)
+			*
 		FROM 
 			CUSTOMER
 		WHERE 
-			CUSTOMER_SEI = #{customerSei}
-		AND 
-			CUSTOMER_MEI = #{customerMei}
+			CUSTOMER_CD = #{customerCd}
 	</select>
 	
 	<select id="selectByAllCustomer" resultMap="BaseMap">

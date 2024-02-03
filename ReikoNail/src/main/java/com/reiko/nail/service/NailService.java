@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.reiko.nail.dao.BunruiDao;
@@ -38,8 +39,15 @@ public class NailService {
 
 	public List<DenpyoEntity> selectAllDenpyoList() {
 		
-		return denpyoDao.selectByAllDenpyoList();
-		
+		List<DenpyoEntity> list = denpyoDao.selectByAllDenpyoList();
+		list.forEach(denpyo -> {
+		    if (StringUtils.equals(denpyo.getDenpyoHakkozumiFlag(), "1")) {
+		        denpyo.setDenpyoHakkozumiFlag("発行済");
+		    } else {
+		        denpyo.setDenpyoHakkozumiFlag("★未発行");
+		    }
+		});
+		return list;
 	}
 	
 	public List<ShohinEntity> getShohinList(){
@@ -47,7 +55,6 @@ public class NailService {
 		
 		return shohinList;
 	}
-
 
 	// 伝票登録
 	public void saveDenpyo(DenpyoDto denpyoDto) {
@@ -77,16 +84,15 @@ public class NailService {
 		
 		List<SalesEntity> salesList = new ArrayList<>();
 		for(ShohinDto shohin : denpyoDto.getShohinDto()) {
-//			SalesEntity entity = new SalesEntity();
-//			entity.setDenpyoNo(denpyoNo);
-//			entity.setShohinCd(shohin.getShohinCd());
-//			entity.setKounyuDate(denpyoDto.getKounyuDate());
-//			entity.setCustomerCd(denpyoDto.getCustomerCd());
-//			salesList.add(entity);
+			SalesEntity entity = new SalesEntity();
+			entity.setDenpyoNo(denpyoNo);
+			entity.setShohinCd(shohin.getShohinCd());
+			entity.setKounyuDate(denpyoDto.getKounyuDate());
+			entity.setCustomerCd(denpyoDto.getCustomerCd());
+			salesList.add(entity);
 		}
 		
 		salesDao.registryMeisai(salesList);
-		
 	}
 	
 	// すべての分類を取得
