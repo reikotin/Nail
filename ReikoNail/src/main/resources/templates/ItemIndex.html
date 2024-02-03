@@ -36,12 +36,12 @@
                     </select>
                 </div>
                 <div class="col-2 d-flex align-items-end">
-                    <button type="button" class="btn btn-secondary">
+                    <button type="button" id="searchBtn" class="btn btn-secondary">
                   		<i class="bi bi-search"></i>
                   	</button>                
                 </div>
 			</div>
-        	<div class="d-flex justify-content-between">
+        	<div class="d-flex justify-content-between mt-3">
 	            <div class="col">
 	              <span id="searchCount"></span>
 	            </div>
@@ -49,7 +49,7 @@
 					<input type="checkbox" id="ikkatsuDelete">一括削除
 				</div>
 			</div>
-            <div class="mt-3">
+            <div>
 	            <table class="table table-bordered text-center">
 	              <thead>
 	                  <tr>
@@ -64,20 +64,6 @@
 	                  </tr>
 	              </thead>
 	              <tbody id="itemBody">
-	                <tr>
-					  <td><input type="checkbox" class="deleteInput"></td>
-	                  <td>
-	                    <!--<a class="text-decoration-none" th:href="@{/ItemIndex/{id}(id=${shohin.shohinCd})}">-->
-	                       P-WI24-01
-	                    <!--</a>-->
-	                  </td>
-	                  <td>かわいい</td>
-	                  <td>冬</td>
-	                  <td>2000</td>
-	                  <td>200</td>
-	                  <td>2200</td>
-	                  <td>180分</td>
-	                </tr>
 	              </tbody>
 	            </table>
             </div>
@@ -94,32 +80,87 @@
 			var index = 0;
 			const searchText = '検索結果 : ';
 			const countText = '件';
-			$('#theme').click(function(){
+			$('#theme').change(function(){
 				var theme = $(this).val();
-				
+				// テーマに紐づく季節
 				$.ajax({
 					url: '/GetSeasonList',
 					type: 'GET',
-					data: theme,
+					data: {
+						theme: theme
+						},
 					success: function(response){
 						updateSeasonOptions(response);
 					}
 				});
 			});
+			// 季節のセレクトを削除して追加
 			function updateSeasonOptions(seasonList){
 				if(seasonList.length === 0){
-					$('#searchCount').text(searchText + '0' + countText);
 					return;
 				}
 				var selectBox = $('#season');
-				
+				selectBox.empty();
+				for(var i = 0; i < seasonList.length; i++){
+					var option = $('<option>').val(seasonList[i]).text(seasonList[i]);
+					selectBox.append(option);
+				}
 			}
+			// 検索開始
+			$('#searchBtn').click(function(){
+				var theme = $('#theme').val();
+				var season = $('#season').val();
+				var searchItemDto = {
+					themeType: theme,
+					seasonCd: season
+				};
+				$.ajax({
+					url: '/GetShohinList',
+					type: 'GET',
+					contentType: "application/json; charset=utf-8",
+					dataType: "json",
+					data: searchItemDto,
+					success: function(response){
+						updateItemTable(response);
+					}
+				});
+			});
+			
+			function updateItemTable(shohinList){
+				var count = shohinList.length;
+				$('#searchCount').text(searchText + count + countText);
+				var tbody = $('#itemBody');
+				tbody.empty();
+				
+				for(var i = 0; i < shohinList.length; i++){
+					var data = shohinList[i];
+					var newRow = $('<tr>');
+					var checkCell = $('<td>').html('<input type="checkbox" class="deleteInput">').attr('id', 'check_' + i);
+					newRow.append(checkCell);
+
+					var shohinCell = $(`
+						<td>
+							<a href="/EditItem/${data.shohinCd}">${data.shohinCd}</a>
+						</td>
+					`);
+					newRow.append(shohinCell);
+					newRow.append($('<td>').text(data.themeType).attr('id', 'themeType_' + i));
+					newRow.append($('<td>').text(data.season).attr('id', 'season_' + i));
+					newRow.append($('<td>').text(data.zeinukiGaku.toLocaleString('ja-JP')).attr('id', 'zeinukiGaku_' + i));
+					newRow.append($('<td>').text(data.zeiGaku.toLocaleString('ja-JP')).attr('id', 'zeiGaku_' +i));
+					newRow.append($('<td>').text(data.zeikomiGaku.toLocaleString('ja-JP')).attr('id', 'zeikomiGaku_' + i));
+					newRow.append($('<td>').text(data.makeTime).attr('id', 'makeTime_' +i));
+		
+					tbody.append(newRow);
+					
+				}
+			};
 			
 			$('#ikkatsuDelete').on('change', function(){
 				if ($(this).is(":checked")){
-					$('.deleteInput').prop('disabled', true);
+					
 				}else{
-					$('.deleteInput').prop('disabled', false);	
+					
 				}
 			});
 		});

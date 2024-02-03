@@ -40,13 +40,17 @@
 	
 	<!-- TODO ItemIndex -->
 	<select id="searchItemList" resultMap="BaseMap">
-		SELECT *
+		SELECT 
+			*
 		FROM 
 			N_SHOHIN
 		WHERE 
 			DELETE_FLAG = '0'
-		<if test="shohinCd != null">
-			AND SHOHIN_CD = #{shohinCd}
+		<if test="themeType != null">
+			AND THEME_TYPE = #{themeType}
+		</if>
+		<if test="seasonCd != null">
+			AND SEASON = #{seasonCd}
 		</if>
 	</select>
 	
@@ -123,33 +127,46 @@
 			N_SHOHIN
 		WHERE 
 			SHOHIN_CD = #{shohinCd}
-		AND DELETE_FLAG = '0'
+		AND 
+			DELETE_FLAG = '0'
 	</select>
 	
 	<update id="updateShohin">
 		UPDATE N_SHOHIN
 		SET
-		<trim suffixOverrides=",">
-			<if test="zeinukiGaku != null">
-				ZEINUKIGAKU = #{zeinukiGaku},
-			</if>
-			<if test="zeiGaku != null">
-				ZEIGAKU = #{zeiGaku},
-			</if> 
-			<if test="zeikomiGaku != null">
-				ZEIKOMIGAKU = #{zeikomiGaku},
-			</if>
-			<if test="makeTime != null">
-				MAKE_TIME = #{makeTime},
-			</if>
-			<if test="shohinMemo != null">
-				SHOHIN_MEMO = #{shohinMemo},
-			</if>
-		</trim>
-		
+		<if test="zeinukiGaku != null">
+			ZEINUKIGAKU = #{zeinukiGaku},
+		</if>
+		<if test="zeiGaku != null">
+			ZEIGAKU = #{zeiGaku},
+		</if> 
+		<if test="zeikomiGaku != null">
+			ZEIKOMIGAKU = #{zeikomiGaku},
+		</if>
+		<if test="makeTime != null">
+			MAKE_TIME = #{makeTime},
+		</if>
+		<if test="shiireIdList != null">
+			SHIIRE_ID_LIST = #{shiireIdList},
+		</if>
+		<if test="shohinMemo != null">
+			SHOHIN_MEMO = #{shohinMemo},
+		</if>
 		UPDATE_DATE = CURRENT_TIMESTAMP
 		WHERE
 			SHOHIN_CD = #{shohinCd}
 		AND DELETE_FLAG = '0'
 	</update>
+	
+	<select id="selectRelationToTheme" resultType="string">
+		SELECT 
+			SEASON
+		FROM
+			N_SHOHIN
+		WHERE
+			DELETE_FLAG = '0'
+		AND
+			THEME_TYPE = #{themeType}
+		GROUP BY SEASON
+	</select>
 </mapper>

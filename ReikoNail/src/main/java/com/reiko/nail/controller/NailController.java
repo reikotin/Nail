@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.reiko.nail.dto.BunruiDto;
@@ -21,6 +20,7 @@ import com.reiko.nail.dto.SearchItemDto;
 import com.reiko.nail.dto.SearchShiireDto;
 import com.reiko.nail.dto.ShiireDto;
 import com.reiko.nail.dto.ShohinDto;
+import com.reiko.nail.dto.UpdateShohinDto;
 import com.reiko.nail.entity.CustomerEntity;
 import com.reiko.nail.entity.DenpyoEntity;
 import com.reiko.nail.entity.ShiireEntity;
@@ -28,6 +28,7 @@ import com.reiko.nail.entity.ShohinEntity;
 import com.reiko.nail.enums.DaiBunruiEnum;
 import com.reiko.nail.enums.SeasonEnum;
 import com.reiko.nail.enums.ThemeTypeEnum;
+import com.reiko.nail.enums.UpdateFlagEnum;
 import com.reiko.nail.response.ResponseData;
 import com.reiko.nail.service.CustomerService;
 import com.reiko.nail.service.NailService;
@@ -96,46 +97,41 @@ public class NailController {
 			themeList.add(theme.getKey());
 		}
 		themeList.add(0, "");
-		
-		
-//		List<ShohinEntity> shohinCdList = nailService.getShohinList();
-//		List<ShohinEntity> shohinList = studyService.getShohinList();
-		SearchItemDto searchItem = new SearchItemDto();
-//		model.addAttribute("shohinCdList", shohinCdList);
+
 		model.addAttribute("themeList", themeList);
-		model.addAttribute("searchItem", searchItem);
+		model.addAttribute("searchItem", new SearchItemDto());
 
 		return "ItemIndex";
 	}
 	
-	@RequestMapping(value = "/ItemIndex", method = {RequestMethod.POST})
-	public String searchItem(SearchItemDto searchItemDto, Model model) {
-		
-		String message = null;
-		
-		List<ShohinEntity> shohinList = new ArrayList<>();
-		SearchItemDto searchItem = new SearchItemDto();
-		ResponseData<SearchItemDto> response = new ResponseData<SearchItemDto>();
-		
-		if(StringUtils.equals(searchItemDto.getSearchKbn(), "0")) {
-			response = shohinService.searchItemList(searchItemDto);
-			shohinList = shohinService.getSearchItemList(response.getData());
-		} else if (StringUtils.equals(searchItemDto.getSearchKbn(), "1")) {
-			shohinList = nailService.getShohinList();
-		}
-
-		int count = shohinList.size();
-		
-		List<ShohinEntity> shohinCdList = nailService.getShohinList();
-		
-		model.addAttribute("shohinCdList", shohinCdList);
-		model.addAttribute("message", message);
-		model.addAttribute("count", "検索結果 : " + count + "件");
-		model.addAttribute("searchItem", searchItem);
-		model.addAttribute("shohinList", shohinList);
-		
-		return "ItemIndex";
-	}
+//	@RequestMapping(value = "/ItemIndex", method = {RequestMethod.POST})
+//	public String searchItem(SearchItemDto searchItemDto, Model model) {
+//		
+//		String message = null;
+//		
+//		List<ShohinEntity> shohinList = new ArrayList<>();
+//		SearchItemDto searchItem = new SearchItemDto();
+//		ResponseData<SearchItemDto> response = new ResponseData<SearchItemDto>();
+//		
+//		if(StringUtils.equals(searchItemDto.getSearchKbn(), "0")) {
+//			response = shohinService.searchItemList(searchItemDto);
+//			shohinList = shohinService.getSearchItemList(response.getData());
+//		} else if (StringUtils.equals(searchItemDto.getSearchKbn(), "1")) {
+//			shohinList = nailService.getShohinList();
+//		}
+//
+//		int count = shohinList.size();
+//		
+//		List<ShohinEntity> shohinCdList = nailService.getShohinList();
+//		
+//		model.addAttribute("shohinCdList", shohinCdList);
+//		model.addAttribute("message", message);
+//		model.addAttribute("count", "検索結果 : " + count + "件");
+//		model.addAttribute("searchItem", searchItem);
+//		model.addAttribute("shohinList", shohinList);
+//		
+//		return "ItemIndex";
+//	}
 	
 	@RequestMapping(value = "/NewItem", method = {RequestMethod.GET})
 	public String newItem(Model model) {
@@ -172,49 +168,41 @@ public class NailController {
 		return "Kanryo";
 	}
 	
-	@RequestMapping(value = "ItemIndex/{shohinCd}", method = {RequestMethod.GET})
+	@RequestMapping(value = "/EditItem/{shohinCd}", method = {RequestMethod.GET})
 	public String editItem(@PathVariable String shohinCd, Model model){
 
-		ShohinEntity entity = shohinService.getShohinInfo(shohinCd);
+		ShohinEntity shohinEntity = shohinService.getShohinInfo(shohinCd);
 		
-		model.addAttribute("entity", entity);
-
+		List<ShiireEntity> shiireList = new ArrayList<>();
+		if(StringUtils.isNotEmpty(shohinEntity.getShiireIdList())) {
+			shiireList = shohinService.getShiireListById(shohinEntity.getShiireIdList());
+		}
+		
+	
+		model.addAttribute("flags", UpdateFlagEnum.values());
+		model.addAttribute("shohin", new UpdateShohinDto());
+		model.addAttribute("shohinEntity", shohinEntity);
+		model.addAttribute("shiireList", shiireList);
+		
 		return "EditItem";
 	}
 	
-	@RequestMapping(value = "/Delete", method = {RequestMethod.POST})
-	public String itemDelete(@RequestParam String shohinCd, RedirectAttributes redirectAttributes){
-		String message = null;
-		int result = shohinService.deleteItem(shohinCd);
+	@RequestMapping(value = "/UpdateItem", method = {RequestMethod.POST})
+	public String updateItem(UpdateShohinDto shohinDto, Model model) {
 		
-//		if(result == 1) {
-//			message = "商品コード「" + shohinCd + "」を削除しました";
-//		} else {
-//			message = "商品コード「" + shohinCd + "」はすでに削除済みです";
-//		}
-		message = "商品コード「" + shohinCd + "」を削除しました";
-		redirectAttributes.addFlashAttribute("message", message);
-		return "redirect:/ItemIndex";
-
-	}
-	
-	@RequestMapping(value = "/Update", method = {RequestMethod.POST})
-	public String updateItem(ShohinEntity shohinEntity, RedirectAttributes redirectAttributes) {
-		String message = null;
-		String shohinCd = shohinEntity.getShohinCd();
-		
-		if(shohinEntity.getZeinukiGaku() == 0) {
-			message = "税抜額を0円では登録できません";
-			redirectAttributes.addFlashAttribute("message", message);
-			return "redirect:/ItemIndex/" + shohinCd;
-		} 
-		int result = shohinService.updateItem(shohinEntity);
-		if(result == 1) {
-			message = "商品コード「" + shohinCd +"」を更新しました";
+		String flag = shohinDto.getUpdateFlag();
+		String resultMessage = null;
+		if(StringUtils.equals(flag ,UpdateFlagEnum.UPDATE.getKey())) {
+			shohinService.updateItem(shohinDto);
+			resultMessage = "正常に更新できました。";
+		} else if(StringUtils.equals(flag, UpdateFlagEnum.DELETE.getKey())) {
+			shohinService.deleteItem(shohinDto);
+			resultMessage = "下記の商品を削除しました。";
 		}
 		
-		redirectAttributes.addFlashAttribute("message", message);
-		return "redirect:/ItemIndex";
+		model.addAttribute("headMessage", resultMessage);
+		model.addAttribute("itemMessage", "商品コード : " + shohinDto.getShohinCd());
+		return "Kanryo";
 	}
 	
 	@RequestMapping(value = "/NewBunrui", method = {RequestMethod.GET})
@@ -303,6 +291,12 @@ public class NailController {
 		model.addAttribute("daiBunruiList", daiBunruiList);
 		redirectAttributes.addFlashAttribute("message", message);
 		return "IndexShiire";
+	}
+	@RequestMapping(value = "/EditShiire/{shiireId}", method = {RequestMethod.GET})
+	public String editShiire(@PathVariable String shiireCd, Model model) {
+		// TODO
+		
+		return "EditShiire";
 	}
 	
 }

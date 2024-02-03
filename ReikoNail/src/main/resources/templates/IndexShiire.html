@@ -84,7 +84,7 @@
               <tbody>
                 <tr th:each="shiire: ${shiireList}">
                   <td>
-                    <a class="text-decoration-none" th:href="@{/ItemIndex/{id}(id=${shiire.shiireId})}">
+                    <a class="text-decoration-none" th:href="@{/EditShiire/{id}(id=${shiire.shiireId})}">
                       <span th:text="${shiire.shiireId}"></span>
                     </a>
                   </td>

@@ -1,6 +1,8 @@
 package com.reiko.nail.service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -17,6 +19,7 @@ import com.reiko.nail.dto.SearchShiireDto;
 import com.reiko.nail.dto.ShiireDto;
 import com.reiko.nail.dto.ShohinDto;
 import com.reiko.nail.dto.ShohinIdDto;
+import com.reiko.nail.dto.UpdateShohinDto;
 import com.reiko.nail.entity.ShiireEntity;
 import com.reiko.nail.entity.ShohinEntity;
 import com.reiko.nail.enums.DaiBunruiEnum;
@@ -54,24 +57,18 @@ public class ShohinService {
 		return null;
 	}
 
-	// 商品の検索
-	public ResponseData<SearchItemDto> searchItemList(SearchItemDto searchItemDto) {
-		ResponseData<SearchItemDto> res = new ResponseData<SearchItemDto>();
-		
-	
-		
-		res.setData(searchItemDto);
-		return res;
-	}
 
 	// 商品検索
 	public List<ShohinEntity> getSearchItemList(SearchItemDto data) {
+		
+		if(StringUtils.equals(data.getSeasonCd(), Constants.ALL)){
+			data.setSeasonCd(null);
+		}
 		return shohinDao.searchItemList(data);
 	}
 
 	// 新商品の登録
 	public String registryNewItem(ShohinDto shohinDto) {
-		// P-WI24-O1
 		
 		ThemeTypeEnum themeType = shohinDto.getThemeType();
 		SeasonEnum season = shohinDto.getSeason();
@@ -134,24 +131,53 @@ public class ShohinService {
 	}
 
 	// 商品論理削除
-	public int deleteItem(String shohinCd) {
-		return shohinDao.deleteShohin(shohinCd);
+	public int deleteItem(UpdateShohinDto shohinDto) {
+		
+		return shohinDao.deleteShohin(shohinDto.getShohinCd());
 	}
 
 	// 該当の商品情報取得
 	public ShohinEntity getShohinInfo(String shohinCd) {
+		ShohinEntity entity = shohinDao.findByShohin(shohinCd);
+		return entity;
+	}
+	
+	public List<ShiireEntity> getShiireListById(String shohinUsingShiireid){
 		
-		return shohinDao.findByShohin(shohinCd);
+		List<String> shiireIdList = Arrays.asList(shohinUsingShiireid.split("_"));
+		
+		List<ShiireEntity> shiireList = new ArrayList<>();
+		if(shiireIdList.size() > 0) {
+			shiireList = shiireDao.selectByIdShiireList(shiireIdList);
+		}
+		
+		return shiireList;
 	}
 
-	// 商品情報の編集
-	public int updateItem(ShohinEntity shohinEntity) {
-		
-		int zeinukiGaku = shohinEntity.getZeinukiGaku();
+	// 商品情報の更新
+	public int updateItem(UpdateShohinDto updateShohinDto) {
+		// 税抜額から税額、税込額計算
+		int zeinukiGaku = updateShohinDto.getZeinukiGaku();
 		int zeiGaku = calcZeigaku(zeinukiGaku);
+		// 材料情報の取得
+		String shiireIdList = null;
+		if(updateShohinDto.getIdList().size() > 0 ){
+			shiireIdList = createIdList(updateShohinDto.getIdList());
+		}
+		
+		ShohinEntity shohinEntity = new ShohinEntity();
+		shohinEntity.setShohinCd(updateShohinDto.getShohinCd());
+		shohinEntity.setThemeType(updateShohinDto.getThemeType());
+		shohinEntity.setSeason(updateShohinDto.getSeason());
+		shohinEntity.setZeinukiGaku(zeinukiGaku);
 		shohinEntity.setZeiGaku(zeiGaku);
 		shohinEntity.setZeikomiGaku(zeiGaku + zeinukiGaku);
+		shohinEntity.setShiireIdList(shiireIdList);
+		shohinEntity.setMakeTime(StringUtils.isEmpty(updateShohinDto.getMakeTime()) ? null : updateShohinDto.getMakeTime());
+		shohinEntity.setShohinMemo(StringUtils.isEmpty(updateShohinDto.getShohinMemo()) ? null : updateShohinDto.getShohinMemo());
+		
 		return shohinDao.updateShohin(shohinEntity);
+		
 	}
 	
 	
@@ -193,10 +219,6 @@ public class ShohinService {
 			return response;
 		}
 		
-	}
-	
-	private int calcZeikomiToZeigaku(int zeikomiGaku) {
-		return (int) (zeikomiGaku / 1.1);
 	}
 	
 	public boolean dayService(LocalDate startDate, LocalDate endDate) {
@@ -247,5 +269,14 @@ public class ShohinService {
 		List<ShiireEntity> itemNameList = shiireDao.selectByItemNameList(daiBunruiName, shoBunruiName);
 		
 		return itemNameList;
+	}
+	
+	// 商品のテーマに紐づく季節リストを取得
+	public List<String> relationItemToTheme(String theme){
+		
+		List<String> themeRelatinoToSeasonList = shohinDao.selectRelationToTheme(theme);
+		themeRelatinoToSeasonList.add(0, Constants.ALL);
+	
+		return themeRelatinoToSeasonList;
 	}
 }

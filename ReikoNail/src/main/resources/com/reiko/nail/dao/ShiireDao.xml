@@ -207,7 +207,20 @@
 		<if test="shoBunruiName != null">
 			AND	SHO_BUNRUI_NAME = #{shoBunruiName}	
 		</if>
-			
+	</select>
+	
+	<select id="selectByIdShiireList" resultMap="BaseMap">
+		SELECT
+			*
+		FROM
+			N_SHIIRE
+		WHERE
+			DELETE_FLAG = '0'
+		AND
+			SHIIRE_ID IN
+		<foreach collection="list" item="shiireId" open="(" close=")" separator=",">
+			#{shiireId}
+		</foreach>
 	</select>
 
 </mapper>

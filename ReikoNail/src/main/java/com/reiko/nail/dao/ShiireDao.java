@@ -24,4 +24,11 @@ public interface ShiireDao {
 	List<ShiireEntity> selectByColorAndPartsShiireList(@Param("color") String color, @Param("parts") String parts);
 	
 	List<ShiireEntity> selectByItemNameList(@Param("daiBunruiName") String daiBunruiName, @Param("shoBunruiName") String shoBunruiName);
+	
+	/**
+	 * 仕入IDに対する仕入情報を取得
+	 * @param list
+	 * @return List<ShiireEntity>
+	 */
+	List<ShiireEntity> selectByIdShiireList(List<String> list);
 }

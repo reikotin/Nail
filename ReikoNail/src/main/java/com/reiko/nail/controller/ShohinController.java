@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.reiko.nail.dto.BunruiNameDto;
+import com.reiko.nail.dto.SearchItemDto;
 import com.reiko.nail.dto.SearchShiireDto;
 import com.reiko.nail.dto.ShohinDto;
 import com.reiko.nail.entity.ShiireEntity;
+import com.reiko.nail.entity.ShohinEntity;
 import com.reiko.nail.service.ShohinService;
 
 import lombok.RequiredArgsConstructor;
@@ -75,6 +77,26 @@ public class ShohinController {
 		list = shohinService.searchShiireList(searchShiireDto);	
 		
 		return new ResponseEntity<List<ShiireEntity>>(list, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/GetSeasonList", method = {RequestMethod.GET})
+	public ResponseEntity<List<String>> getSeasonList(@RequestParam String theme){
+		
+		if(StringUtils.isEmpty(theme)) {
+			
+			return ResponseEntity.ok(null);
+		}
+		
+		List<String> resultList = shohinService.relationItemToTheme(theme);	
+		
+		return new ResponseEntity<List<String>>(resultList, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/GetShohinList", method = {RequestMethod.GET})
+	public ResponseEntity<List<ShohinEntity>> getShohinList(@ModelAttribute SearchItemDto searchItemDto){
+		
+		List<ShohinEntity> list	= shohinService.getSearchItemList(searchItemDto);
+		return new ResponseEntity<List<ShohinEntity>>(list, HttpStatus.OK);
 	}
 	
 //	@RequestMapping(value = "/Valid", method = {RequestMethod.POST})

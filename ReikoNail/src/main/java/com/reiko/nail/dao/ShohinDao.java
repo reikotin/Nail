@@ -60,7 +60,7 @@ public interface ShohinDao {
 	ShohinEntity findByShohin(@Param("shohinCd") String shohinCd);
 
 	/**
-	 * 商品情報の編集
+	 * 商品情報の更新
 	 * @param shohinEntity
 	 * @return
 	 */
@@ -73,5 +73,12 @@ public interface ShohinDao {
 	 * @return
 	 */
 	String findThemeAndSeason(@Param("themeType") String themeType, @Param("seasonCd") String seasonCd);
+
+	/**
+	 * テーマに紐づく季節
+	 * @param themeType
+	 * @return
+	 */
+	List<String> selectRelationToTheme(@Param("themeType") String themeType);
 	
 }

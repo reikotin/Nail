@@ -15,86 +15,76 @@
     <div class="row he-1">
         <div th:replace="~{fragments/side :: nav}"></div>
         <main class="col-md-9 ml-sm-auto col-lg-10 bg-light">
-          <div class="container r-w">
+          <div class="container r-w mt-3">
             <div class="d-flex justify-content-between align-items-center border-bottom border-dark mt-3">
-              <h1 class="h1">R-ネイル</h1><div id="message-container"><span th:if="${message}" th:text="${message}"></span></div>
+              <h1 class="h1">R-ネイル : 商品編集</h1><div id="message-container"><span th:if="${message}" th:text="${message}"></span></div>
               <h6 class="">システム日付 : <span id="clock"></span></h6>
             </div>
           </div>
-          <div class="container">
-			<div class="row mb-3">
-	            <div class="col mt-3 mb-3">
-	              <h2 class="h2">商品編集</h2>
-	            </div>
-	            <div class="col mt-3 mb-3 d-flex justify-content-end">
-					<form method="POST" th:action="@{/Delete}" th:object="${entity}">
-						<input type="hidden" th:value="${shohinCd}" name="shohinCd">
-					    <button type="button" id="deleteForm" class="btn btn-danger"  data-bs-toggle="modal" data-bs-target="#staticBackdrop"><i class="bi bi-trash3"></i></button>
-				        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-				          <div class="modal-dialog">
-				            <div class="modal-content">
-				              <div class="modal-header">
-				                <h1 class="modal-title fs-5" id="staticBackdropLabel">本当に削除しますか？</h1>
-				                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-				              </div>
-				              <div class="modal-body">
-								商品コード: <span id="setShohinCd" class="me-2"></span><br>
-				                カラー　　:<span id="setColor" class="me-2"></span><br>
-				                税抜額　　:<span id="setZeinukiGaku"></span>
-							  </div>
-				              <div class="modal-footer">
-				                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
-				                <button type="submit" class="btn btn-danger" id="delete">削除</button>
-				              </div>
-				            </div>
-				          </div>
-				       </div>
-				    </form>
+          <div class="container r-w">
+            <form th:object="${shohin}" th:action="@{/UpdateItem}" method="POST">
+			  <input type="hidden" name="shohinCd" th:value="${shohinEntity.shohinCd}">
+			  <div class="d-flex justify-content-between">
+	              <div class="col-4 mt-3">                
+	                 <label>テーマ</label>
+	                <input type="text" name="themeType" th:value="${shohinEntity.themeType}" class="form-control text-center border border-secondary" readonly>
+	              </div>
+	              <div class="d-flex align-items-center">
+					  <input type="hidden" id="flag" name="updateFlag">
+					  <button type="submit" class="btn btn-danger me-3" id="deleteBtn"><i class="bi bi-trash3"></i></button>
+					  <button type="submit" class="btn btn-primary" id="updateBtn">更新</button>
+				  </div>
+			  </div>
+              <div class="col-4 mt-3">
+				  <label>季節</label>
+				  <input type="text" name="season" th:value="${shohinEntity.season}" class="form-control text-center border border-secondary" readonly>
+			  </div>
+			  <div class="col-4 mt-3">
+				  <label>税抜額</label>
+					<input type="text" id="zeinukiGaku" name="zeinukiGaku" th:value="${shohinEntity.zeinukiGaku}" class="form-control border border-secondary text-end pe-2">
+			  </div>
+			  <div class="col-4 mt-3">
+				  <label>作成時間</label>
+					<input type="text" id="makeTime" name="makeTime" th:value="${shohinEntity.makeTime}" 
+					placeholder="単位 : 分" class="form-control border border-secondary text-end pe-2">
+			  </div>
+
+			  <div class="mt-3">材料情報</div>
+			  <div class="card p-3 border border-secondary" id="addCard">
+			  <!--
+				<div class="d-flex justify-content-end mt-3 me-3">
+					<button type="button" class="btn btn-secondary">削除</button>
 				</div>
-			</div>
-            <form th:object="${entity}" method="POST" th:action="@{/Update}">
-              <div id="formContainer" style="
-              width: 35%;
-              margin: auto;">
-                <div class="mb-3">
-                  <div class="col">
-                    <label for="formGroupExampleInput" class="form-label">商品コード</label>
-                    <input type="text" th:field="*{shohinCd}" class="form-control" readonly>
-                  </div>
-                </div>
-                <div class="mb-3">
-                  <div class="col">
-                    <label for="formGroupExampleInput" class="form-label">カラー</label>
-                    <input type="text" th:field="*{color}" class="form-control" readonly>
-                  </div>
-                </div>
-                <div class="mb-3">
-                  <div class="col">
-                    <label for="formGroupExampleInput" class="form-label">税抜額</label>
-                    <input type="text" class="form-control text-end" th:field="*{zeinukiGaku}" required="true">
-                  </div>
-                </div>
-                <div class="mb-3">
-                  <div class="col">
-                    <label for="formGroupExampleInput" class="form-label">作成所要時間</label>
-                    <input type="text" class="form-control" th:field="*{makeTime}">
-                  </div>
-                </div>
-                <div class="mb-3">
-                  <div class="col">
-                    <label for="formGroupExampleInput" class="form-label">材料メモ</label>
-                    <input type="text" class="form-control" th:field="*{zairyoMemo}">
-                  </div>
-                </div>
-                  
-                <div class="mb-3">
-                  <label for="formGroupExampleInput" class="form-label">商品詳細</label>
-                  <textarea class="form-control" rows="3" th:field="*{shohinMemo}"></textarea>
-                </div>
-                <div class="col mb-3">
-                  <button type="submit" class="btn btn-primary">更新</button>
-                </div>
-              </div>
+				<div class="d-flex">
+					<div class="d-flex align-items-end">
+						<button type="button" id="addZairyo" class="btn btn-primary addZairyo">材料追加</button>
+					</div>
+		            <div class="col ms-3" id="daiBunrui">
+						<label>大分類</label>
+						<select class="form-select text-center border border-secondary">
+							<option value=""></option>
+						</select>
+					</div>
+		            <div class="col ms-3">
+						<label>小分類</label>
+						<select id="shoBunruiName_0" class="form-select text-center border border-secondary">
+							<option value=""></option>
+						</select>
+					</div>
+					<div class="col  ms-3 me-3">
+						<label>品名</label>
+						<select id="idList_0" th:field="*{idList[__${0}__].id}" class="form-select text-center border border-secondary">
+							<option value=""></option>
+						</select>
+					</div>
+				  </div>
+			  -->
+			  </div>
+			  <!--<div id="addCard"></div>-->
+			  <div class="col mt-3">
+				  <label>商品メモ</label>
+				  <textarea name="shohinMemo" th:text="${shohinEntity.shohinMemo}" class="form-control border border-secondary"></textarea>
+			  </div>
             </form>
           </div>          
         </main>
@@ -105,32 +95,212 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js" integrity="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS" crossorigin="anonymous"></script>
     <script th:inline="javascript">
 		$(document).ready(function () {
-			var shohinCd = $('#shohinCd').val();
-			var color = $('#color').val();
-			var zeinukiGaku = $('#zeinukiGaku').val();
-			// 商品の削除
-			$('#delete').on('click', function(){
-				const shohinCd = $('#shohinCd').val();
+			var shiireList = /*[[${shiireList}]]*/ [];
+			var index = 0;
+			shiireList.forEach(function(shiireEntity){
+				var newCard = $(`
+						<div class="d-flex justify-content-end mt-3 me-3" id="zairyoDelete_${index}">
+							<button type="button" id="deleteZairyo_${index}" class="btn btn-secondary">削除</button>
+						</div>
+						<div class="d-flex" id="zairyoBox_${index}">
+							<div class="d-flex align-items-end">
+								<button type="button" id="addZairyo" class="btn btn-primary addZairyo">材料追加</button>
+							</div>
+				            <div class="col ms-3">
+								<label>大分類</label>
+								<select id="daiBunruiName_${index}" class="form-select text-center border border-secondary">
+									<option value=""></option>
+									<option selected>${shiireEntity.daiBunruiName}</option>
+								</select>
+							</div>
+				            <div class="col ms-3">
+								<label>小分類</label>
+								<select id="shoBunruiName_${index}" class="form-select text-center border border-secondary">
+									<option value=""></option>
+									<option selected>${shiireEntity.shoBunruiName}</option>
+								</select>
+							</div>
+							<div class="col  ms-3 me-3">
+								<label>品名</label>
+								<select id="idList_${index}" name="idList[${index}].id" class="form-select text-center border border-secondary">
+									<option value=""></option>
+									<option value="${shiireEntity.shiireId}" selected>${shiireEntity.itemName}</option>
+								</select>
+							</div>
+						  </div>
+				`);
+				$('#addCard').append(newCard);
+				newCard.find('#addZairyo').on('click', handleAddZairyoClick);
+				if(index === 0){
+					newCard.find('#addZairyo').off('click',  handleAddZairyoClick);
+				}
+				var selectBox = $('#daiBunruiName_' + index);
+				if(shiireEntity.daiBunruiName === 'カラー'){
+					var color = $('<option>').val('カラー').text('カラー').prop('selected', true);
+					var parts = $('<option>').val('パーツ').text('パーツ');
+					selectBox.append(color);
+					selectBox.append(parts);
+				} else {
+					var color = $('<option>').val('カラー').text('カラー');
+					var parts = $('<option>').val('パーツ').text('パーツ').prop('selected', true);
+					selectBox.append(color);
+					selectBox.append(parts);
+				}
+				index++;
+				console.log(index);
+			});
+			
+			function handleAddZairyoClick(){
+				index++;
+				var newCard = $(`
+						<div class="d-flex justify-content-end mt-3 me-3" id="zairyoDelete_${index}">
+							<button type="button" id="deleteZairyo_${index}" class="btn btn-secondary">削除</button>
+						</div>
+						<div class="d-flex" id="zairyoBox_${index}">
+							<div class="d-flex align-items-end">
+								<button type="button" id="addZairyo" class="btn btn-primary addZairyo">材料追加</button>
+							</div>
+				            <div class="col ms-3">
+								<label>大分類</label>
+								<select id="daiBunruiName_${index}" class="form-select text-center border border-secondary">
+									<option value=""></option>
+									<option value="カラー">カラー</option>
+									<option value="パーツ">パーツ</option>
+								</select>
+							</div>
+				            <div class="col ms-3">
+								<label>小分類</label>
+								<select id="shoBunruiName_${index}" class="form-select text-center border border-secondary">
+									<option value=""></option>
+								</select>
+							</div>
+							<div class="col  ms-3 me-3">
+								<label>品名</label>
+								<select id="idList_${index}" name="idList[${index}].id" class="form-select text-center border border-secondary">
+									<option value=""></option>
+								</select>
+							</div>
+						  </div>
+				`);
+				newCard.find('#addZairyo').on('click', handleAddZairyoClick);
+				$('#addCard').append(newCard);
+				console.log(index);
+			};
+			
+			$('#addZairyo').on('click', handleAddZairyoClick);
+			
+			$('#addCard').on('click', 'button[id^="deleteZairyo_"]', function(){
+				index--;
+				var numberOfDeleteZairyoButtons = $('button[id^="deleteZairyo_"]').length;
+				if(numberOfDeleteZairyoButtons === 1){
+					index = 0;
+					return;
+				}
+				var num = $(this).attr('id').split('_')[1];
+				$('#zairyoBox_' + num).remove();
+				$('#zairyoDelete_' + num).remove();
+			    $('div[id^="zairyoBox_"]').each(function() {
+			        var currentNum = $(this).attr('id').split('_')[1];
+			        // 削除対象よりも後の要素に対して順番をずらす
+			        if (currentNum > num) {
+			            var newNum = currentNum - 1;
+			            $(this).attr('id', 'zairyoBox_' + newNum);
+			            $('#zairyoDelete_' + currentNum).attr('id', 'zairyoDelete_' + newNum);
+			            $('#deleteZairyo_' + currentNum).attr('id', 'deleteZairyo_' + newNum);
+			            // idList の順番もずらす
+			            $('#idList_' + currentNum).attr('id', 'idList_' + newNum);
+			            $('#idList_' + currentNum).attr('name', 'idList[' + newNum + '].id');
+			        }
+			    });
+			    console.log(index);
+			});
+			$('#addCard').on('change', 'select[id^="daiBunruiName_"]', function(){
+				var selectedIndex = $(this).attr('id').match(/\d+/)[0];
+				var selectDaiBunruiName = $(this).val();
+				$('#idList_' + selectedIndex).val('');
+				if(selectDaiBunruiName === ''){
+					$('#shoBunruiName_' + selectedIndex).prop('disabled', true);
+					$('#shoBunruiName_' + selectedIndex).val('');
+					$('#idList_' + selectedIndex).empty().prop('disabled', true);
+					return;
+				} else {
+					$('#idList_' + selectedIndex).empty().prop('disabled', false);
+					$('#shoBunruiName_' + selectedIndex).prop('disabled', false);
+				}
 				$.ajax({
-					url: '/Delete',
-					type: 'POST',
-					data: {shohinCd: shohinCd},
+					url: '/GetShoBunrui',
+					type: 'GET',
+					data: {
+						daiBunruiName : selectDaiBunruiName,
+						searchKbn: '2'
+						},
 					success: function(data){
-						console.log(data);
-					},
-					error: function(data){
-						console.log(data);
+						updateShoBunruiOptions(data, selectedIndex);
+					},error: function(){
+						
 					}
 				});
 			});
-			// 削除前の確認
-			$('#deleteForm').on('click', function(){
-				$('#setShohinCd').text(shohinCd);
-				$('#setColor').text(color);
-				$('#setZeinukiGaku').text(zeinukiGaku);
+			function updateShoBunruiOptions(shoBunruiList, index) {
+				var selectBox = $('#shoBunruiName_' + index);
+                selectBox.empty();
+                if(shoBunruiList.length > 0){
+					$('#shoBunruiName_' + index).prop('disabled', false);
+				}
+                for (var i = 0; i < shoBunruiList.length; i++) {
+					var option = $('<option>').val(shoBunruiList[i].bunruiName).text(shoBunruiList[i].bunruiName);
+                    selectBox.append(option);
+                }
+             }
+
+             /**$('#shoBunruiName').on('change', function(){*/
+            $('#addCard').on('change', 'select[id^="shoBunruiName_"]', function(){
+				var selectedShoBunrui = $(this).val();
+				var ind = $(this).attr('id').split('_')[1];
+				var selectedDaiBunrui = $('#daiBunruiName_' + ind).val();
+				if(selectedShoBunrui === ''){
+					$('#idList_' + ind).empty();
+					return;
+				}
+				$.ajax({
+					url: '/GetItemNameList',
+					type: 'GET',
+					data: {
+						daiBunrui: selectedDaiBunrui,
+						shoBunrui: selectedShoBunrui
+						},
+					success: function(response){
+						updateItemOptions(response, ind);
+					}
+				});
+			 });
+			 
+			function updateItemOptions(itemList, ind){
+				var selectBoxByItem = $('#idList_' + ind);
+				selectBoxByItem.empty();
+				for(var i = 0; i < itemList.length; i ++){
+					var option = $('<option>').val(itemList[i].shiireId).text(itemList[i].itemName);
+					selectBoxByItem.append(option);
+				}
+			}
+			var flags =  /*[[ ${flags} ]]*/[];
+			console.log(flags);
+			// 商品の削除
+			$('#updateBtn').on('click', function(){
+				$('#flag').val(flags[1]);
+				return true;
 			});
+			
+			$('#deleteBtn').on('click', function(){
+				var flag = $('#flag');
+				var newFlag = $(` 
+					<input type="hidden" name="updateFlag" th:value="${deleteItem}">
+				`);
+				flag.append(newFlag);
+			})
+			
 			// 数値以外の入力制御および全角数値の制御
-            $('#zeinukiGaku').on('input', function() {
+            $('#zeinukiGaku', '#makeTime').on('input', function() {
                let inputValue = $(this).val().replace(/[^0-9０-９]/g, '');
                inputValue = inputValue.replace(/[０-９]/g, function(s) {
                  return String.fromCharCode(s.charCodeAt(0) - 0xFEE0);
