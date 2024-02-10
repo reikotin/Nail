@@ -143,7 +143,7 @@
 							<h1 class="modal-title fs-5" id="staticBackdropLabel"></h1>
 							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 						</div>
-						<div class="modal-body">
+						<div class="modal-body" id="modal2">
 							
 						</div>
 						<div class="modal-footer">
@@ -386,7 +386,7 @@
                 }
              }
              
-             $('#registerShiire').on('click', function(){
+            $('#registerShiire').on('click', function(){
 				var modelMessage = '';
 				var suryo = $('#suryo').val();
 				var date = $('#shiireDate').val();
@@ -411,13 +411,13 @@
 				}
 		        if (modelMessage !== '') {
 		            $('#staticBackdropLabel2').text('以下の項目を修正してください');  
-		            $('.modal-body').html(modelMessage); 
+		            $('#modal2').html(modelMessage); 
 		            $('#staticBackdrop2').modal('show');
 		            return;
 		        } else {
 		            $('#shiireForm').submit();
 		        }
-			 });
+			});
 			// 数値以外の入力制御および全角数値の制御
             $('#zeikomiGaku').on('input', function() {
                let inputValue = $(this).val().replace(/[^0-9０-９]/g, '');
