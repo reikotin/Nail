@@ -27,4 +27,14 @@ public class DenpyoEntity {
 	private LocalDate createDate;
 	/** 伝票更新日 */
 	private LocalDate updateDate;
+	/** 発送方法 */
+	private String hassoHoho;
+	/** 追跡番号 */
+	private String tsuisekiNo;
+	/** 発送日 */
+	private LocalDate hassoDate;
+	/** 発送料 */
+	private Integer hassoRyo;
+	/** 削除フラグ */
+	private	String deleteFlag;
 }

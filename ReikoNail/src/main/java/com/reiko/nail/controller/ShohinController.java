@@ -45,7 +45,7 @@ public class ShohinController {
 	@RequestMapping(value = "/GetShoBunrui", method = {RequestMethod.GET})
 	public ResponseEntity<List<BunruiNameDto>> getShoBunrui(@RequestParam String daiBunruiName, String searchKbn){
 		
-		List<BunruiNameDto> shoBunruiList = shohinService.getShoBunruiList(daiBunruiName);
+		List<BunruiNameDto> shoBunruiList = shohinService.getShoBunruiList(daiBunruiName, searchKbn);
 		
 		if(StringUtils.equals(searchKbn, "2")){
 			BunruiNameDto dto = new BunruiNameDto();

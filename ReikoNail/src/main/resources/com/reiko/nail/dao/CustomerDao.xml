@@ -112,5 +112,15 @@
 		WHERE
 			CUSTOMER_CD = #{customerCd}
 	</update>
+	
+	<update id="updateCustomerKingakuJoho">
+		UPDATE
+			CUSTOMER
+		SET
+			KOUNYU_KAISU = KOUNYU_KAISU + 1,
+			RUIKEI_KOUNYU_KINGAKU = RUIKEI_KOUNYU_KINGAKU + #{kounyuKngaku}
+		WHERE
+			CUSTOMER_CD = #{customerCd}
+	</update>
 
 </mapper>

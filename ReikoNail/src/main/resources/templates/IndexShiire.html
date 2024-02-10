@@ -121,56 +121,52 @@
                 message.empty(); // メッセージをクリア
             }, 5000);
 	  }
-		$(document).ready(function () {
-			$('#daiBunruiName').on('change', function(){
-				var selectDaiBunruiName = $(this).val();
-				if(selectDaiBunruiName === ''){
-					$('#shoBunruiName').prop('disabled', true);
-					$('#shoBunruiName').val('');
-					return;
+	$(document).ready(function () {
+		$('#daiBunruiName').on('change', function(){
+			var selectDaiBunruiName = $(this).val();
+			if(selectDaiBunruiName === ''){
+				$('#shoBunruiName').prop('disabled', true);
+				$('#shoBunruiName').val('');
+				return;
+			}
+			$.ajax({
+				url: '/GetShoBunrui',
+				type: 'GET',
+				data: {
+					daiBunruiName : selectDaiBunruiName,
+					searchKbn: '1'
+				},
+				success: function(data){
+					updateShoBunruiOptions(data);
+				},error: function(){
+					
 				}
-				
-				$.ajax({
-					url: '/GetShoBunrui',
-					type: 'GET',
-					data: {
-						daiBunruiName : selectDaiBunruiName,
-						searchKbn: '1'
-					},
-					success: function(data){
-						updateShoBunruiOptions(data);
-					},error: function(){
-						
-					}
-				});
 			});
-			
-			function updateShoBunruiOptions(shoBunruiList) {
-				var selectBox = $('#shoBunruiName');
-                selectBox.empty();  // Clear existing options
+		});
+		function updateShoBunruiOptions(shoBunruiList) {
+			var selectBox = $('#shoBunruiName');
+            selectBox.empty();  // Clear existing options
 
-                if(shoBunruiList.length > 0){
-					$('#shoBunruiName').prop('disabled', false);
-				}
-                for (var i = 0; i < shoBunruiList.length; i++) {
-					var option = $('<option>').val(shoBunruiList[i].bunruiName).text(shoBunruiList[i].bunruiName);
-                    selectBox.append(option);
-                }
+            if(shoBunruiList.length > 0){
+				$('#shoBunruiName').prop('disabled', false);
+			}
+            for (var i = 0; i < shoBunruiList.length; i++) {
+				var option = $('<option>').val(shoBunruiList[i].bunruiName).text(shoBunruiList[i].bunruiName);
+                selectBox.append(option);
              }
-             
-             $('#startDate').change(function(){
-				 var startDate = $('#startDate').val();
-				 $('#endDate').prop('min', startDate);
-			 });
-			 
-			 
-			$('input[type=date]').on('change', function() {
+        } 
+            
+        $('#startDate').change(function(){
+			 var startDate = $('#startDate').val();
+			 $('#endDate').prop('min', startDate);
+		 });
+		$('input[type=date]').on('change', function() {
                 // 入力がある場合は文字色を黒に、入力がない場合は白に変更
-                $(this).css('color', $(this).val() ? 'black' : 'white');
-            });
-             
-         });
-	
+            $(this).css('color', $(this).val() ? 'black' : 'white');
+        });
+        
+        
+    });
    // $(document).ready(function() {
      // $('#zeinuki1, #zeinuki2').on('input', function() {
         // 数値以外を取り除く

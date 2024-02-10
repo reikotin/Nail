@@ -13,6 +13,11 @@
 		<result column="BIKO" property="biko" />
 		<result column="CREATE_DATE" property="createDate" />
 		<result column="UPDATE_DATE" property="updateDate" />
+		<result column="HASSOHOHO" property="hassoHoho" />
+		<result column="TSUISEKI_NO" property="tsuisekiNo"/>
+		<result column="HASSO_DATE" property="hassoDate" />
+		<result column="HASSO_RYO" property="hassoRyo" />
+  		<result column="DELETE_FLAG" property="deleteFlag" />
 	</resultMap>
 
 	<select id="selectByAllDenpyoList" resultMap="BaseMap">
@@ -20,6 +25,8 @@
 			* 
 		FROM 
 			N_DENPYO
+		WHERE
+			DELETE_FLAG = '0'	
 		ORDER BY
 			DENPYO_HAKKOZUMI_FLAG, KOUNYU_DATE DESC
 	</select>
@@ -58,5 +65,181 @@
 			, CURRENT_TIMESTAMP
 		)
 	</insert>
+	
+	<select id="exportDenpyo">
+		SELECT 
+			denpyo.DENPYO_NO AS denpyoNo,
+			denpyo.KOUNYU_DATE AS kounyuDate,
+			cus.CUSTOMER_SEI AS customerSei,
+			cus.CUSTOMER_MEI AS customerMei,
+			sale.SHOHIN_CD AS shohinCd,
+			sho.ZEIKOMIGAKU AS zeikomiGaku,
+			COUNT(sale.SHOHIN_CD) AS suryo,
+			sho.ZEIKOMIGAKU * COUNT(sale.SHOHIN_CD) AS shokei
+		FROM 
+			N_DENPYO denpyo
+		INNER JOIN 
+			CUSTOMER cus
+		ON 
+			denpyo.CUSTOMER_CD = cus.CUSTOMER_CD
+		LEFT JOIN 
+			N_SALES sale
+		ON 
+			denpyo.DENPYO_NO = sale.DENPYO_NO
+		INNER JOIN 
+			N_SHOHIN sho
+		ON 
+			sale.SHOHIN_CD = sho.SHOHIN_CD
+		WHERE 
+			denpyo.DENPYO_NO = #{denpyoNo}
+		AND 
+			denpyo.DENPYO_HAKKOZUMI_FLAG = '0'
+		AND
+			denpyo.DELETE_FLAG = '0'
+		GROUP BY 
+			sale.SHOHIN_CD
+			
+	</select>
+	
+	
+	<select id="selectByEditDenpyoForCustomerJoho">
+		SELECT 
+			denpyo.DENPYO_NO AS denpyoNo,
+			denpyo.CUSTOMER_CD AS customerCd,
+			denpyo.KOUNYU_DATE AS kounyuDate,
+			denpyo.DENPYO_HAKKOZUMI_FLAG AS denpyoHakkozumiFlag,
+			cus.CUSTOMER_SEI AS customerSei,
+			cus.CUSTOMER_MEI AS customerMei,
+			cus.SEI_FURIGANA AS seiFurigana,
+			cus.MEI_FURIGANA AS meiFurigana,
+			cus.YUBIN_NO AS yubinNo,
+			cus.PREFECTURE_CITY AS prefectureCity,
+			cus.STREET_NO AS streetNo,
+			denpyo.HASSO_DATE AS hassoDate,
+			denpyo.BIKO AS biko,
+			denpyo.ZEIKOMIGAKU AS gokeiKingaku,
+			denpyo.HASSOHOHO AS hassoHoho,
+			denpyo.TSUISEKI_NO AS tsuisekiNo,
+			denpyo.HASSO_RYO AS hassoRyo
+		FROM 
+			N_DENPYO denpyo
+		INNER JOIN 
+			CUSTOMER cus
+		ON 
+			denpyo.CUSTOMER_CD = cus.CUSTOMER_CD
+		LEFT JOIN 
+			N_SALES sale
+		ON 
+			denpyo.DENPYO_NO = sale.DENPYO_NO
+		INNER JOIN 
+			N_SHOHIN sho
+		ON 
+			sale.SHOHIN_CD = sho.SHOHIN_CD
+		WHERE 
+			denpyo.DENPYO_NO = #{denpyoNo}
+		AND
+			denpyo.DELETE_FLAG = '0'
+		GROUP BY 
+			denpyo.DENPYO_NO
+	</select>
+	
+	<select id="selectByEditDenpyoForShohinJoho">
+		SELECT 
+			sho.SHOHIN_CD AS shohinCd,
+			sho.ZEINUKIGAKU AS zeinukiGaku,
+			sho.ZEIGAKU AS zeiGaku,
+			sho.ZEIKOMIGAKU AS zeikomiGaku
+		FROM 
+			N_DENPYO denpyo
+		INNER JOIN 
+			CUSTOMER cus
+		ON 
+			denpyo.CUSTOMER_CD = cus.CUSTOMER_CD
+		LEFT JOIN 
+			N_SALES sale
+		ON 
+			denpyo.DENPYO_NO = sale.DENPYO_NO
+		INNER JOIN 
+			N_SHOHIN sho
+		ON 
+			sale.SHOHIN_CD = sho.SHOHIN_CD
+		WHERE 
+			denpyo.DENPYO_NO = #{denpyoNo}
+		AND
+			denpyo.DELETE_FLAG = '0'
+		GROUP BY 
+			sale.SHOHIN_CD
+	</select>
+	
+	<update id="deleteDenpyoByPrimary">
+		UPDATE 
+			N_DENPYO
+		SET
+			DELETE_FLAG = '1'
+		WHERE 
+			DENPYO_NO = #{denpyoNo}
+	</update>
+	
+	<update id="updateDenpyoByNotKingakuHenko">
+		UPDATE
+			N_DENPYO
+		SET
+		  <if test="hassoHoho != null || hassoHoho != ''">
+			HASSOHOHO = #{hassoHoho},
+		  </if>
+		  <if test="tsuisekiNo != null || tsuisekiNo != ''">
+			TSUISEKI_NO = #{tsuisekiNo},
+		  </if>
+		  <if test="hassoRyo != null || hassoRyo != ''">
+			HASSO_RYO = #{hassoRyo},
+		  </if>
+		  <if test="biko != biko || biko !=''">
+		  	BIKO = #{biko},
+		  </if>
+		  DENPYO_HAKKOZUMI_FLAG = #{denpyoHakkozumiFlag},
+		  UPDATE_DATE = CURRENT_TIMESTAMP
+		WHERE
+			DENPYO_NO = #{denpyoNo}
+		AND
+			DELETE_FLAG = '0'
+	</update>
+	
+	<update id="updateDenpyoByKingakuHenko">
+		UPDATE 
+			N_DENPYO
+		SET
+			ZEINUKIGAKU = #{zeinukiGaku},
+			ZEIGAKU = #{zeiGaku},
+			ZEIKOMIGAKU = #{zeikomiGaku},
+		  <if test="hassoHoho != null || hassoHoho != ''">
+			HASSOHOHO = #{hassoHoho},
+		  </if>
+		  <if test="tsuisekiNo != null || tsuisekiNo != ''">
+			TSUISEKI_NO = #{tsuisekiNo},
+		  </if>
+		  <if test="hassoRyo != null || hassoRyo != ''">
+			HASSO_RYO = #{hassoRyo},
+		  </if>
+		  <if test="biko != biko || biko !=''">
+		  	BIKO = #{biko},
+		  </if>
+		  	DENPYO_HAKKOZUMI_FLAG = #{denpyoHakkozumiFlag},
+			UPDATE_DATE = CURRENT_TIMESTAMP
+		WHERE
+			DENPYO_NO = #{denpyoNo}
+		AND
+			DELETE_FLAG = '0'
+	</update>
+	
+<!-- 	<update id="deleteDenpyoIkkatsu">
+		UPDATE
+			N_DENPYO
+		SET
+			DELETE_FLAG = '1'
+		WHERE
+			DENPYO_NO
+	
+	
+	</update> -->
 	
 </mapper>

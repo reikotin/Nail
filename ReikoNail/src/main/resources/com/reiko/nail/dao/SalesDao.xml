@@ -28,4 +28,11 @@
 	   </foreach>
 	</insert>
 	
+	<delete id="deleteMeisaiByPrimary">
+		DELETE FROM N_SALES
+		WHERE
+			DENPYO_NO = #{denpyoNo}
+	</delete>
+	
+	
 </mapper>

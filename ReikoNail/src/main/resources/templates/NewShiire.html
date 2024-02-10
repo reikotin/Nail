@@ -29,12 +29,12 @@
 	        </div>
           </div>
           <div class="container r-w">
-			<form th:object="${shiireDto}" th:action="@{/SaveShiire}" method="POST">
+			<form th:object="${shiireDto}" id="shiireForm" th:action="@{/SaveShiire}" method="POST">
 				<input type="hidden" th:field="*{shiireId}">
 				<div class="col-4 d-flex mb-3">
 					<div class="col-3 d-flex align-items-center justify-content-center 
 					border border-secondary bg-secondary text-white start-rounted">仕入日</div>
-					<input type="Date" name=shiireDate th:min="${minDate}" class="form-control-plaintext border border-secondary pe-2 text-center end-rounted">
+					<input type="Date" id="shiireDate" name=shiireDate th:min="${minDate}" class="form-control-plaintext border border-secondary pe-2 text-center end-rounted">
 				</div>
 				<div>分類情報</div>
 				<div class="d-flex mb-3">
@@ -48,9 +48,10 @@
 					</select>
 				  </div>
 				  <div class="col-4 d-flex">
-					<div class="col-3 px-2 d-flex align-items-center justify-content-center border border-secondary bg-secondary text-white">小分類</div>
-					<select th:field="*{shoBunruiName}" class="form-control-plaintext border border-secondary text-center end-rounted" disabled="true">
-						<option value=""> </option>
+					<div class="col-3 px-2 d-flex align-items-center justify-content-center 
+					border border-secondary bg-secondary text-white">小分類</div>
+					<select th:field="*{shoBunruiName}" class="form-control-plaintext border border-secondary text-center end-rounted">
+						<option value="">  </option>
 						<option th:each="shoBunrui : ${shoBunruiList}" th:value="${shoBunrui.bunruiName}" th:text="${shoBunrui.bunruiName}"/>
 					</select>
 					<!--<input type="text" th:field="*{shoBunruiName}" class="form-control-plaintext border border-secondary text-center end-rounted">-->
@@ -132,9 +133,25 @@
 				</div>
 				<div class="d-flex justify-content-end">
 					<div class="mt-3 mb-3">
-              			<button type="submit" id="registerShiire" class="btn btn-primary">登録</button>    
+              			<button type="button" id="registerShiire" class="btn btn-primary" onclick="validateAndShowModal()">登録</button>  
             		</div>
 				</div>
+			<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h1 class="modal-title fs-5" id="staticBackdropLabel"></h1>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">修正</button>
+						</div>
+					</div>
+				</div>
+			</div>
 			</form>
 				<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
 				  <div class="modal-dialog modal-fullscreen">
@@ -219,7 +236,38 @@
 	              message.empty(); 
 	          }, 5000);
 		}
-		
+	    function validateAndShowModal() {
+			var modelMessage = '';
+			var suryo = $('#suryo').val();
+			var date = $('#shiireDate').val();
+			var jan = $('#janCd').val();
+			var zeikomi = $('#zeikomiGaku').val();
+			var dai = $('#daiBunruiName').val()
+			
+	        if(suryo === '' || suryo === '0'){
+				modelMessage += '・数量が「0」もしくは「空」です。<br>';
+			}
+			if(date === ''){
+				modelMessage += "・仕入日が「空」です。<br>";
+			}
+			if(jan === ''){
+				modelMessage += '・品番が「空」です。<br>';
+			}
+			if(zeikomi === '' || zeikomi === '0'){
+				modelMessage += '・税込額が「0」もしくは「空」です。<br>入力して計算ボタンを押下してください。<br>';
+			}
+			if(dai === ''){
+				modelMessage += '大分類を選択してください。<br>';
+			}
+	        if (modelMessage !== '') {
+	            $('#staticBackdropLabel').text('以下の項目を修正してください');  
+	            $('.modal-body').html(modelMessage); 
+	            $('#staticBackdrop').modal('show');
+	            return;
+	        } else {
+	            $('#shiireForm').submit();
+	        }
+	    }
 		$(document).ready(function () {
 			$('input[type=date]').on('change', function() {
                 // 入力がある場合は文字色を黒に、入力がない場合は白に変更
@@ -242,12 +290,10 @@
 					$('#zeikomiGaku').prop('readonly', false);
 					$('#zeinukiGaku').prop('readonly', true);
 				}
-				
             });
 			
 			$('#keisan').on('click', function(){
 				if(selectedKeisanMode === '1'){
-					
 				  var zeikomiGaku = $('#zeikomiGaku').val();
 				  var zeinukiGaku = Math.round(zeikomiGaku / 1.1);
 				  $('#zeiGaku').val(zeikomiGaku - zeinukiGaku);
@@ -258,12 +304,9 @@
 					$('#zeikomiGaku').val(zeikomiGaku);
 					$('#zeiGaku').val(zeikomiGaku - zeinukiGaku);
 				}
-
 			});
 			
-			
 			$('#kensaku').on('click', function(){
-				
 				var searchJan =  $('#searchJan').val();
 				var searchItemName = $('#searchItemName').val();
 				var searchDaiBunrui = $('#searchDaiBunrui').val();
@@ -309,7 +352,6 @@
 			});
 			
 			$('#resultOk').on('click', function(){
-				
 				var index = $('input[name="selectRow"]:checked').val();
 				
 				var dai = $('#setDaiBunrui_' + index).text();
@@ -327,7 +369,9 @@
 				var shiireId = $('#setShiireId_' + index).text();
 				
 				$('#daiBunruiName').val(dai);
-				$('#shoBunruiName').val(sho);
+				var selectSho = $('#shoBunruiName');
+				var selectbunrui = $('<option>').val(sho).text(sho).prop('selected', true);
+				selectSho.append(selectbunrui);
 				$('#itemName').val(item);
 				$('#janCd').val(jan);
 				$('#shiireSaki').val(saki);
@@ -337,7 +381,6 @@
 				$('#zeiGaku').val(zei);
 				$('#zeikomiGaku').val(zeikomi);
 				$('#shiireId').val(shiireId);
-				
 			});
 			
 			$('#daiBunruiName').on('change', function(){
@@ -352,7 +395,7 @@
 					type: 'GET',
 					data: {
 						daiBunruiName : selectDaiBunruiName,
-						searchKbn: '1'
+						searchKbn: '3'
 						},
 					success: function(data){
 						updateShoBunruiOptions(data);
@@ -368,7 +411,6 @@
                 if(shoBunruiList.length > 0){
 					$('#shoBunruiName').prop('disabled', false);
 				}
-				
                 for (var i = 0; i < shoBunruiList.length; i++) {
 					var option = $('<option>').val(shoBunruiList[i].bunruiName).text(shoBunruiList[i].bunruiName);
                     selectBox.append(option);

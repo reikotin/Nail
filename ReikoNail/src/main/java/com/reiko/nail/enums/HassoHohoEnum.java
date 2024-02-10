@@ -6,14 +6,16 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public enum UpdateFlagEnum  implements NailEnum {
-	DELETE("削除", 0),
-	UPDATE("更新", 1), 
+public enum HassoHohoEnum implements NailEnum {
+	
+	
+	QUICKPOST("1", "クイックポスト"),
+//	YAMATO("2", "ヤマト")
 	;
 
 	private final String _key;
 	
-	private final int _value;
+	private final String _value;
 	
 	@Override
 	@JsonValue
@@ -21,22 +23,23 @@ public enum UpdateFlagEnum  implements NailEnum {
 		return _key;
 	}
 	
-	public int getValue() {
+	public String getValue() {
 		return _value; 
 	}
 	
-	private UpdateFlagEnum (String key, int value) {
+	private HassoHohoEnum (String key, String value) {
 		_key = key;
 		_value = value;
 	}
 	
-	public static UpdateFlagEnum getByKey(String key) {
+	public static HassoHohoEnum getByKey(String key) {
 		if(StringUtils.isEmpty(key)) {
 			return null;
 		}
-		return Arrays.stream(UpdateFlagEnum.values())
+		return Arrays.stream(HassoHohoEnum.values())
 				.filter(e -> StringUtils.equals(key, e.getKey()))
 				.findFirst()
 				.orElse(null);
 	}
+
 }

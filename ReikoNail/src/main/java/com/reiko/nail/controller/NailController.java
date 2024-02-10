@@ -1,6 +1,7 @@
 package com.reiko.nail.controller;
 
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +17,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.reiko.nail.dto.BunruiDto;
 import com.reiko.nail.dto.BunruiNameDto;
 import com.reiko.nail.dto.DenpyoDto;
+import com.reiko.nail.dto.EditDenpyoDto;
+import com.reiko.nail.dto.ExportDenpyo;
 import com.reiko.nail.dto.SearchItemDto;
 import com.reiko.nail.dto.SearchShiireDto;
 import com.reiko.nail.dto.ShiireDto;
@@ -26,6 +29,8 @@ import com.reiko.nail.entity.DenpyoEntity;
 import com.reiko.nail.entity.ShiireEntity;
 import com.reiko.nail.entity.ShohinEntity;
 import com.reiko.nail.enums.DaiBunruiEnum;
+import com.reiko.nail.enums.DenpyoHakkoFlagEnum;
+import com.reiko.nail.enums.HassoHohoEnum;
 import com.reiko.nail.enums.SeasonEnum;
 import com.reiko.nail.enums.ThemeTypeEnum;
 import com.reiko.nail.enums.UpdateFlagEnum;
@@ -55,6 +60,48 @@ public class NailController {
 	
 		return "Home";
 	}
+	
+	@RequestMapping(value = "/Denpyo/{denpyoNo}", method = {RequestMethod.GET})
+	public String editDenpyo(@PathVariable String denpyoNo, Model model) {
+		List<ShohinEntity> shohinList = nailService.getShohinList();
+		ResponseData<EditDenpyoDto> data = nailService.getEditDenpyoJoho(denpyoNo);
+		
+		model.addAttribute("hassoHohoList", HassoHohoEnum.values());
+		model.addAttribute("shohinList", shohinList);
+		model.addAttribute("denpyoDto", new EditDenpyoDto());
+		model.addAttribute("hassoDate", data.getMessage());
+		model.addAttribute("isHassouZumi", data.isHasError());
+		model.addAttribute("editDenpyo", data.getData());
+		model.addAttribute("meisaiList", data.getData().getShohinJoho());
+		
+		return "EditDenpyo";
+	}
+	
+	@RequestMapping(value = "/UpdateDenpyo", method = {RequestMethod.POST})
+	public String updateDenpyo(@ModelAttribute EditDenpyoDto denpyoDto, Model model) {
+		System.out.println(denpyoDto);
+		String denpyoNo = denpyoDto.getDenpyoNo();
+		String status = denpyoDto.getStatus();
+
+		String headMessage = "";
+		String itemMessage = "伝票番号:" + denpyoNo;
+		// 伝票更新
+		if(StringUtils.equals(status, DenpyoHakkoFlagEnum.DELETE.getKey())) {
+			String deleteMessage = nailService.deleteDenpyo(denpyoNo);
+			itemMessage = itemMessage + "<br>" + deleteMessage;
+			headMessage = "削除完了しました";
+		}
+		
+		int result = nailService.updateDenpyo(denpyoDto);
+		if(result == 1) {
+			itemMessage += "<br>伝票・明細の更新に失敗しました。<br>直前の処理を確認してください";
+		}
+		
+		model.addAttribute("headMessage", headMessage);
+		model.addAttribute("itemMessage", itemMessage);
+		
+		return "Kanryo";
+	}
 
 	@RequestMapping(value = "/NewDenpyo", method = {RequestMethod.GET})
 	public String newDenpyo(Model model) {
@@ -63,7 +110,7 @@ public class NailController {
 		List<CustomerEntity> customerList = customerService.getAllCustomer();
 		
 		DenpyoDto denpyoDto = new DenpyoDto();
-		
+		model.addAttribute("hassoHohoList", HassoHohoEnum.values());
 		model.addAttribute("customerList", customerList);
 		model.addAttribute("shohinList", shohinList);
 		model.addAttribute("denpyoDto", denpyoDto);
@@ -76,11 +123,14 @@ public class NailController {
 		
 		if(denpyoDto.isCustomerJohoHenshu()) {
 			customerService.updateCustomerJoho(denpyoDto);
+		} else {
+			customerService.updateRuikeiKounyuKingaku(denpyoDto);
 		}
 		//System.out.println(denpyoDto);
 		nailService.saveDenpyo(denpyoDto);
 		
 		String message = "伝票登録完了しました。";
+		model.addAttribute("next", "続けて登録する");
 		model.addAttribute("url", "/NewDenpyo");
 		model.addAttribute("headMessage", message);
 		return "kanryo";
@@ -135,17 +185,7 @@ public class NailController {
 		
 		List<ShiireEntity> shiireList = shohinService.getColorAndPartsShiireList();
 		
-//		Map<String, List<ShiireEntity>> groupedByDaiBunrui = shiireList.stream()
-//		        .collect(Collectors.groupingBy(ShiireEntity::getDaiBunruiName));
-//		
-//		List<ShiireEntity> partsList = groupedByDaiBunrui.get(DaiBunruiEnum.PARTS.getKey());
-//		List<ShiireEntity> colorList = groupedByDaiBunrui.get(DaiBunruiEnum.COLOR.getKey());
-//		
-//		model.addAttribute("partsList", partsList);
-//		model.addAttribute("colorList", colorList);
-		model.addAttribute("shiireList", shiireList);
-		
-		
+		model.addAttribute("shiireList", shiireList);		
 		model.addAttribute("themTypeList", ThemeTypeEnum.values());
 		model.addAttribute("seasonList", SeasonEnum.values());
 		model.addAttribute("shohin", new ShohinDto());	
@@ -161,7 +201,7 @@ public class NailController {
 		model.addAttribute("headMessage", "正常に登録できました。");
 		model.addAttribute("itemMessage", "商品コード : " + result);
 		model.addAttribute("url", "/NewItem");
-		
+		model.addAttribute("next", "続けて登録する");		
 		return "Kanryo";
 	}
 	
@@ -175,8 +215,7 @@ public class NailController {
 			shiireList = shohinService.getShiireListById(shohinEntity.getShiireIdList());
 		}
 		
-	
-		model.addAttribute("flags", UpdateFlagEnum.values());
+		model.addAttribute("flags", DenpyoHakkoFlagEnum.values());
 		model.addAttribute("shohin", new UpdateShohinDto());
 		model.addAttribute("shohinEntity", shohinEntity);
 		model.addAttribute("shiireList", shiireList);
@@ -255,7 +294,7 @@ public class NailController {
 		model.addAttribute("headMessage", result.getMessage());
 		model.addAttribute("itemMessage", "品名 : " + result.getData().getItemName());
 		model.addAttribute("url", "/NewShiire");
-		
+		model.addAttribute("next", "続けて登録する");		
 		return "Kanryo";
 	}
 	
@@ -289,11 +328,62 @@ public class NailController {
 		redirectAttributes.addFlashAttribute("message", message);
 		return "IndexShiire";
 	}
+	
 	@RequestMapping(value = "/EditShiire/{shiireId}", method = {RequestMethod.GET})
 	public String editShiire(@PathVariable String shiireCd, Model model) {
 		// TODO
 		
 		return "EditShiire";
 	}
+	
+	@RequestMapping(value = "/Export", method = {RequestMethod.GET})
+	public String exportDenpyo(Model model) {
+		
+		 
+		DenpyoDto dto = new	DenpyoDto();
+		
+		List<ExportDenpyo> exportList = nailService.denpyoHakko();
+		Integer goukei = 0;
+		for(int i = 0; i < exportList.size(); i++) {
+			goukei += exportList.get(i).getShokei();
+		}
+		
+		int tableSizeTyousei = 0;
+		if(exportList.size() < 5) {
+			tableSizeTyousei = 5 - exportList.size();
+		}
+		
+		for(int i = 0; i < tableSizeTyousei; i++) {
+			ExportDenpyo exportDto = new ExportDenpyo();
+			exportDto.setDenpyoNo("　");
+			exportDto.setCustomerSei("　");
+			exportDto.setCustomerMei("　");
+			exportDto.setKounyuDate(null);
+			exportDto.setShohinCd("　");
+			exportDto.setZeikomiGaku(null);
+			exportDto.setSuryo(null);
+			exportDto.setShokei(null);
+			exportList.add(exportDto);
+		}
+		
+		for(int i = 0; i < exportList.size(); i++) {
+			exportList.get(i).setNumber(i+1);
+		}
+		
+		String denpyoNo = exportList.get(0).getDenpyoNo();
+		LocalDate kounyuDate = exportList.get(0).getKounyuDate();
+		String customerSei = exportList.get(0).getCustomerSei();
+		String customerMei = exportList.get(0).getCustomerMei();
+		
+		model.addAttribute("denpyoNo", denpyoNo);
+		model.addAttribute("kounyuDate", kounyuDate);		
+		model.addAttribute("customerSei", customerSei + "　");
+		model.addAttribute("customerMei", customerMei + "　");
+		model.addAttribute("goukei", goukei);
+		
+		model.addAttribute("exportList", exportList);
+		return "Export";
+	}
+	
 	
 }

@@ -207,8 +207,6 @@
          $('#addMeisai').on('change', 'select[id^="shohinCd_"]', function () {
    			var selectedIndex = $(this).attr('id').match(/\d+/)[0];
 			var selectedShohinCd = $(this).val();
-
-			// Ajaxリクエストを使用して対応する情報をサーバーから取得
 			$.ajax({
             	url: '/getShohinInfo',
 				type: 'GET',

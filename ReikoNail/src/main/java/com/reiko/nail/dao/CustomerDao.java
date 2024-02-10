@@ -17,5 +17,7 @@ public interface CustomerDao {
 	void updateCustomer(CustomerEntity customerEntity);
 	
 	List<CustomerEntity> selectByAllCustomer();
+	
+	void updateCustomerKingakuJoho(@Param("customerCd") String customerCd, @Param("kounyuKngaku") Long kounyuKingaku);
 
 }

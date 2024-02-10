@@ -52,6 +52,15 @@ public class CustomerService {
 		customerDao.updateCustomer(customerEntity);
 	}
 	
+	public void updateRuikeiKounyuKingaku(DenpyoDto denpyoDto) {
+		Long kounyuKingaku = sumPrice(denpyoDto.getShohinDto());
+		
+		String customerCd = denpyoDto.getCustomerCd();
+		
+		customerDao.updateCustomerKingakuJoho(customerCd, kounyuKingaku);
+		
+	}
+	
 	// 購入金額の計算
 	private Long sumPrice(List<ShohinDto> shohinDto) {
 		Long total = 0L;

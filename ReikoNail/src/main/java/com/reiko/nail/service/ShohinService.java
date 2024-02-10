@@ -181,9 +181,13 @@ public class ShohinService {
 	}
 	
 	
-	public List<BunruiNameDto> getShoBunruiList(String daiBunruiName) {
+	public List<BunruiNameDto> getShoBunruiList(String daiBunruiName, String searchKbn) {
 		
 		List<BunruiNameDto> dtoList = bunruiDao.relationByDaiBunrui(daiBunruiName);
+		
+		if(StringUtils.equals(searchKbn, "3")){
+			return dtoList;
+		}
 		BunruiNameDto dto = new BunruiNameDto();
 		dto.setBunruiName(Constants.ALL);
 		dtoList.add(0, dto);

@@ -98,6 +98,10 @@
 	margin: 2rem 0;
 }
 
+.export-mb-1{
+	margin-bottom: 2rem;
+}
+
 input[type=date] {
   position: relative;
  
@@ -119,7 +123,6 @@ input[type=date]::-webkit-calendar-picker-indicator {
 
 .boot-btn{
 	font-size: calc(1.375rem + 1.5vw);
-	
 }
 
 .shiire-label{
@@ -131,5 +134,12 @@ input[type=date]::-webkit-calendar-picker-indicator {
 .addZairyo {
 	font-size: 13px;
 }
+
+.export-table{
+	
+	width: 100%;
+	text-align: center;
+}
+
 
 

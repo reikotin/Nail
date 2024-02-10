@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="/style.css" rel="stylesheet" type="text/css">
+    <title>R-ネイル | 伝票詳細</title>
+</head>
+<body>
+   <div class="container-fluid">
+      <div class="row he-1">
+        <div th:replace="~{fragments/side :: nav}"></div>
+        <main class="col-md-9 ml-sm-auto col-lg-10 bg-light">
+        <div class="container r-w">
+            <div class="d-flex justify-content-between align-items-center border-bottom border-dark mt-3">
+               <h1 class="h1" th:if="${isHassouZumi}">R-ネイル : 伝票詳細</h1>
+               <h1 class="h1" th:unless="${isHassouZumi}">R-ネイル : 伝票編集</h1>
+               <h6 class="">システム日付 : <span id="clock"></span></h6>
+            </div>
+        </div>
+        <form th:object="${denpyoDto}" th:action="@{/UpdateDenpyo}" id="denpyoForm" method="POST">
+			<input type="hidden" name="status" id="status">
+			<input type="hidden" name="kounyuDate" th:value="${editDenpyo.kounyuDate}">
+			<input type="hidden" name="customerCd" th:value="${editDenpyo.customerCd}">
+        <div class="container">
+			<div class="d-flex justify-content-between mt-3">
+				<div class="d-flex">
+					  <input type="text" th:value="${editDenpyo.denpyoHakkozumiFlag}" 
+					  class="border border-success text-center text-success rounded" style="padding: 8px 0;">
+					  <span th:if="${isHassouZumi}" th:text="${hassoDate}" class="ms-2 d-flex align-items-center"></span>
+				</div>
+				<div class="d-flex align-items-center" th:unless="${isHassouZumi}">
+					  <button type="button" class="btn btn-danger me-3" id="deleteBtn"><i class="bi bi-trash3"></i></button>
+					  <button type="button" class="btn btn-primary" id="updateBtn">更新</button>
+				</div>
+			</div>
+            <div id="formContainer">
+				<div class="d-flex row mb-3 mt-3">
+					<div class="col-sm-3">
+						<div>伝票番号</div>
+                    	<input type="text" class="form-control" name="denpyoNo" th:value="${editDenpyo.denpyoNo}" readonly>
+                    </div>
+					<div class="col-sm-3">
+						<label>発送方法</label>
+						<select class="form-control text-center" id="hassoHoho">	
+							<option th:each="hoho : ${hassoHohoList}" 
+								th:value="${hoho.name()}" 
+								th:text="${hoho.value}" />
+						</select>
+					</div>
+					<div class="col-sm-3">
+						<label>追跡番号</label>
+						<input type="text" name="tsuisekiNo" th:value="${editDenpyo.tsuisekiNo}" class="form-control text-cente" th:readonly="${isHassouZumi}">
+					</div>
+                    <div class="col-sm-3">
+						<label for="formGroupExampleInput">発送料</label>
+						<input type="text" name="hassoRyo" class="form-control text-end" th:readonly="${isHassouZumi}">
+					</div>
+				</div>
+            </div>
+            <div class="row mb-3">
+				<div class="col-sm-2">
+                    <label for="formGroupExampleInput">郵便番号</label>
+                    <input type="text" name="yubinNo" class="form-control" th:value="${editDenpyo.yubinNo}" readonly>
+                </div>
+                <div class="col">
+                    <label for="formGroupExampleInput">住所1</label>
+                    <input type="text" name="prefectureCity" class="form-control" th:value="${editDenpyo.prefectureCity}" readonly>
+                </div>
+                <div class="col">
+                    <label for="formGroupExampleInput">住所2</label>
+                    <input type="text" name="streetNo" class="form-control" th:value="${editDenpyo.streetNo}" readonly>
+                </div>
+           </div>
+           <div class="row mb-3">
+			   <div class="col-sm-3">
+				   <label for="formGroupExampleInput">氏</label>
+				   <input type="text" name="customerSei" class="form-control" th:value="${editDenpyo.customerSei}" readonly>
+			   </div> 
+               <div class="col-sm-3">
+				   <label for="formGroupExampleInput">氏(フリガナ)</label>
+                   <input type="text" name="seiFurigana" class="form-control" th:value="${editDenpyo.seiFurigana}" readonly>
+               </div>
+           </div>
+           <div class="row mb-3">
+			   <div class="col-sm-3">
+				   <label for="formGroupExampleInput">名</label>
+                   <input type="text" name="cusomerMei" class="form-control" th:value="${editDenpyo.customerMei}" readonly>
+               </div>
+               <div class="col-sm-3">
+				   <label for="formGroupExampleInput">名(フリガナ)</label>
+                   <input type="text" name="meiFurigana" class="form-control" th:value="${editDenpyo.meiFurigana}" readonly>
+               </div>
+           </div>
+           <div id="dynamicElementContainer">
+			   <div class="mt-3">
+				   <div class="col-sm-3 mb-3">
+					   <label>合計金額</label>
+	                   <input type="text" id="gokeiGaku" class="form-control text-end" th:value="${#numbers.formatInteger(editDenpyo.gokeiKingaku, 3, 'COMMA')}" readonly>
+				   </div>
+				   <div class="d-flex justify-content-between mt-3 mb-3" id="addShohinBtn">
+						<div class="align-items-center">
+							<span class="align-items-center btn btn-primary" id="addForm">商品追加</span>
+						</div>
+						<div class="align-items-center">
+							<span class="align-items-center btn btn-secondary" id="calc">金額再計算</span>
+						</div>
+	               </div>
+	               <div class="mb-3" id="addMeisai">
+
+	               </div>
+                   <div class="mb-3">
+					  <label>備考<span class="ms-2 anyInput">任意</span></label>
+                  	  <textarea class="form-control" rows="3" name="biko" th:text="${editDenpyo.biko}" th:readonly="${isHassouZumi}"></textarea>
+                   </div>
+                   <div class="col mb-3" id="hassoBtn">
+					 <button type="button" class="btn btn-success">発送完了</button>
+				   </div>
+               </div>
+           </div>
+        </div>
+        </form>
+        </main>
+     </div>
+   </div>
+    
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js" integrity="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS" crossorigin="anonymous"></script>
+    <script th:inline="javascript">
+	
+	$(document).ready(function () {
+		var isHassoZumi = /*[[${isHassouZumi}]]*/'';
+		var meisaiList = /*[[${meisaiList}]]*/ [];
+		var shohinList = /*[[${shohinList}]]*/ []; 
+		var index = 0
+		meisaiList.forEach(function(meisai){
+			var newMeisai = $(`
+				<div class="d-flex mb-3" id="seikyu_${index}">
+					<div class="col me-3">
+						<label>商品CD</label>
+						<select id="shohinCd_${index}" name="shohinJoho[${index}].shohinCd" class="form-select">
+							<option value="" selected></option>
+							<option selected>${meisai.shohinCd}</option>
+						</select>
+			        </div>
+			        <div class="col me-3">
+						<label>税抜額</label>
+			            <input type="text" id="zeinukiGaku_${index}" name="shohinJoho[${index}].zeinukiGaku" value="${meisai.zeinukiGaku}" class="form-control text-end">
+			        </div>
+			        <div class="col me-3">
+			            <label>税額</label>
+			            <input type="text" id="zeiGaku_${index}" name="shohinJoho[${index}].zeiGaku" value="${meisai.zeiGaku}" class="form-control text-end" required="true">
+			        </div>
+			        <div class="col me-3">
+			            <label>税込額</label>
+			            <input type="text" id="zeikomiGaku_${index}" name="shohinJoho[${index}].zeikomiGaku" value="${meisai.zeikomiGaku}" class="form-control text-end" required="true">
+			        </div>
+			        <div class="d-flex align-items-end">
+						<button type="button" id="deleteMeisai_${index}" class="btn btn-secondary">削除</button>
+					</div>
+				</div>
+			`);
+			$('#addMeisai').append(newMeisai);
+			var shohinCdValue = $('#shohinCd_' + index).val();
+			shohinList.forEach(function(shohin){
+				if(shohinCdValue != shohin.shohinCd){
+					$(`#shohinCd_${index}`).append($('<option>', {
+                    	value: shohin.shohinCd,
+                    	text: shohin.shohinCd
+                	}));
+				}
+			});
+			index++;
+		})
+		
+		function addForm(){
+			var newForm = $(`
+				<div class="d-flex mb-3" id="seikyu_${index}">
+					<div class="col me-3">
+						<label>商品CD</label>
+						<select id="shohinCd_${index}" name="shohinJoho[${index}].shohinCd" class="form-select">
+							<option value="" selected></option>
+						</select>
+			        </div>
+			        <div class="col me-3">
+						<label>税抜額</label>
+			            <input type="text" id="zeinukiGaku_${index}" name="shohinJoho[${index}].zeinukiGaku"  class="form-control text-end">
+			        </div>
+			        <div class="col me-3">
+			            <label>税額</label>
+			            <input type="text" id="zeiGaku_${index}" name="shohinJoho[${index}].zeiGaku" class="form-control text-end" required="true">
+			        </div>
+			        <div class="col me-3">
+			            <label>税込額</label>
+			            <input type="text" id="zeikomiGaku_${index}" name="shohinJoho[${index}].zeikomiGaku" class="form-control text-end" required="true">
+			        </div>
+			        <div class="d-flex align-items-end">
+						<button type="button" id="deleteMeisai_${index}" class="btn btn-secondary">削除</button>
+					</div>
+				</div>
+			`);
+			$('#addMeisai').append(newForm);
+			shohinList.forEach(function(shohin) {
+                $(`#shohinCd_${index}`).append($('<option>', {
+                    value: shohin.shohinCd,
+                    text: shohin.shohinCd
+                }));
+            });
+			index++;
+		};
+		$('#addForm').on('click', addForm);
+		
+		$('#addMeisai').on('change', 'select[id^="shohinCd_"]', function (){
+			var selectedIndex = $(this).attr('id').match(/\d+/)[0];
+			var selectedShohinCd = $(this).val();
+			$.ajax({
+            	url: '/getShohinInfo',
+				type: 'GET',
+				data: { shohinCd: selectedShohinCd },
+				success: function (data) {
+					$(`#zeinukiGaku_${selectedIndex}`).val(data.zeinukiGaku || 0);
+					$(`#zeiGaku_${selectedIndex}`).val(data.zeiGaku || 0);
+					$(`#zeikomiGaku_${selectedIndex}`).val(data.zeikomiGaku || 0);
+				}
+			});
+		});
+		
+        $('#addMeisai').on('click', 'button[id^="deleteMeisai_"]', function(){
+			var num = $(this).attr('id').split('_')[1];
+			if(num === '0'){
+				return;
+			}
+			index--;
+			$('#seikyu_' + num).remove(); 
+			$('div[id^="seikyu_"]').each(function() {
+				var currentNum = $(this).attr('id').split('_')[1];
+				if(currentNum > num){
+					var newNum = currentNum - 1;
+					$(this).attr('id', 'seikyu_' + newNum);
+					$('#shohinCd_' + currentNum).attr('id', 'shohinCd_' + newNum).attr('name', 'shohinEntity[' + newNum +'].shohinCd');
+					$('#zeinukiGaku_' + currentNum).attr('id', 'zeinukiGaku_' + newNum).attr('name', 'shohinEntity[' + newNum + '].zeinukiGaku');
+					$('#zeiGaku_' + currentNum).attr('id', 'zeiGaku_' + newNum).attr('name', 'shohinEntity[' + newNum + '].zeiGaku');
+					$('#zeikomiGaku_' + currentNum).attr('id', 'zeikomiGaku_' + newNum).attr('name', 'shohinEntity[' + newNum + '].zeikomiGaku');
+					$('#deleteMeisai_' + currentNum).attr('id', 'deleteMeisai_' + newNum);
+				}
+			});			
+		});
+		
+		$('#calc').on('click', function(){
+			var num = 0;
+			var gokeiGaku = 0;
+			$('div[id^="seikyu_"]').each(function(){
+				var value = $('#zeikomiGaku_' + num).val();
+				var integerValue = parseInt(value.replace(/,/g, ''), 10);
+				gokeiGaku += integerValue;
+				num++;
+			});
+			$('#gokeiGaku').val(gokeiGaku.toLocaleString());
+		});
+		
+		if(isHassoZumi){
+			$('#addShohinBtn').css('display', 'none');
+			var count = 0;
+			$('div[id^="seikyu_"]').each(function(){
+				$('#shohinCd_' + count).prop('disabled', true);
+				$('#zeinukiGaku_' + count).prop('readonly', true);
+				$('#zeiGaku_' + count).prop('readonly', true);
+				$('#zeikomiGaku_' + count).prop('readonly', true);
+				$('#deleteMeisai_' + count).css('display', 'none');
+				$('#updateBtn').css('display', 'none');
+				$('#hassoBtn').css('display', 'none');
+				$('#calc').css('display', 'none');
+				$('#hassoHoho').prop('disabled', true);
+				$('#addForm').css('display', 'none');
+				count++;
+			});
+		}
+		// 発送
+		$('#hassoBtn').on('click', function(){
+			$('#status').val('1');
+			$('#denpyoForm').submit();
+		});
+		// 削除
+		$('#deleteBtn').on('click', function(){
+			$('#status').val('2');
+			$('#denpyoForm').submit();
+		});
+		// 更新
+		$('#updateBtn').on('click', function(){
+			$('#status').val('0');
+			$('#denpyoForm').submit();
+		});
+	});
+	
+	function updateClock() {
+	      var now = new Date();
+	      var formattedTime = now.toLocaleString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+	      document.getElementById('clock').innerText = formattedTime;
+	}
+	updateClock();
+	setInterval(updateClock, 1000);
+	</script>
+</body>
+</html>
