@@ -293,9 +293,7 @@
 			
 			$('#deleteBtn').on('click', function(){
 				var flag = $('#flag');
-				var newFlag = $(` 
-					<input type="hidden" name="updateFlag" th:value="${deleteItem}">
-				`);
+				$('#flag').val(flags[0]);
 				flag.append(newFlag);
 			})
 			

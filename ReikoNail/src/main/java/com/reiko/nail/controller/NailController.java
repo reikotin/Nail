@@ -215,7 +215,7 @@ public class NailController {
 			shiireList = shohinService.getShiireListById(shohinEntity.getShiireIdList());
 		}
 		
-		model.addAttribute("flags", DenpyoHakkoFlagEnum.values());
+		model.addAttribute("flags", UpdateFlagEnum.values());
 		model.addAttribute("shohin", new UpdateShohinDto());
 		model.addAttribute("shohinEntity", shohinEntity);
 		model.addAttribute("shiireList", shiireList);
