@@ -5,9 +5,9 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.reiko.nail.dao.CustomerDao;
-import com.reiko.nail.dto.DenpyoDto;
-import com.reiko.nail.dto.ShohinDto;
+import com.reiko.nail.dto.EditDenpyoDto;
 import com.reiko.nail.entity.CustomerEntity;
+import com.reiko.nail.entity.ShohinEntity;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,22 +22,23 @@ public class CustomerService {
 		return customerDao.findByCustomer(customerCd);
 	}
 
-	// 新規お客様登録
-	public void insertNewCustomer(DenpyoDto denpyoDto) {
-		
-		CustomerEntity customerEntity = new CustomerEntity();
-		customerEntity.setCustomerCd(denpyoDto.getCustomerCd());
-		customerEntity.setCustomerSei(denpyoDto.getCustomerSei());
-		customerEntity.setCustomerMei(denpyoDto.getCustomerMei());
-		customerEntity.setYubinNo(denpyoDto.getYubinNo());
-		customerEntity.setPrefectureCity(denpyoDto.getPrefectureCity());
-		customerEntity.setStreetNo(denpyoDto.getStreetNo());
-		customerEntity.setRuikeiKounyuKingaku(sumPrice(denpyoDto.getShohinDto()));
-		
-		customerDao.insertCustomer(customerEntity);
-	}
+//	/**
+//	 * TODO 2/11 未使用メソッド
+//	 * @param denpyoDto
+//	 */
+//	public void insertNewCustomer(DenpyoDto denpyoDto) {
+//		CustomerEntity customerEntity = new CustomerEntity();
+//		customerEntity.setCustomerCd(denpyoDto.getCustomerCd());
+//		customerEntity.setCustomerSei(denpyoDto.getCustomerSei());
+//		customerEntity.setCustomerMei(denpyoDto.getCustomerMei());
+//		customerEntity.setYubinNo(denpyoDto.getYubinNo());
+//		customerEntity.setPrefectureCity(denpyoDto.getPrefectureCity());
+//		customerEntity.setStreetNo(denpyoDto.getStreetNo());
+//		customerDao.insertCustomer(customerEntity);
+//	}
+	
 	// お客様情報更新
-	public void updateCustomerJoho(DenpyoDto denpyoDto) {
+	public void updateCustomerJoho(EditDenpyoDto denpyoDto) {
 		CustomerEntity customerEntity = new CustomerEntity();
 		customerEntity.setCustomerCd(denpyoDto.getCustomerCd());
 		customerEntity.setCustomerSei(denpyoDto.getCustomerSei());
@@ -47,13 +48,13 @@ public class CustomerService {
 		customerEntity.setYubinNo(denpyoDto.getYubinNo());
 		customerEntity.setPrefectureCity(denpyoDto.getPrefectureCity());
 		customerEntity.setStreetNo(denpyoDto.getStreetNo());
-		customerEntity.setRuikeiKounyuKingaku(sumPrice(denpyoDto.getShohinDto()));
+		customerEntity.setRuikeiKounyuKingaku(sumPrice(denpyoDto.getShohinJoho()));
 		
 		customerDao.updateCustomer(customerEntity);
 	}
 	
-	public void updateRuikeiKounyuKingaku(DenpyoDto denpyoDto) {
-		Long kounyuKingaku = sumPrice(denpyoDto.getShohinDto());
+	public void updateRuikeiKounyuKingaku(EditDenpyoDto denpyoDto) {
+		Long kounyuKingaku = sumPrice(denpyoDto.getShohinJoho());
 		
 		String customerCd = denpyoDto.getCustomerCd();
 		
@@ -62,10 +63,10 @@ public class CustomerService {
 	}
 	
 	// 購入金額の計算
-	private Long sumPrice(List<ShohinDto> shohinDto) {
+	private Long sumPrice(List<ShohinEntity> list) {
 		Long total = 0L;
 		
-		for(ShohinDto shohin : shohinDto) {
+		for(ShohinEntity shohin : list) {
 			total += shohin.getZeinukiGaku();
 		}
 		

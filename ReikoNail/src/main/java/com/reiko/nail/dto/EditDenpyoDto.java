@@ -48,4 +48,6 @@ public class EditDenpyoDto {
 	List<ShohinEntity> shohinJoho;
 	/** ステータス */
 	private String status;
+	/** お客様情報修正区分 */
+	private boolean customerJohoHenshu;
 }

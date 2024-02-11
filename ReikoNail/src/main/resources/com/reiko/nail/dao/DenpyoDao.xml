@@ -19,6 +19,8 @@
 		<result column="HASSO_RYO" property="hassoRyo" />
   		<result column="DELETE_FLAG" property="deleteFlag" />
 	</resultMap>
+	
+	
 
 	<select id="selectByAllDenpyoList" resultMap="BaseMap">
 		SELECT 
@@ -140,7 +142,7 @@
 		AND
 			denpyo.DELETE_FLAG = '0'
 		GROUP BY 
-			denpyo.DENPYO_NO
+			denpyo.DENPYO_NO, denpyo.CUSTOMER_CD
 	</select>
 	
 	<select id="selectByEditDenpyoForShohinJoho">
@@ -167,8 +169,6 @@
 			denpyo.DENPYO_NO = #{denpyoNo}
 		AND
 			denpyo.DELETE_FLAG = '0'
-		GROUP BY 
-			sale.SHOHIN_CD
 	</select>
 	
 	<update id="deleteDenpyoByPrimary">

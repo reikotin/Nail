@@ -98,22 +98,22 @@
 	                    	<div class="d-flex mb-3" id="seikyu_0">
 								<div class="col me-3">
 									<label>商品CD</label>
-									<select id="shohinCd_0" class="form-select" th:field="*{shohinDto[__${0}__].shohinCd}">
+									<select id="shohinCd_0" class="form-select" th:field="*{shohinJoho[__${0}__].shohinCd}">
 										<option value="" selected>---</option>
 										<option th:each="shohinList : ${shohinList}" th:value="${shohinList.shohinCd}" th:text="${shohinList.shohinCd}"></option>
 									</select>
 		                    	</div>
 		                    	<div class="col me-3">
 		                        	<label>税抜額</label>
-		                        	<input type="text" id="zeinukiGaku_0" th:field="*{shohinDto[__${0}__].zeinukiGaku}" class="form-control text-end" required="true">
+		                        	<input type="text" id="zeinukiGaku_0" th:field="*{shohinJoho[__${0}__].zeinukiGaku}" class="form-control text-end" required="true">
 		                    	</div>
 		                    	<div class="col me-3">
 		                        	<label>税額</label>
-		                        	<input type="text" id="zeiGaku_0" th:field="*{shohinDto[__${0}__].zeiGaku}" class="form-control text-end" required="true">
+		                        	<input type="text" id="zeiGaku_0" th:field="*{shohinJoho[__${0}__].zeiGaku}" class="form-control text-end" required="true">
 		                    	</div>
 		                    	<div class="col me-3">
 		                        	<label>税込額</label>
-		                        	<input type="text" id="zeikomiGaku_0" th:field="*{shohinDto[__${0}__].zeikomiGaku}" class="form-control text-end" required="true">
+		                        	<input type="text" id="zeikomiGaku_0" th:field="*{shohinJoho[__${0}__].zeikomiGaku}" class="form-control text-end" required="true">
 		                    	</div>
 		                    	<div class="d-flex align-items-end">
 									<button type="button" id="deleteMeisai_0" class="btn btn-secondary">削除</button>
@@ -153,21 +153,21 @@
                   <div class="d-flex mb-3" id="seikyu_${index}">
                       <div class="col me-3">
                           <label>商品CD</label>
-                          <select class="form-select" id="shohinCd_${index}" name="shohinDto[${index}].shohinCd">
+                          <select class="form-select" id="shohinCd_${index}" name="shohinJoho[${index}].shohinCd">
                               <option value="" selected>---</option>
                           </select>
                       </div>
                       <div class="col me-3">
                           <label>税抜額</label>
-                          <input type="text" id="zeinukiGaku_${index}" class="form-control text-end" name="shohinDto[${index}].zeinukiGaku">
+                          <input type="text" id="zeinukiGaku_${index}" class="form-control text-end" name="shohinJoho[${index}].zeinukiGaku">
                       </div>
                       <div class="col me-3">
                           <label>税額</label>
-                          <input type="text" id="zeiGaku_${index}" class="form-control text-end" name="shohinDto[${index}].zeiGaku">
+                          <input type="text" id="zeiGaku_${index}" class="form-control text-end" name="shohinJoho[${index}].zeiGaku">
                       </div>
                       <div class="col me-3">
                           <label>税込額</label>
-                          <input type="text" id="zeikomiGaku_${index}" class="form-control text-end" name="shohinDto[${index}].zeikomiGaku">
+                          <input type="text" id="zeikomiGaku_${index}" class="form-control text-end" name="shohinJoho[${index}].zeikomiGaku">
                       </div>
                       <div class="d-flex align-items-end">
 						  <button type="button" id="deleteMeisai_${index}" class="btn btn-secondary">削除</button>
@@ -195,10 +195,10 @@
 				if(currentNum > num){
 					var newNum = currentNum - 1;
 					$(this).attr('id', 'seikyu_' + newNum);
-					$('#shohinCd_' + currentNum).attr('id', 'shohinCd_' + newNum).attr('name', 'shohinDto[' + newNum +'].shohinCd');
-					$('#zeinukiGaku_' + currentNum).attr('id', 'zeinukiGaku_' + newNum).attr('name', 'shohinDto[' + newNum + '].zeinukiGaku');
-					$('#zeiGaku_' + currentNum).attr('id', 'zeiGaku_' + newNum).attr('name', 'shohinDto[' + newNum + '].zeiGaku');
-					$('#zeikomiGaku_' + currentNum).attr('id', 'zeikomiGaku_' + newNum).attr('name', 'shohinDto[' + newNum + '].zeikomiGaku');
+					$('#shohinCd_' + currentNum).attr('id', 'shohinCd_' + newNum).attr('name', 'shohinJoho[' + newNum +'].shohinCd');
+					$('#zeinukiGaku_' + currentNum).attr('id', 'zeinukiGaku_' + newNum).attr('name', 'shohinJoho[' + newNum + '].zeinukiGaku');
+					$('#zeiGaku_' + currentNum).attr('id', 'zeiGaku_' + newNum).attr('name', 'shohinJoho[' + newNum + '].zeiGaku');
+					$('#zeikomiGaku_' + currentNum).attr('id', 'zeikomiGaku_' + newNum).attr('name', 'shohinJoho[' + newNum + '].zeikomiGaku');
 					$('#deleteMeisai_' + currentNum).attr('id', 'deleteMeisai_' + newNum);
 				}
 			});			

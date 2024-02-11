@@ -79,7 +79,6 @@ public class NailController {
 	
 	@RequestMapping(value = "/UpdateDenpyo", method = {RequestMethod.POST})
 	public String updateDenpyo(@ModelAttribute EditDenpyoDto denpyoDto, Model model) {
-		System.out.println(denpyoDto);
 		String denpyoNo = denpyoDto.getDenpyoNo();
 		String status = denpyoDto.getStatus();
 
@@ -88,13 +87,15 @@ public class NailController {
 		// 伝票更新
 		if(StringUtils.equals(status, DenpyoHakkoFlagEnum.DELETE.getKey())) {
 			String deleteMessage = nailService.deleteDenpyo(denpyoNo);
-			itemMessage = itemMessage + "<br>" + deleteMessage;
+			itemMessage = itemMessage + "\n" + deleteMessage;
 			headMessage = "削除完了しました";
 		}
 		
 		int result = nailService.updateDenpyo(denpyoDto);
-		if(result == 1) {
-			itemMessage += "<br>伝票・明細の更新に失敗しました。<br>直前の処理を確認してください";
+		if(result == 0) {
+			headMessage = "伝票を更新しました。";
+		}else if(result == 1) {
+			itemMessage += "\n伝票・明細の更新に失敗しました。\n直前の処理を確認してください";
 		}
 		
 		model.addAttribute("headMessage", headMessage);
@@ -109,7 +110,7 @@ public class NailController {
 		List<ShohinEntity> shohinList = nailService.getShohinList();
 		List<CustomerEntity> customerList = customerService.getAllCustomer();
 		
-		DenpyoDto denpyoDto = new DenpyoDto();
+		EditDenpyoDto denpyoDto = new EditDenpyoDto();
 		model.addAttribute("hassoHohoList", HassoHohoEnum.values());
 		model.addAttribute("customerList", customerList);
 		model.addAttribute("shohinList", shohinList);
@@ -119,7 +120,7 @@ public class NailController {
 	}
 	
 	@RequestMapping(value = "/Save", method = {RequestMethod.POST})
-	public String saveDenpyo(@ModelAttribute DenpyoDto denpyoDto, Model model) {
+	public String saveDenpyo(@ModelAttribute EditDenpyoDto denpyoDto, Model model) {
 		
 		if(denpyoDto.isCustomerJohoHenshu()) {
 			customerService.updateCustomerJoho(denpyoDto);

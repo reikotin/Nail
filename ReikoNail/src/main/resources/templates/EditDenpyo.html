@@ -32,7 +32,6 @@
 				<div class="d-flex">
 					  <input type="text" th:value="${editDenpyo.denpyoHakkozumiFlag}" 
 					  class="border border-success text-center text-success rounded" style="padding: 8px 0;">
-					  <span th:if="${isHassouZumi}" th:text="${hassoDate}" class="ms-2 d-flex align-items-center"></span>
 				</div>
 				<div class="d-flex align-items-center" th:unless="${isHassouZumi}">
 					  <button type="button" class="btn btn-danger me-3" id="deleteBtn"><i class="bi bi-trash3"></i></button>
@@ -45,6 +44,12 @@
 						<div>伝票番号</div>
                     	<input type="text" class="form-control" name="denpyoNo" th:value="${editDenpyo.denpyoNo}" readonly>
                     </div>
+				</div>
+				<div class="d-flex row mb-3 mt-3">
+                    <div class="col-sm-3">
+						<label>発送日</label>
+						<input type="Date" name="hassoDate" th:value="${editDenpyo.hassoDate}" class="form-control text-center" th:readonly="${isHassouZumi}">
+					</div>
 					<div class="col-sm-3">
 						<label>発送方法</label>
 						<select class="form-control text-center" id="hassoHoho">	
@@ -59,7 +64,7 @@
 					</div>
                     <div class="col-sm-3">
 						<label for="formGroupExampleInput">発送料</label>
-						<input type="text" name="hassoRyo" class="form-control text-end" th:readonly="${isHassouZumi}">
+						<input type="text" name="hassoRyo" th:value="${editDenpyo.hassoRyo}" class="form-control text-end" th:readonly="${isHassouZumi}">
 					</div>
 				</div>
             </div>

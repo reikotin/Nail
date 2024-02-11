@@ -16,10 +16,8 @@ import com.reiko.nail.dao.SalesDao;
 import com.reiko.nail.dao.ShohinDao;
 import com.reiko.nail.dto.BunruiDto;
 import com.reiko.nail.dto.BunruiNameDto;
-import com.reiko.nail.dto.DenpyoDto;
 import com.reiko.nail.dto.EditDenpyoDto;
 import com.reiko.nail.dto.ExportDenpyo;
-import com.reiko.nail.dto.ShohinDto;
 import com.reiko.nail.entity.BunruiEntity;
 import com.reiko.nail.entity.DenpyoEntity;
 import com.reiko.nail.entity.SalesEntity;
@@ -63,7 +61,7 @@ public class NailService {
 	}
 
 	// 伝票登録
-	public void saveDenpyo(DenpyoDto denpyoDto) {
+	public void saveDenpyo(EditDenpyoDto denpyoDto) {
 		/** 購入日の伝票枚数を取得し、伝票番号に変換 */
 		int denpyoMaisu = denpyoDao.countDenpyoMaisu(denpyoDto.getKounyuDate());
 		String denpyoDate = denpyoDto.getKounyuDate().format(DateTimeFormatter.ofPattern("yyMMdd"));
@@ -75,7 +73,7 @@ public class NailService {
 		Integer zeiGaku = 0;
 		Integer zeikomiGaku = 0;
 
-		for(ShohinDto shohinDto : denpyoDto.getShohinDto()) {
+		for(ShohinEntity shohinDto : denpyoDto.getShohinJoho()) {
 			zeinukiGaku += shohinDto.getZeinukiGaku();
 			zeiGaku += shohinDto.getZeiGaku();
 			zeikomiGaku += shohinDto.getZeikomiGaku();
@@ -85,10 +83,10 @@ public class NailService {
 	}
 	
 	// 販売明細登録
-	private void saveMeisai(DenpyoDto denpyoDto, String denpyoNo) {
+	private void saveMeisai(EditDenpyoDto denpyoDto, String denpyoNo) {
 		
 		List<SalesEntity> salesList = new ArrayList<>();
-		for(ShohinDto shohin : denpyoDto.getShohinDto()) {
+		for(ShohinEntity shohin : denpyoDto.getShohinJoho()) {
 			SalesEntity entity = new SalesEntity();
 			entity.setDenpyoNo(denpyoNo);
 			entity.setShohinCd(shohin.getShohinCd());
@@ -281,8 +279,6 @@ public class NailService {
 		denpyoJoho = denpyoDao.selectByEditDenpyoForCustomerJoho(denpyoNo);
 		
 		if(DenpyoHakkoFlagEnum.getByKey(denpyoJoho.getDenpyoHakkozumiFlag()) == DenpyoHakkoFlagEnum.HASSOZUMI) {
-			// 発送済みメッセージ
-			resulData.setMessage(hassouzumiMessage(denpyoJoho.getHassoDate()));
 			// 発送済みフラグ
 			resulData.setHasError(true); 
 			denpyoJoho.setDenpyoHakkozumiFlag(DenpyoHakkoFlagEnum.HASSOZUMI.getValue());
@@ -297,9 +293,4 @@ public class NailService {
 		
 		return resulData;
 	}
-	
-    private static String hassouzumiMessage(LocalDate date) {
-        String formattedDate = "発送日 : " +  date.format(DateTimeFormatter.ofPattern("yyyy年MM月dd日"));
-        return formattedDate;
-    }
 }
