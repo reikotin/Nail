@@ -27,14 +27,13 @@
 				<thead>
 					<tr>
 						<th>伝票番号</th>
-						<th>お客様CD</th>
+						<th>お客様名</th>
 						<th>購入日</th>
-						<th>税抜額</th>
-						<th>税額</th>
 						<th>税込額</th>
 						<th>ステータス</th>
-						<th>伝票作成日</th>
-						<th>伝票更新日</th>
+						<th>発送方法</th>
+						<th>発送日</th>
+						<th>最終更新日</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -44,13 +43,12 @@
 								<span th:text="${denpyo.denpyoNo}"></span>
 							</a>
 						</td>
-						<td th:text="${denpyo.customerCd}"></td>
+						<td th:text="${denpyo.customerSei + denpyo.customerMei}"></td>
 						<td th:text="${denpyo.kounyuDate}"></td>
-						<td th:text="${#numbers.formatInteger(denpyo.zeinukiGaku, 3, 'COMMA')}"></td>
-						<td th:text="${#numbers.formatInteger(denpyo.zeiGaku, 3, 'COMMA')}"></td>
 						<td th:text="${#numbers.formatInteger(denpyo.zeikomiGaku, 3, 'COMMA')}"></td>
 						<td th:text="${denpyo.denpyoHakkozumiFlag}"></td>
-						<td th:text="${denpyo.createDate}"></td>
+						<td th:text="${denpyo.hassoHoho}"></td>
+						<td th:text="${denpyo.hassoDate}"></td>
 						<td th:text="${denpyo.updateDate}"></td>
 					</tr>
 				</tbody>
@@ -62,18 +60,13 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js" integrity="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS" crossorigin="anonymous"></script>
     <script th:inline="javascript">
-    // JavaScriptで時計を更新する関数
-	    function updateClock() {
+	function updateClock() {
 	        var now = new Date();
 	        var formattedTime = now.toLocaleString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
 	        document.getElementById('clock').innerText = formattedTime;
-	    }
-	
-	    // 初回実行
-	    updateClock();
-	
-	    // 1秒ごとに時計を更新
-	    setInterval(updateClock, 1000);
+	}
+	updateClock();
+	setInterval(updateClock, 1000);
 	</script>
   </body>
 </html>

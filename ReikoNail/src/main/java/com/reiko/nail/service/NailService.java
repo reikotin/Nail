@@ -16,6 +16,7 @@ import com.reiko.nail.dao.SalesDao;
 import com.reiko.nail.dao.ShohinDao;
 import com.reiko.nail.dto.BunruiDto;
 import com.reiko.nail.dto.BunruiNameDto;
+import com.reiko.nail.dto.DenpyoDto;
 import com.reiko.nail.dto.EditDenpyoDto;
 import com.reiko.nail.dto.ExportDenpyo;
 import com.reiko.nail.entity.BunruiEntity;
@@ -24,6 +25,7 @@ import com.reiko.nail.entity.SalesEntity;
 import com.reiko.nail.entity.ShohinEntity;
 import com.reiko.nail.enums.DaiBunruiEnum;
 import com.reiko.nail.enums.DenpyoHakkoFlagEnum;
+import com.reiko.nail.enums.HassoHohoEnum;
 import com.reiko.nail.response.ResponseData;
 
 import lombok.RequiredArgsConstructor;
@@ -41,15 +43,18 @@ public class NailService {
 	private final BunruiDao bunruiDao;
 
 	// 伝票情報の取得
-	public List<DenpyoEntity> selectAllDenpyoList() {
+	public List<DenpyoDto> selectAllDenpyoList() {
 		
-		List<DenpyoEntity> list = denpyoDao.selectByAllDenpyoList();
+		List<DenpyoDto> list = denpyoDao.selectByAllDenpyoList();
 		list.forEach(denpyo -> {
 			if(DenpyoHakkoFlagEnum.getByKey(denpyo.getDenpyoHakkozumiFlag()) == DenpyoHakkoFlagEnum.HASSOZUMI) {
 		        denpyo.setDenpyoHakkozumiFlag(DenpyoHakkoFlagEnum.HASSOZUMI.getValue());
 		    } else {
 		        denpyo.setDenpyoHakkozumiFlag(DenpyoHakkoFlagEnum.UKETSUKETYU.getValue());
 		    }
+			if(HassoHohoEnum.getByKey(denpyo.getHassoHoho()) == HassoHohoEnum.QUICKPOST) {
+				denpyo.setHassoHoho(HassoHohoEnum.QUICKPOST.getValue());
+			}
 		});
 		return list;
 	}
@@ -284,6 +289,10 @@ public class NailService {
 			denpyoJoho.setDenpyoHakkozumiFlag(DenpyoHakkoFlagEnum.HASSOZUMI.getValue());
 		} else {
 			denpyoJoho.setDenpyoHakkozumiFlag(DenpyoHakkoFlagEnum.UKETSUKETYU.getValue());
+		}
+		
+		if(HassoHohoEnum.getByKey(denpyoJoho.getHassoHoho()) == HassoHohoEnum.QUICKPOST) {
+			denpyoJoho.setHassoHoho(HassoHohoEnum.QUICKPOST.getValue());
 		}
 		// 商品情報のセット
 		shohinJoho = denpyoDao.selectByEditDenpyoForShohinJoho(denpyoNo);

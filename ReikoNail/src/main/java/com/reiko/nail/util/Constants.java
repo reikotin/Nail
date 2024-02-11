@@ -19,4 +19,6 @@ public class Constants {
 	
 	public static final String ALL = "全て";
 	public static final String HENSHUARI = "1";
+	
+	public static final String ZIPCLOUD = "https://zipcloud.ibsnet.co.jp/api/search?zipcode=";
 }

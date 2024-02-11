@@ -19,18 +19,31 @@
 		<result column="HASSO_RYO" property="hassoRyo" />
   		<result column="DELETE_FLAG" property="deleteFlag" />
 	</resultMap>
-	
+
+
 	
 
-	<select id="selectByAllDenpyoList" resultMap="BaseMap">
+	<select id="selectByAllDenpyoList">
 		SELECT 
-			* 
+			denpyo.DENPYO_NO AS denpyoNo,
+			denpyo.DENPYO_HAKKOZUMI_FLAG AS denpyoHakkozumiFlag,
+			denpyo.KOUNYU_DATE AS kounyuDate,
+			denpyo.HASSO_DATE AS hassoDate,
+			denpyo.HASSOHOHO AS hassoHoho,
+			denpyo.UPDATE_DATE AS updateDate,
+			denpyo.ZEIKOMIGAKU AS zeikomiGaku,
+			cus.CUSTOMER_SEI AS customerSei,
+			cus.CUSTOMER_MEI AS customerMei
 		FROM 
-			N_DENPYO
+			N_DENPYO denpyo
+		INNER JOIN 
+			CUSTOMER cus
+		ON
+			denpyo.CUSTOMER_CD = cus.CUSTOMER_CD
 		WHERE
 			DELETE_FLAG = '0'	
 		ORDER BY
-			DENPYO_HAKKOZUMI_FLAG, KOUNYU_DATE DESC
+			denpyo.DENPYO_HAKKOZUMI_FLAG, denpyo.KOUNYU_DATE DESC
 	</select>
 	
 	<select id="countDenpyoMaisu" resultType="int">

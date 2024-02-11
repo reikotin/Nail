@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum HassoHohoEnum implements NailEnum {
 	
 	
-	QUICKPOST("1", "クイックポスト"),
+	QUICKPOST("01", "クイックポスト"),
 //	YAMATO("2", "ヤマト")
 	;
 

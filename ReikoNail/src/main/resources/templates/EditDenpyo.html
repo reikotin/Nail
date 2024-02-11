@@ -52,7 +52,8 @@
 					</div>
 					<div class="col-sm-3">
 						<label>発送方法</label>
-						<select class="form-control text-center" id="hassoHoho">	
+						<input type="text" th:if="${isHassouZumi}" th:value="${editDenpyo.hassoHoho}" class="form-control text-center" readonly>
+						<select class="form-control text-center" th:unless="${isHassouZumi}">	
 							<option th:each="hoho : ${hassoHohoList}" 
 								th:value="${hoho.name()}" 
 								th:text="${hoho.value}" />
@@ -60,7 +61,7 @@
 					</div>
 					<div class="col-sm-3">
 						<label>追跡番号</label>
-						<input type="text" name="tsuisekiNo" th:value="${editDenpyo.tsuisekiNo}" class="form-control text-cente" th:readonly="${isHassouZumi}">
+						<input type="text" name="tsuisekiNo" th:value="${editDenpyo.tsuisekiNo}" class="form-control text-center" th:readonly="${isHassouZumi}">
 					</div>
                     <div class="col-sm-3">
 						<label for="formGroupExampleInput">発送料</label>
@@ -84,11 +85,11 @@
            </div>
            <div class="row mb-3">
 			   <div class="col-sm-3">
-				   <label for="formGroupExampleInput">氏</label>
+				   <label for="formGroupExampleInput">姓</label>
 				   <input type="text" name="customerSei" class="form-control" th:value="${editDenpyo.customerSei}" readonly>
 			   </div> 
                <div class="col-sm-3">
-				   <label for="formGroupExampleInput">氏(フリガナ)</label>
+				   <label for="formGroupExampleInput">姓(フリガナ)</label>
                    <input type="text" name="seiFurigana" class="form-control" th:value="${editDenpyo.seiFurigana}" readonly>
                </div>
            </div>

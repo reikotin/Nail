@@ -1,21 +1,62 @@
 package com.reiko.nail.service;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.reiko.nail.dao.CustomerDao;
+import com.reiko.nail.dto.ApiResponse;
 import com.reiko.nail.dto.EditDenpyoDto;
 import com.reiko.nail.entity.CustomerEntity;
 import com.reiko.nail.entity.ShohinEntity;
+import com.reiko.nail.util.Constants;
 
 import lombok.RequiredArgsConstructor;
+
 
 @Service
 @RequiredArgsConstructor
 public class CustomerService {
 	
 	private final CustomerDao customerDao;
+	private final HttpClient httpClient;
+	private final ObjectMapper objectMapper;
+	
+	
+	public ApiResponse getAddress(String yubinNo) {
+		String apiUrl = Constants.ZIPCLOUD + yubinNo;
+	
+		ApiResponse result = null;
+		
+		try {
+			HttpRequest request = (HttpRequest) HttpRequest.newBuilder(URI.create(apiUrl)).build();
+			HttpResponse<String> response = this.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+			ApiResponse apiResponse = objectMapper.readValue(response.body(), ApiResponse.class);
+			if(ObjectUtils.isEmpty(apiResponse.getResults())) {
+				apiResponse.setError(true);
+				apiResponse.setMessage("に一致する住所がありません。");
+			}
+			result = apiResponse;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return result;
+	}
+	
+	public List<String> valid(Object obj){
+		List<String> message = new ArrayList<>();
+		
+		
+		return message;
+	}
 	
 	// 既存のお客様検索
 	public CustomerEntity findByCustomer(String customerCd) {

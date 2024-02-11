@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import com.reiko.nail.dto.DenpyoDto;
 import com.reiko.nail.dto.EditDenpyoDto;
 import com.reiko.nail.dto.ExportDenpyo;
 import com.reiko.nail.entity.DenpyoEntity;
@@ -14,7 +15,7 @@ import com.reiko.nail.entity.ShohinEntity;
 @Mapper
 public interface DenpyoDao {
 
-	List<DenpyoEntity> selectByAllDenpyoList();
+	List<DenpyoDto> selectByAllDenpyoList();
 
 	int countDenpyoMaisu(@Param("kounyuDate") LocalDate kounyuDate);
 

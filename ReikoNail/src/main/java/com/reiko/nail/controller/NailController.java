@@ -25,7 +25,6 @@ import com.reiko.nail.dto.ShiireDto;
 import com.reiko.nail.dto.ShohinDto;
 import com.reiko.nail.dto.UpdateShohinDto;
 import com.reiko.nail.entity.CustomerEntity;
-import com.reiko.nail.entity.DenpyoEntity;
 import com.reiko.nail.entity.ShiireEntity;
 import com.reiko.nail.entity.ShohinEntity;
 import com.reiko.nail.enums.DaiBunruiEnum;
@@ -54,7 +53,7 @@ public class NailController {
 	@RequestMapping(value = "/", method = {RequestMethod.GET})
 	public String show(Model model) {
 		
-		List<DenpyoEntity> denpyoList = nailService.selectAllDenpyoList();
+		List<DenpyoDto> denpyoList = nailService.selectAllDenpyoList();
 		
 		model.addAttribute("denpyoList", denpyoList);
 	
