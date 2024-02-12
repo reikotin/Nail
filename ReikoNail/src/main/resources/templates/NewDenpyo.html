@@ -18,17 +18,14 @@
         <main class="col-md-9 ml-sm-auto col-lg-10 bg-light">
           <div class="container r-w">
             <div class="d-flex justify-content-between align-items-center border-bottom border-dark mt-3">
-              <h1 class="h1">R-ネイル</h1>
+              <h1 class="h1">R-ネイル : 伝票登録</h1>
               <h6 class="">システム日付 : <span id="clock"></span></h6>
             </div>
           </div>
           <form th:object="${denpyoDto}" th:action="@{/Save}" method="post">
             <div class="container">
-              <div class="mt-3 mb-3">
-                <h2 class="h2">伝票登録</h2>
-              </div>
               <div id="formContainer">
-                <div class="d-flex row mb-3">
+                <div class="d-flex row mt-3 mb-3">
                   <div class="col-sm-3">
                     <label for="formGroupExampleInput" class="form-label">登録日</label>
                     <input type="Date" class="form-control" id="kounyuDate" name=kounyuDate required="true">

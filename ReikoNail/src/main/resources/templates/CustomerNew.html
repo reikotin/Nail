@@ -123,11 +123,6 @@
 						if(response.hasError){
 							errorPrint(response.data, response.message);
 						} else {
-							/*
-							sessionStorage.setItem("headMessage", "正常に登録完了しました。");
-							sessionStorage.setItem("itemMessage", response.data[0]);
-							sessionStorage.setItem("itemMessage2", response.data[1]);
-							sessionStorage.setItem("next", "/CustomerNew");*/
 							window.location.href = '/Kanryo';
 						}
 					}
@@ -148,6 +143,7 @@
 			$('#addressSearch').on('click', function(){
 				var yubinNo = $('#yubinNo').val();
 				$('#prefectureCity').val('');
+				$('#cityRead').val('')
 				$('#notFound').text('');
 				$.ajax({
 					url: '/GetAddress',
