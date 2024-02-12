@@ -4,7 +4,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -16,6 +15,7 @@ import com.reiko.nail.dto.ApiResponse;
 import com.reiko.nail.dto.EditDenpyoDto;
 import com.reiko.nail.entity.CustomerEntity;
 import com.reiko.nail.entity.ShohinEntity;
+import com.reiko.nail.response.ResponseData;
 import com.reiko.nail.util.Constants;
 
 import lombok.RequiredArgsConstructor;
@@ -51,32 +51,29 @@ public class CustomerService {
 		return result;
 	}
 	
-	public List<String> valid(Object obj){
-		List<String> message = new ArrayList<>();
-		
-		
-		return message;
-	}
-	
 	// 既存のお客様検索
 	public CustomerEntity findByCustomer(String customerCd) {
 		return customerDao.findByCustomer(customerCd);
 	}
 
-//	/**
-//	 * TODO 2/11 未使用メソッド
-//	 * @param denpyoDto
-//	 */
-//	public void insertNewCustomer(DenpyoDto denpyoDto) {
-//		CustomerEntity customerEntity = new CustomerEntity();
-//		customerEntity.setCustomerCd(denpyoDto.getCustomerCd());
-//		customerEntity.setCustomerSei(denpyoDto.getCustomerSei());
-//		customerEntity.setCustomerMei(denpyoDto.getCustomerMei());
-//		customerEntity.setYubinNo(denpyoDto.getYubinNo());
-//		customerEntity.setPrefectureCity(denpyoDto.getPrefectureCity());
-//		customerEntity.setStreetNo(denpyoDto.getStreetNo());
-//		customerDao.insertCustomer(customerEntity);
-//	}
+	/**
+	 * お客様登録
+	 * @param CustomerEntity
+	 */
+	public ResponseData<String> insertNewCustomer(CustomerEntity customerEntity) {
+		ResponseData<String> customeData = new ResponseData<>();
+		int count = customerDao.countCustomer();
+		String newCode = String.format(Constants.FORTH, count + 1);
+		customerEntity.setCustomerCd(newCode);
+		int result = customerDao.insertCustomer(customerEntity);
+		if(result != 1) {
+			customeData.setHasError(true);
+		}
+		System.out.println("お客様情報登録件数: " + result + "件");
+		customeData.setData("お客様コード: " + newCode);
+		
+		return customeData;
+	}
 	
 	// お客様情報更新
 	public void updateCustomerJoho(EditDenpyoDto denpyoDto) {

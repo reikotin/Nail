@@ -38,6 +38,7 @@ import com.reiko.nail.service.CustomerService;
 import com.reiko.nail.service.NailService;
 import com.reiko.nail.service.ShohinService;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
 @Controller
@@ -58,6 +59,22 @@ public class NailController {
 		model.addAttribute("denpyoList", denpyoList);
 	
 		return "Home";
+	}
+	
+	@RequestMapping(value = "/Kanryo", method = {RequestMethod.GET})
+	public String kanryo(HttpSession session, Model model) {
+		
+		String headMessage = (String) session.getAttribute("headMessage");
+		String itemMessage = (String) session.getAttribute("itemMessage1");
+		String itemMessage2 = (String) session.getAttribute("itemMessage2");
+		String next = (String) session.getAttribute("next");
+		String url = (String) session.getAttribute("url");
+		model.addAttribute("headMessage", headMessage);
+		model.addAttribute("itemMessage", itemMessage);
+		model.addAttribute("itemMessage2", itemMessage2);
+		model.addAttribute("next", next);
+		model.addAttribute("url", url);
+		return "Kanryo";
 	}
 	
 	@RequestMapping(value = "/Denpyo/{denpyoNo}", method = {RequestMethod.GET})

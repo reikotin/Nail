@@ -16,9 +16,13 @@ public class Constants {
 	public static final String GOLD = "GO";
 	public static final String SILVER = "SI";
 	public static final String VARIOUS = "VA";
-	
+	/** 全て */
 	public static final String ALL = "全て";
 	public static final String HENSHUARI = "1";
-	
+	/** 4桁0埋め */
+	public static final String FORTH = "%04d";
+	/** 2桁0埋め */
+	public static final String TWO = "%02d";
+	/** 郵便番号API */
 	public static final String ZIPCLOUD = "https://zipcloud.ibsnet.co.jp/api/search?zipcode=";
 }

@@ -12,12 +12,18 @@ public interface CustomerDao {
 
 	CustomerEntity findByCustomer(@Param("customerCd") String customerCd);
 
-	void insertCustomer(CustomerEntity customerEntity);
+	int insertCustomer(CustomerEntity customerEntity);
 	
 	void updateCustomer(CustomerEntity customerEntity);
 	
 	List<CustomerEntity> selectByAllCustomer();
 	
 	void updateCustomerKingakuJoho(@Param("customerCd") String customerCd, @Param("kounyuKngaku") Long kounyuKingaku);
+	
+	/**
+	 * お客様コード生成用
+	 * @return お客様登録数
+	 */
+	int countCustomer();
 
 }

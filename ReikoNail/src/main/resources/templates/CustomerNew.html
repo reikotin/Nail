@@ -74,6 +74,21 @@
 						<button type="button" id="insert" class="btn btn-primary">登録</button>
 					</div>
 				</div>
+				<div class="modal fade" id="staticBackdrop2" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel2" aria-hidden="true">
+					<div class="modal-dialog modal-lg">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h1 class="modal-title fs-5" id="staticBackdropLabel"></h1>
+								<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+							</div>
+							<div class="modal-body" id="modal2">
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">修正</button>
+							</div>
+						</div>
+					</div>
+				</div>
 			</main>
 		</div>
 	</div>
@@ -91,7 +106,6 @@
 				var yubinNo = $('#yubinNo').val();
 				var prefectureCity = $('#prefectureCity').val();
 				var streetNo = $('#streetNo').val();
-				
 				var customerEntity = {
 					customerSei: customerSei,
 					customerMei: customerMei,
@@ -101,16 +115,35 @@
 					prefectureCity: prefectureCity,
 					streetNo: streetNo
 				};
-				console.log(customerEntity);
 				$.ajax({
 					url: '/Register',
 					type: 'POST',
 					data: customerEntity,
-					success: function(data){
-						
+					success: function(response){
+						if(response.hasError){
+							errorPrint(response.data, response.message);
+						} else {
+							/*
+							sessionStorage.setItem("headMessage", "正常に登録完了しました。");
+							sessionStorage.setItem("itemMessage", response.data[0]);
+							sessionStorage.setItem("itemMessage2", response.data[1]);
+							sessionStorage.setItem("next", "/CustomerNew");*/
+							window.location.href = '/Kanryo';
+						}
 					}
 				});
 			});
+			
+			function errorPrint(data, message){
+				var headMessage = message;
+				var modalMessage = '';
+				for (var i = 0; i < data.length; i++) {
+					modalMessage +=  data[i] + '<br>';
+				}
+				$('#staticBackdropLabel').text(headMessage);
+				$('#modal2').html(modalMessage);
+				$('#staticBackdrop2').modal('show');
+			}
 			
 			$('#addressSearch').on('click', function(){
 				var yubinNo = $('#yubinNo').val();

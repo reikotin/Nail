@@ -30,6 +30,13 @@
 		SELECT * FROM CUSTOMER
 	</select>
 	
+	<select id="countCustomer" resultType="int">
+		SELECT
+			COUNT(*)
+		FROM
+			CUSTOMER
+	</select>
+	
 	<insert id="insertCustomer" parameterType="com.reiko.nail.entity.CustomerEntity">
 		INSERT INTO CUSTOMER
 		<trim prefix="(" suffix=")" suffixOverrides=",">
@@ -88,7 +95,7 @@
           <if test="streetNo != null">
             #{streetNo},
           </if>
-            '0'
+            '0',
             '0',
             CURRENT_TIMESTAMP,
             CURRENT_TIMESTAMP
