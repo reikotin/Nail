@@ -7,6 +7,8 @@ import java.net.http.HttpResponse;
 import java.util.List;
 
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,15 +26,16 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class CustomerService {
-	
+	private final static Logger logger = LogManager.getLogger(CustomerService.class);
 	private final CustomerDao customerDao;
 	private final HttpClient httpClient;
 	private final ObjectMapper objectMapper;
+	private final MessageService messageService;
 	
 	
 	public ApiResponse getAddress(String yubinNo) {
+		logger.info(messageService.getMessage("get.address.Start", new String[] {yubinNo}));
 		String apiUrl = Constants.ZIPCLOUD + yubinNo;
-	
 		ApiResponse result = null;
 		
 		try {
@@ -41,18 +44,18 @@ public class CustomerService {
 			ApiResponse apiResponse = objectMapper.readValue(response.body(), ApiResponse.class);
 			if(ObjectUtils.isEmpty(apiResponse.getResults())) {
 				apiResponse.setError(true);
-				apiResponse.setMessage("に一致する住所がありません。");
+				apiResponse.setMessage(messageService.getMessage("not.address.info", new String[] {yubinNo}));
 			}
 			result = apiResponse;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 		return result;
 	}
 	
 	// 既存のお客様検索
 	public CustomerEntity findByCustomer(String customerCd) {
+		
 		return customerDao.findByCustomer(customerCd);
 	}
 
@@ -77,6 +80,8 @@ public class CustomerService {
 	
 	// お客様情報更新
 	public void updateCustomerJoho(EditDenpyoDto denpyoDto) {
+		logger.info(messageService.getMessage("customer.update.Start", new String[] {denpyoDto.getCustomerCd()}));
+		
 		CustomerEntity customerEntity = new CustomerEntity();
 		customerEntity.setCustomerCd(denpyoDto.getCustomerCd());
 		customerEntity.setCustomerSei(denpyoDto.getCustomerSei());
@@ -89,15 +94,17 @@ public class CustomerService {
 		customerEntity.setRuikeiKounyuKingaku(sumPrice(denpyoDto.getShohinJoho()));
 		
 		customerDao.updateCustomer(customerEntity);
+		logger.info(messageService.getMessage("customer.update.End", new String[] {denpyoDto.getCustomerCd()}));
 	}
 	
 	public void updateRuikeiKounyuKingaku(EditDenpyoDto denpyoDto) {
+		logger.info(messageService.getMessage("customer.update.Start", new String[] {denpyoDto.getCustomerCd()}));
 		Long kounyuKingaku = sumPrice(denpyoDto.getShohinJoho());
 		
 		String customerCd = denpyoDto.getCustomerCd();
 		
 		customerDao.updateCustomerKingakuJoho(customerCd, kounyuKingaku);
-		
+		logger.info(messageService.getMessage("customer.update.End", new String[] {denpyoDto.getCustomerCd()}));
 	}
 	
 	// 購入金額の計算

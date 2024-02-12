@@ -38,68 +38,33 @@
 	</select>
 	
 	<insert id="insertCustomer" parameterType="com.reiko.nail.entity.CustomerEntity">
-		INSERT INTO CUSTOMER
-		<trim prefix="(" suffix=")" suffixOverrides=",">
-		  <if test="customerCd != null">
+		INSERT INTO CUSTOMER (
 			CUSTOMER_CD, 
-		  </if>
-		  <if test="customerSei != null">
             CUSTOMER_SEI,
-		 </if>
-		 <if test="customerMei != null">
             CUSTOMER_MEI,
-         </if>
-         <if test="seiFurigana != null">
          	SEI_FURIGANA,
-         </if>
-         <if test="meiFurigana != null">
          	MEI_FURIGANA,
-         </if>
-         <if test="yubinNo != null">
             YUBIN_NO,
-         </if>
-         <if test="prefectureCity != null">
             PREFECTURE_CITY,
-          </if>
-          <if test="streetNo != null">
             STREET_NO,
-          </if>
             RUIKEI_KOUNYU_KINGAKU,
             KOUNYU_KAISU,
             CREATE_DATE,
             UPDATE_DATE
-		</trim>
-		VALUES
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-          <if test="customerCd != null">
+		)VALUES(
             #{customerCd},
-          </if>
-          <if test="customerSei != null">
             #{customerSei},
-          </if>
-          <if test="customerMei != null">
             #{customerMei},
-          </if>
-          <if test="seiFurigana != null">
           	#{seiFurigana},
-          </if>
-          <if test="meiFurigana != null">
           	#{meiFurigana},
-          </if>
-          <if test="yubinNo != null">
             #{yubinNo},
-         </if>
-         <if test="prefectureCity != null">
             #{prefectureCity},
-          </if>
-          <if test="streetNo != null">
             #{streetNo},
-          </if>
             '0',
             '0',
             CURRENT_TIMESTAMP,
             CURRENT_TIMESTAMP
-       </trim>
+       )
 	</insert>
 	
 	<update id="updateCustomer">

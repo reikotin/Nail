@@ -25,7 +25,7 @@ public class CustomerEntity {
 	private String meiFurigana;
 	/** 郵便番号 */
 	@NotBlank(message = "郵便番号を入力して下さい")
-	@Pattern(regexp = "^(\\d{7}|\\d{3}-\\d{4})$", message = "「123-4567」もしくは「1234567」の形式で入力してください。")
+	@Pattern(regexp = "^(\\d{7})$", message = "「1234567」の形式で入力してください。")
 	private String yubinNo;
 	/** 都道府県・市区町村 */
 	@NotBlank(message = "都道府県・市区町村を入力して下さい")

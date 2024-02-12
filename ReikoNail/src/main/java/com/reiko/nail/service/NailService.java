@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,18 +36,19 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class NailService {
 	
+	private final static Logger logger = LogManager.getLogger(NailService.class);
 	private final DenpyoDao denpyoDao;
-	
 	private final ShohinDao shohinDao;
-	
 	private final SalesDao salesDao;
-	
 	private final BunruiDao bunruiDao;
+	private final MessageService messageService;
 
 	// 伝票情報の取得
 	public List<DenpyoDto> selectAllDenpyoList() {
 		
 		List<DenpyoDto> list = denpyoDao.selectByAllDenpyoList();
+		logger.info(messageService.getMessage("get.data.count", new String[] {"伝票情報", Integer.toString(list.size())}));
+		
 		list.forEach(denpyo -> {
 			if(DenpyoHakkoFlagEnum.getByKey(denpyo.getDenpyoHakkozumiFlag()) == DenpyoHakkoFlagEnum.HASSOZUMI) {
 		        denpyo.setDenpyoHakkozumiFlag(DenpyoHakkoFlagEnum.HASSOZUMI.getValue());
@@ -56,6 +59,7 @@ public class NailService {
 				denpyo.setHassoHoho(HassoHohoEnum.QUICKPOST.getValue());
 			}
 		});
+		
 		return list;
 	}
 	

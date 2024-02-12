@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -35,6 +37,7 @@ import com.reiko.nail.enums.ThemeTypeEnum;
 import com.reiko.nail.enums.UpdateFlagEnum;
 import com.reiko.nail.response.ResponseData;
 import com.reiko.nail.service.CustomerService;
+import com.reiko.nail.service.MessageService;
 import com.reiko.nail.service.NailService;
 import com.reiko.nail.service.ShohinService;
 
@@ -45,17 +48,18 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class NailController {
 	
+	private final static Logger logger = LogManager.getLogger(NailController.class);
 	private final NailService nailService;
-	
 	private final ShohinService shohinService;
-	
 	private final CustomerService customerService;
+	private final MessageService messageService;
 
 	@RequestMapping(value = "/", method = {RequestMethod.GET})
 	public String show(Model model) {
+		logger.info(messageService.getMessage("proccess.Start", new String[] {"伝票一覧取得"}));	
 		
 		List<DenpyoDto> denpyoList = nailService.selectAllDenpyoList();
-		
+		logger.info(messageService.getMessage("proccess.End", new String[] {"伝票一覧取得"}));	
 		model.addAttribute("denpyoList", denpyoList);
 	
 		return "Home";
@@ -137,6 +141,7 @@ public class NailController {
 	
 	@RequestMapping(value = "/Save", method = {RequestMethod.POST})
 	public String saveDenpyo(@ModelAttribute EditDenpyoDto denpyoDto, Model model) {
+		logger.info(messageService.getMessage("proccess.Start", new String[] {"伝票登録"}));
 		
 		if(denpyoDto.isCustomerJohoHenshu()) {
 			customerService.updateCustomerJoho(denpyoDto);
