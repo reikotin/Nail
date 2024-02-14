@@ -34,9 +34,14 @@
 					  <input type="text" th:value="${editDenpyo.denpyoHakkozumiFlag}" 
 					  class="border border-success text-center text-success rounded" style="padding: 8px 0;">
 				</div>
+				<div class="d-flex align-items-center" th:if="${isHassouZumi}">
+					<a th:href="@{/Export/{denpyoNo}(denpyoNo=${editDenpyo.denpyoNo})}" target="_blank"
+						class="btn btn-info me-3" id="denpyoImage">領収書イメージ</a>
+				</div>
 				<div class="d-flex align-items-center" th:unless="${isHassouZumi}">
-					  <button type="button" class="btn btn-danger me-3" id="deleteBtn"><i class="bi bi-trash3"></i></button>
-					  <button type="button" class="btn btn-primary" id="updateBtn">更新</button>
+					<button type="button" class="btn btn-success me-3" id="hassoBtn">発送完了</button>
+					<button type="button" class="btn btn-danger me-3" id="deleteBtn"><i class="bi bi-trash3"></i></button>
+					<button type="button" class="btn btn-primary" id="updateBtn">更新</button>
 				</div>
 			</div>
             <div id="formContainer">
@@ -125,9 +130,6 @@
 					  <label>備考<span class="ms-2 anyInput">任意</span></label>
                   	  <textarea class="form-control" rows="3" name="biko" th:text="${editDenpyo.biko}" th:readonly="${isHassouZumi}"></textarea>
                    </div>
-                   <div class="col mb-3" id="hassoBtn">
-					 <button type="button" class="btn btn-success">発送完了</button>
-				   </div>
                </div>
            </div>
         </div>
@@ -140,7 +142,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js" integrity="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS" crossorigin="anonymous"></script>
     <script th:inline="javascript">
-	
 	$(document).ready(function () {
 		var isHassoZumi = /*[[${isHassouZumi}]]*/'';
 		var meisaiList = /*[[${meisaiList}]]*/ [];
@@ -304,7 +305,7 @@
 			$('#denpyoForm').submit();
 		});
 	});
-	
+		
 	function updateClock() {
 	      var now = new Date();
 	      var formattedTime = now.toLocaleString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });

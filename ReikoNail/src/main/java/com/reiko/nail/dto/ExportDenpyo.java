@@ -16,6 +16,8 @@ public class ExportDenpyo {
 	private String customerMei;
 	/** 購入日(注文日) */
 	private LocalDate kounyuDate;
+	/** 発送日 */
+	private LocalDate hassoDate;
 	/** 商品番号 */
 	private String shohinCd;
 	/** 税込額 */

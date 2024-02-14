@@ -51,7 +51,6 @@ public class CustomerController {
 	@RequestMapping(value = "/CustomerNew", method = {RequestMethod.GET})
 	public ModelAndView customerNew() {
 		ModelAndView modelAndView = new ModelAndView("CustomerNew");
-		 
 		
 		modelAndView.addObject("customer", new CustomerEntity());
 		return modelAndView;
@@ -78,7 +77,7 @@ public class CustomerController {
 		if(errorMessageList.size() != 0) {
 			response.setData(errorMessageList);
 			response.setHasError(true);
-			response.setMessage("以下の項目を修正してください。");
+			response.setMessage(messageService.getMessage("check.data.info", null));
 			return new ResponseEntity<ResponseData<List<String>>>(response, HttpStatus.OK);
 		}
 		
@@ -89,7 +88,7 @@ public class CustomerController {
 			response.setHasError(true);
 		}
 		String customerName = "お客様名: " + customerEntity.getCustomerSei() + customerEntity.getCustomerMei();
-		session.setAttribute("headMessage", "正常に登録完了しました。");
+		session.setAttribute("headMessage", messageService.getMessage("insert.success", null));
 		session.setAttribute("itemMessage1", resultData.getData());
 		session.setAttribute("itemMessage2", customerName);
 		session.setAttribute("next", "続けて登録する");
@@ -120,5 +119,53 @@ public class CustomerController {
 		
 		return modelAndView;
 	}
+	
+	@RequestMapping(value = "/UpdateCustomer", method = {RequestMethod.POST})
+	public ResponseEntity<ResponseData<List<String>>> updateCustomer(
+			@ModelAttribute CustomerEntity customerEntity, HttpSession session){
+		logger.info(messageService.getMessage("customer.update.Start", new String[] {customerEntity.getCustomerCd()}));
+		ResponseData<List<String>> response = new ResponseData<List<String>>();
+		// バリデーションチェック
+		List<String> errorMessageList = validationService.validateCustomer(customerEntity);
+		if(errorMessageList.size() != 0) {
+			response.setData(errorMessageList);
+			response.setHasError(true);
+			response.setMessage(messageService.getMessage("check.data.info", null));
+			return new ResponseEntity<ResponseData<List<String>>>(response, HttpStatus.OK);
+		}
+		
+		ResponseData<String> resultData = customerService.updateCustomerJoho(customerEntity);
+		
+		String customerName = "お客様名: " + customerEntity.getCustomerSei() + customerEntity.getCustomerMei();
+		session.setAttribute("headMessage", messageService.getMessage("update.success", null));
+		session.setAttribute("itemMessage1", resultData.getData());
+		session.setAttribute("itemMessage2", customerName);
+		session.setAttribute("next", "お客様一覧画面");
+		session.setAttribute("url", "/CustomerIndex");
+		logger.info(messageService.getMessage("customer.update.End", new String[] {customerEntity.getCustomerCd()}));
+		return new ResponseEntity<ResponseData<List<String>>>(response, HttpStatus.OK);
+	}
 
+	@RequestMapping(value = "/DeleteCustomer", method = {RequestMethod.POST})
+	public ResponseEntity<ResponseData<String>> deleteCustomer(@RequestParam String customerCd, String customerName, HttpSession session){
+		logger.info(messageService.getMessage("proccess.Start", new String[] {"お客様情報削除"}));
+		ResponseData<String> response = new ResponseData<String>();
+		int result = customerService.deleteCustomer(customerCd);
+		if(result != 1) {
+			response.setHasError(true);
+			response.setMessage(messageService.getMessage("delete.success", null));
+			response.setData("お客様コード=" + customerCd + "のお客様情報削除中にエラーが発生しました。");
+			return new ResponseEntity<ResponseData<String>>(response, HttpStatus.OK);
+		} 
+		
+		session.setAttribute("headMessage", messageService.getMessage("delete.success", null));
+		session.setAttribute("itemMessage1", "お客様コード: " + customerCd);
+		session.setAttribute("itemMessage2", "お客様名: " + customerName);
+		session.setAttribute("next", "お客様一覧画面");
+		session.setAttribute("url", "/CustomerIndex");
+		
+		logger.info(messageService.getMessage("proccess.End", new String[] {"お客様情報削除"}));
+		
+		return new ResponseEntity<ResponseData<String>>(response, HttpStatus.OK);
+	}
 }

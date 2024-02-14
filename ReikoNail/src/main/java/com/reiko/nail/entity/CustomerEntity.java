@@ -37,6 +37,8 @@ public class CustomerEntity {
 	private int kounyuKaisu;
 	/** 累計購入金額 */
 	private Long ruikeiKounyuKingaku;
+	/** 削除フラグ */
+	private String deleteFlag;
 	/** 登録日 */
 	private LocalDate createDate;
 	/** 更新日 */

@@ -13,6 +13,7 @@
 		<result column="STREET_NO" property="streetNo" />
 		<result column="KOUNYU_KAISU" property="kounyuKaisu" />
 		<result column="RUIKEI_KOUNYU_KINGAKU" property="ruikeiKounyuKingaku" />
+		<result column="DELETE_FLAG" property="deleteFlag" />
 		<result column="CREATE_DATE" property="createDate" />
 		<result column="UPDATE_DATE" property="updateDate" />
 	</resultMap>
@@ -24,10 +25,12 @@
 			CUSTOMER
 		WHERE 
 			CUSTOMER_CD = #{customerCd}
+		AND
+			DELETE_FLAG = '0'
 	</select>
 	
 	<select id="selectByAllCustomer" resultMap="BaseMap">
-		SELECT * FROM CUSTOMER
+		SELECT * FROM CUSTOMER WHERE DELETE_FLAG = '0'
 	</select>
 	
 	<select id="countCustomer" resultType="int">
@@ -67,7 +70,7 @@
        )
 	</insert>
 	
-	<update id="updateCustomer">
+	<update id="updateCustomerJohoAndKounyu">
 		UPDATE 
 			CUSTOMER
 		SET
@@ -92,6 +95,31 @@
 			KOUNYU_KAISU = KOUNYU_KAISU + 1,
 			RUIKEI_KOUNYU_KINGAKU = RUIKEI_KOUNYU_KINGAKU + #{kounyuKngaku}
 		WHERE
+			CUSTOMER_CD = #{customerCd}
+	</update>
+	
+	<update id="updateCustomerJoho">
+		UPDATE
+			CUSTOMER
+		SET
+			CUSTOMER_SEI = #{customerSei},
+			CUSTOMER_MEI = #{customerMei},
+			SEI_FURIGANA = #{seiFurigana},
+			MEI_FURIGANA = #{meiFurigana},
+			YUBIN_NO = #{yubinNo},
+			PREFECTURE_CITY = #{prefectureCity},
+			STREET_NO = #{streetNo},
+			UPDATE_DATE = CURRENT_TIMESTAMP
+		WHERE
+			CUSTOMER_CD = #{customerCd}
+	</update>
+	
+	<update id="deleteCustomerByPrimary">
+		UPDATE 
+			CUSTOMER 
+		SET
+			DELETE_FLAG = '1'
+		WHERE 
 			CUSTOMER_CD = #{customerCd}
 	</update>
 

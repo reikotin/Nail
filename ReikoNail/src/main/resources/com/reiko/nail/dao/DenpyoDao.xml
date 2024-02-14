@@ -41,7 +41,7 @@
 		ON
 			denpyo.CUSTOMER_CD = cus.CUSTOMER_CD
 		WHERE
-			DELETE_FLAG = '0'	
+			denpyo.DELETE_FLAG = '0'	
 		ORDER BY
 			denpyo.DENPYO_HAKKOZUMI_FLAG, denpyo.KOUNYU_DATE DESC
 	</select>
@@ -85,6 +85,7 @@
 		SELECT 
 			denpyo.DENPYO_NO AS denpyoNo,
 			denpyo.KOUNYU_DATE AS kounyuDate,
+			denpyo.HASSO_DATE AS hassoDate,
 			cus.CUSTOMER_SEI AS customerSei,
 			cus.CUSTOMER_MEI AS customerMei,
 			sale.SHOHIN_CD AS shohinCd,
@@ -108,7 +109,7 @@
 		WHERE 
 			denpyo.DENPYO_NO = #{denpyoNo}
 		AND 
-			denpyo.DENPYO_HAKKOZUMI_FLAG = '0'
+			denpyo.DENPYO_HAKKOZUMI_FLAG = '1'
 		AND
 			denpyo.DELETE_FLAG = '0'
 		GROUP BY 

@@ -5,7 +5,11 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
+
+import com.reiko.nail.entity.CustomerEntity;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
@@ -15,10 +19,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ValidationService {
 
+	private final static Logger logger = LogManager.getLogger(ValidationService.class);
 	private final Validator validator;
+	private final MessageService messageService;
 	
 	public List<String> validateCustomer(Object obj){
-		System.out.println("入力チェックを開始します。");
+		logger.info(messageService.getMessage("proccess.Start", new String[] {"入力チェック"}));
 		List<String> messageList = new ArrayList<>();
 		
 		Set<ConstraintViolation<Object>> violations = validator.validate(obj);
@@ -26,6 +32,17 @@ public class ValidationService {
 		for (ConstraintViolation<Object> violation : violations) {
 			messageList.add(violation.getMessage());
 	    }
+		if(obj instanceof CustomerEntity) {
+			customerErrorSort(messageList);
+		}
+		
+		logger.info(messageService.getMessage("proccess.End", new String[] {"入力チェック"}));
+		logger.info("エラー件数: " + messageList.size() + "件");
+
+		return messageList;
+	}
+
+	private void customerErrorSort(List<String> messageList) {
 		messageList.sort(Comparator.comparingInt(str -> {
 
 			switch(str) {
@@ -39,11 +56,8 @@ public class ValidationService {
 			}
 			return Integer.MAX_VALUE;
 		}));
-		
-		System.out.println("入力チェックを終了しました。");
-		System.out.println("エラー件数: " + messageList.size() + "件");
-
-		return messageList;
 	}
+	
+
 	
 }

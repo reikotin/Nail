@@ -67,7 +67,6 @@ public class NailController {
 	
 	@RequestMapping(value = "/Kanryo", method = {RequestMethod.GET})
 	public String kanryo(HttpSession session, Model model) {
-		
 		String headMessage = (String) session.getAttribute("headMessage");
 		String itemMessage = (String) session.getAttribute("itemMessage1");
 		String itemMessage2 = (String) session.getAttribute("itemMessage2");
@@ -83,8 +82,11 @@ public class NailController {
 	
 	@RequestMapping(value = "/Denpyo/{denpyoNo}", method = {RequestMethod.GET})
 	public String editDenpyo(@PathVariable String denpyoNo, Model model) {
+		logger.info(messageService.getMessage("proccess.Start", new String[] {"伝票番号:" + denpyoNo + "の情報取得"}));
+		
 		List<ShohinEntity> shohinList = nailService.getShohinList();
 		ResponseData<EditDenpyoDto> data = nailService.getEditDenpyoJoho(denpyoNo);
+		logger.info(messageService.getMessage("proccess.End", new String[] {"伝票番号:" + denpyoNo + "の情報取得"}));
 		
 		model.addAttribute("hassoHohoList", HassoHohoEnum.values());
 		model.addAttribute("shohinList", shohinList);
@@ -144,11 +146,10 @@ public class NailController {
 		logger.info(messageService.getMessage("proccess.Start", new String[] {"伝票登録"}));
 		
 		if(denpyoDto.isCustomerJohoHenshu()) {
-			customerService.updateCustomerJoho(denpyoDto);
+			customerService.updateCustomerJohoAll(denpyoDto);
 		} else {
 			customerService.updateRuikeiKounyuKingaku(denpyoDto);
 		}
-		//System.out.println(denpyoDto);
 		nailService.saveDenpyo(denpyoDto);
 		
 		String message = "伝票登録完了しました。";
@@ -358,51 +359,28 @@ public class NailController {
 		return "EditShiire";
 	}
 	
-	@RequestMapping(value = "/Export", method = {RequestMethod.GET})
-	public String exportDenpyo(Model model) {
+	@RequestMapping(value = "/Export/{denpyoNo}", method = {RequestMethod.GET})
+	public String exportDenpyo(@PathVariable String denpyoNo, Model model) {
+		logger.info(messageService.getMessage("proccess.Start", new String[] {"領収書兼納品書取得"}));
+		List<ExportDenpyo> exportList = nailService.denpyoHakko(denpyoNo);
+		logger.info(messageService.getMessage("proccess.End", new String[] {"領収書兼納品書取得"}));
+        Integer shokeiSum = exportList.stream()
+                .mapToInt(denpyo -> denpyo.getShokei() != null ? denpyo.getShokei() : 0)
+                .sum();
 		
-		 
-		DenpyoDto dto = new	DenpyoDto();
-		
-		List<ExportDenpyo> exportList = nailService.denpyoHakko();
-		Integer goukei = 0;
-		for(int i = 0; i < exportList.size(); i++) {
-			goukei += exportList.get(i).getShokei();
-		}
-		
-		int tableSizeTyousei = 0;
-		if(exportList.size() < 5) {
-			tableSizeTyousei = 5 - exportList.size();
-		}
-		
-		for(int i = 0; i < tableSizeTyousei; i++) {
-			ExportDenpyo exportDto = new ExportDenpyo();
-			exportDto.setDenpyoNo("　");
-			exportDto.setCustomerSei("　");
-			exportDto.setCustomerMei("　");
-			exportDto.setKounyuDate(null);
-			exportDto.setShohinCd("　");
-			exportDto.setZeikomiGaku(null);
-			exportDto.setSuryo(null);
-			exportDto.setShokei(null);
-			exportList.add(exportDto);
-		}
-		
-		for(int i = 0; i < exportList.size(); i++) {
-			exportList.get(i).setNumber(i+1);
-		}
-		
-		String denpyoNo = exportList.get(0).getDenpyoNo();
+		String ryoshushodenpyoNo = exportList.get(0).getDenpyoNo();
 		LocalDate kounyuDate = exportList.get(0).getKounyuDate();
+		LocalDate hassoDate = exportList.get(0).getHassoDate();
 		String customerSei = exportList.get(0).getCustomerSei();
 		String customerMei = exportList.get(0).getCustomerMei();
 		
-		model.addAttribute("denpyoNo", denpyoNo);
-		model.addAttribute("kounyuDate", kounyuDate);		
+		
+		model.addAttribute("denpyoNo", ryoshushodenpyoNo);
+		model.addAttribute("kounyuDate", kounyuDate);
+		model.addAttribute("hassoDate", hassoDate);
 		model.addAttribute("customerSei", customerSei + "　");
 		model.addAttribute("customerMei", customerMei + "　");
-		model.addAttribute("goukei", goukei);
-		
+		model.addAttribute("goukei", shokeiSum);
 		model.addAttribute("exportList", exportList);
 		return "Export";
 	}

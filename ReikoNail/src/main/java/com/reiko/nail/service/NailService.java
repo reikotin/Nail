@@ -276,8 +276,34 @@ public class NailService {
 	}
 	
 	// 領収書兼納品書の取得
-	public List<ExportDenpyo> denpyoHakko(){
-		return denpyoDao.exportDenpyo("2402040003");
+	public List<ExportDenpyo> denpyoHakko(String denpyoNo){
+		List<ExportDenpyo> exportList = denpyoDao.exportDenpyo(denpyoNo);
+		if(exportList.size() != 0) {
+			logger.info(messageService.getMessage("get.denpyo.info", new String[] {denpyoNo}));
+		}
+		// 表示の都合上、強制的にリストサイズを5にする。
+		int tableSizeTyousei = 0;
+		if(exportList.size() < 5) {
+			tableSizeTyousei = 5 - exportList.size();
+		}
+		for(int i = 0; i < tableSizeTyousei; i++) {
+			ExportDenpyo exportDto = new ExportDenpyo();
+			exportDto.setDenpyoNo("　");
+			exportDto.setCustomerSei("　");
+			exportDto.setCustomerMei("　");
+			exportDto.setKounyuDate(null);
+			exportDto.setShohinCd("　");
+			exportDto.setZeikomiGaku(null);
+			exportDto.setSuryo(null);
+			exportDto.setShokei(null);
+			exportList.add(exportDto);
+		}
+		
+		for(int i = 0; i < exportList.size(); i++) {
+			exportList.get(i).setNumber(i+1);
+		}
+		
+		return exportList;
 	}
 	
 	// 編集用の伝票情報の取得

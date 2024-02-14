@@ -36,8 +36,9 @@
 						</div>
 						<div class="col-sm-6 d-flex justify-content-end align-items-end">
 							<div>
-								<button type="submit" class="btn btn-danger me-3" id="deleteBtn"><i class="bi bi-trash3"></i></button>
-								<button type="submit" class="btn btn-primary" id="updateBtn">更新</button>
+								<input type="hidden" th:field="*{customerCd}">
+								<button type="button" class="btn btn-danger me-3" id="deleteBtn"><i class="bi bi-trash3"></i></button>
+								<button type="button" class="btn btn-primary" id="updateBtn">更新</button>
 							</div>
 						</div>
 					</div>
@@ -88,9 +89,6 @@
 							<input type="text" th:value="*{ruikeiKounyuKingaku}" id="kingaku" class="form-control" readonly>
 						</div>
 					</div>
-					<div class="mt-4">
-						<button type="button" id="insert" class="btn btn-primary">登録</button>
-					</div>
 				</div>
 				<div class="modal fade" id="staticBackdrop2" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel2" aria-hidden="true">
 					<div class="modal-dialog modal-lg">
@@ -115,7 +113,9 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js" integrity="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS" crossorigin="anonymous"></script>
     <script th:inline="javascript">
 		$(document).ready(function (){
-			
+			var customerCd = $('#customerCd').val();
+			var customerName = $('#customerSei').val() + $('#customerMei').val();
+			console.log(customerName);
 			var kaisu = $('#kaisu').val();
 			var kingaku = $('#kingaku').val();
 			if(kaisu > 10){
@@ -132,7 +132,7 @@
 				$('#kingaku').css('background-color', '#C2EEFF');
 			}
 			
-			$('#insert').on('click', function(){
+			$('#updateBtn').on('click', function(){
 				var customerSei = $('#customerSei').val();
 				var customerMei = $('#customerMei').val();
 				var seiFurigana = $('#seiFurigana').val();
@@ -141,6 +141,7 @@
 				var prefectureCity = $('#prefectureCity').val();
 				var streetNo = $('#streetNo').val();
 				var customerEntity = {
+					customerCd: customerCd,
 					customerSei: customerSei,
 					customerMei: customerMei,
 					seiFurigana: seiFurigana,
@@ -150,7 +151,7 @@
 					streetNo: streetNo
 				};
 				$.ajax({
-					url: '/Register',
+					url: '/UpdateCustomer',
 					type: 'POST',
 					data: customerEntity,
 					success: function(response){
@@ -161,6 +162,25 @@
 						}
 					}
 				});
+			});
+			
+			$('#deleteBtn').on('click', function(){
+				$.ajax({
+					url: '/DeleteCustomer',
+					type: 'POST',
+					data: {
+						customerCd: customerCd,
+						customerName: customerName
+					},
+					success: function(response){
+						if(response.hasError){
+							errorPrint(response.data, response.message);
+						} else {
+							window.location.href = '/Kanryo';
+						}
+					}
+				})
+				
 			});
 			
 			function errorPrint(data, message){
