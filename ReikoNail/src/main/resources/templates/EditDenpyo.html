@@ -58,7 +58,7 @@
 					</div>
 					<div class="col-sm-3">
 						<label>発送方法</label>
-						<input type="text" th:if="${isHassouZumi}" th:field="${hassoHoho}" class="form-control text-center" readonly>
+						<input type="text" th:if="${isHassouZumi}" name="hassoHoho" class="form-control text-center" readonly>
 						<select class="form-control text-center" th:unless="${isHassouZumi}" name="hassoHoho">	
 							<option th:each="hoho : ${hassoHohoList}" 
 								th:value="${hoho.key}" 
