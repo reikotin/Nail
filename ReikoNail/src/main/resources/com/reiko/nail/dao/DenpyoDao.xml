@@ -113,7 +113,7 @@
 		AND
 			denpyo.DELETE_FLAG = '0'
 		GROUP BY 
-			sale.SHOHIN_CD
+			sale.SHOHIN_CD, denpyo.KOUNYU_DATE
 			
 	</select>
 	
