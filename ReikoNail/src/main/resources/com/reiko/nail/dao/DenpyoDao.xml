@@ -198,6 +198,9 @@
 		UPDATE
 			N_DENPYO
 		SET
+		  <if test="hassoDate != null || hassoDate != ''">
+		  	HASSO_DATE = #{hassoDate},
+		  </if>
 		  <if test="hassoHoho != null || hassoHoho != ''">
 			HASSOHOHO = #{hassoHoho},
 		  </if>
@@ -225,6 +228,9 @@
 			ZEINUKIGAKU = #{zeinukiGaku},
 			ZEIGAKU = #{zeiGaku},
 			ZEIKOMIGAKU = #{zeikomiGaku},
+		  <if test="hassoDate != null || hassoDate != ''">
+		  	HASSO_DATE = #{hassoDate},
+		  </if>
 		  <if test="hassoHoho != null || hassoHoho != ''">
 			HASSOHOHO = #{hassoHoho},
 		  </if>

@@ -322,7 +322,7 @@ public class NailService {
 		}
 		
 		if(HassoHohoEnum.getByKey(denpyoJoho.getHassoHoho()) == HassoHohoEnum.QUICKPOST) {
-			denpyoJoho.setHassoHoho(HassoHohoEnum.QUICKPOST.getValue());
+			denpyoJoho.setHassoHoho(HassoHohoEnum.QUICKPOST.getKey());
 		}
 		// 商品情報のセット
 		shohinJoho = denpyoDao.selectByEditDenpyoForShohinJoho(denpyoNo);
