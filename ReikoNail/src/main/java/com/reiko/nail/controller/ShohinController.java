@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,8 +19,11 @@ import com.reiko.nail.dto.BunruiNameDto;
 import com.reiko.nail.dto.SearchItemDto;
 import com.reiko.nail.dto.SearchShiireDto;
 import com.reiko.nail.dto.ShohinDto;
+import com.reiko.nail.dto.ShohinRequest;
 import com.reiko.nail.entity.ShiireEntity;
 import com.reiko.nail.entity.ShohinEntity;
+import com.reiko.nail.response.ResponseData;
+import com.reiko.nail.service.MessageService;
 import com.reiko.nail.service.ShohinService;
 
 import lombok.RequiredArgsConstructor;
@@ -26,7 +32,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ShohinController {
 	
+	private final static Logger logger = LogManager.getLogger(ShohinController.class);
 	private final ShohinService shohinService;
+	private final MessageService messageService;
 	
 	@RequestMapping(value = "/getShohinInfo", method = {RequestMethod.GET})
 	public ResponseEntity<ShohinDto> getShohinInfo(@RequestParam String shohinCd){
@@ -74,7 +82,7 @@ public class ShohinController {
 		
 		List<ShiireEntity> list = new ArrayList<>();
 		
-		list = shohinService.searchShiireList(searchShiireDto);	
+		list = shohinService.searchShiireForNewShiire(searchShiireDto);	
 		
 		return new ResponseEntity<List<ShiireEntity>>(list, HttpStatus.OK);
 	}
@@ -99,13 +107,33 @@ public class ShohinController {
 		return new ResponseEntity<List<ShohinEntity>>(list, HttpStatus.OK);
 	}
 	
-//	@RequestMapping(value = "/Valid", method = {RequestMethod.POST})
-//	public ResponseEntity<ShiireEntity> valid(@RequestBody ShiireEntity shiireEntity){
-//		System.out.println("test");
-//		shiireEntity.setItemName("上書き");
-//		System.out.println(shiireEntity);
-//		
-//		return new ResponseEntity<ShiireEntity>(shiireEntity, HttpStatus.OK);
-//	}
+	/**
+	 * 商品一括削除
+	 * @param requestList
+	 * @return resultメッセージ
+	 */
+	@RequestMapping(value = "/IkkatsuDeleteShohin", method = {RequestMethod.POST})
+	public ResponseEntity<ResponseData<String>> ikkatsuDeleteShohin(@RequestBody List<ShohinRequest> requestList){
+		ResponseData<String> res = new ResponseData<>();
+		logger.info(messageService.getMessage("proccess.Start", new String[] {"商品一括削除"}));
+		
+		int deleteCount = shohinService.ikkatsuDeleteShohin(requestList);
+		if(deleteCount > 0) {
+			logger.info(messageService.getMessage("delete.data.count", new String[] {"商品", Integer.toString(deleteCount)}));
+			res.setData(messageService.getMessage("delete.success", null));
+			res.setHasError(false);
+			res.setMessage(Integer.toString(deleteCount) + "件の商品を削除しました。");
+			res.setData(messageService.getMessage("delete.success", null));
+		} else {
+			res.setHasError(true);
+			res.setMessage("管理者に報告してください。");
+			res.setData("商品一括削除に失敗しました。");
+		}
+		
+		logger.info(messageService.getMessage("proccess.End", new String[] {"商品一括削除"}));
+		
+		
+		return new ResponseEntity<ResponseData<String>>(res, HttpStatus.OK);
+	}
 
 }

@@ -21,4 +21,6 @@ public class SearchShiireDto {
 	
 	private LocalDate endDate;
 	
+	private int number;
+	
 }

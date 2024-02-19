@@ -1,3 +1,4 @@
+
 package com.reiko.nail.service;
 
 import java.time.LocalDate;
@@ -108,10 +109,19 @@ public class NailService {
 	
 	// 伝票の論理削除
 	public String deleteDenpyo(String denpyoNo) {
+		logger.info(messageService.getMessage("delete.denpyo.info", new String[] {denpyoNo}));
 		int denpyoDeleteCount = denpyoDao.deleteDenpyoByPrimary(denpyoNo);
+		if(denpyoDeleteCount == 1) {
+			logger.info(messageService.getMessage("delete.success", null));
+		}
+		logger.info(messageService.getMessage("delete.meisai.info", new String[] {denpyoNo}));
 		int meisaiDeleteCount = salesDao.deleteMeisaiByPrimary(denpyoNo);
+		if(meisaiDeleteCount >= 1) {
+			logger.info(messageService.getMessage("delete.success", null));
+			logger.info(messageService.getMessage("delete.data.count", new String[] {"明細", Integer.toString(meisaiDeleteCount)}));
+		}
 		
-		String denpyo = "伝票削除数:" + denpyoDeleteCount + "件<br>";
+		String denpyo = "\n伝票削除数:" + denpyoDeleteCount + "件\n";
 		String meisai = "明細削除数:" + meisaiDeleteCount + "件";
 		return denpyo + meisai;	
 	}
@@ -119,7 +129,7 @@ public class NailService {
 	// 伝票情報・明細情報の更新
 	@Transactional
 	public int updateDenpyo(EditDenpyoDto denpyoDto) {
-		System.out.println("伝票情報の更新処理を開始します。");
+		logger.info(messageService.getMessage("proccess.Start", new String[] {"伝票情報更新"}));
 		List<ShohinEntity> shohinJoho = denpyoDao.selectByEditDenpyoForShohinJoho(denpyoDto.getDenpyoNo());
 	
         List<String> beforeShohinCdList = shohinJoho.stream()
@@ -143,12 +153,10 @@ public class NailService {
         if(isShohinCdMatch) {
         	int result = denpyoDao.updateDenpyoByNotKingakuHenko(entity);
         	if(result != 0) {
-        		System.out.println("金額変更なしで伝票を更新しました");
-        		System.out.println("伝票番号: " + denpyoDto.getDenpyoNo());
+        		logger.info("金額変更なしで更新完了しました");
+        		logger.info("更新伝票番号: " + denpyoDto.getDenpyoNo());
         	}
-        	System.out.println("伝票情報の更新処理を終了します。");
-        	
-        	
+        	logger.info(messageService.getMessage("proccess.End", new String[] {"伝票情報更新"}));
         } else {
         	Integer zeinukiGaku = 0;
         	Integer zeiGaku = 0;
@@ -164,20 +172,22 @@ public class NailService {
         	try {
 	        	int result = denpyoDao.updateDenpyoByKingakuHenko(entity);
 	           	if(result != 0) {
-	        		System.out.println("金額変更ありで伝票を更新しました");
-	        		System.out.println("伝票番号: " + denpyoDto.getDenpyoNo());
+	           		logger.info("金額変更ありで更新完了しました。");
+	           		logger.info("更新伝票番号: " + denpyoDto.getDenpyoNo());
 	        	}
-	           	System.out.println("伝票情報の更新処理を終了します。");
-	           	System.out.println("明細情報の更新処理を開始します。");
+	           	logger.info(messageService.getMessage("proccess.End", new String[] {"伝票情報更新"}));
+	           	logger.info(messageService.getMessage("proccess.Start", new String[] {"明細情報更新"}));
 	           	int deleteCount = salesDao.deleteMeisaiByPrimary(denpyoDto.getDenpyoNo());
 	           	if(result != 0) {
-	        		System.out.println("伝票番号: " + denpyoDto.getDenpyoNo() + "に紐づく、明細情報を削除しました。");
-	        		System.out.println("削除件数: " + deleteCount + "件");
+	           		logger.info("伝票番号: " + denpyoDto.getDenpyoNo() + "に紐づく、明細情報を削除しました。");
+	        		logger.info(messageService.getMessage("delete.data.count", new String[] {"新しい明細", Integer.toString(deleteCount)}));
 	        	}
-	           	System.out.println("新しい明細情報の登録処理を開始します。");
+	           	
+	           	logger.info(messageService.getMessage("proccess.Start", new String[] {"新しい明細情報の登録"}));
+	           	
 	           	int updateMeisaiCount = updateMeisai(denpyoDto);
-	           	System.out.println("登録件数: " + updateMeisaiCount + "件");
-	           	System.out.println("新しい明細情報の登録処理を終了します。");
+	           	logger.info(messageService.getMessage("insert.data.count", new String[] {"新しい明細", Integer.toString(updateMeisaiCount)}));
+	           	logger.info(messageService.getMessage("proccess.End", new String[] {"新しい明細情報の登録"}));
         	} catch (Exception e) {
         		returnInt = 1;
 				e.printStackTrace();

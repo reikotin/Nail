@@ -106,22 +106,26 @@ public class NailController {
 
 		String headMessage = "";
 		String itemMessage = "伝票番号:" + denpyoNo;
-		// 伝票更新
+		String itemMessage2 = "";
+		int result = 0;
 		if(StringUtils.equals(status, DenpyoHakkoFlagEnum.DELETE.getKey())) {
+			logger.info(messageService.getMessage("proccess.Start", new String[] {"伝票削除"}));
 			String deleteMessage = nailService.deleteDenpyo(denpyoNo);
-			itemMessage = itemMessage + "\n" + deleteMessage;
-			headMessage = "削除完了しました";
+			itemMessage2 = deleteMessage;
+			headMessage = messageService.getMessage("delete.success", null);
+			logger.info(messageService.getMessage("proccess.End", new String[] {"伝票削除"}));
+		} else {
+			result = nailService.updateDenpyo(denpyoDto);
+			if(result == 0) {
+				headMessage = messageService.getMessage("update.success", null);
+			}else if(result == 1) {
+				itemMessage += "\n伝票・明細の更新に失敗しました。\n直前の処理を確認してください";
+			}
 		}
-		
-		int result = nailService.updateDenpyo(denpyoDto);
-		if(result == 0) {
-			headMessage = "伝票を更新しました。";
-		}else if(result == 1) {
-			itemMessage += "\n伝票・明細の更新に失敗しました。\n直前の処理を確認してください";
-		}
-		
+
 		model.addAttribute("headMessage", headMessage);
 		model.addAttribute("itemMessage", itemMessage);
+		model.addAttribute("itemMessage2", itemMessage2);
 		
 		return "Kanryo";
 	}
@@ -143,16 +147,16 @@ public class NailController {
 	
 	@RequestMapping(value = "/Save", method = {RequestMethod.POST})
 	public String saveDenpyo(@ModelAttribute EditDenpyoDto denpyoDto, Model model) {
-		logger.info(messageService.getMessage("proccess.Start", new String[] {"伝票登録"}));
 		
 		if(denpyoDto.isCustomerJohoHenshu()) {
 			customerService.updateCustomerJohoAll(denpyoDto);
 		} else {
 			customerService.updateRuikeiKounyuKingaku(denpyoDto);
 		}
+		logger.info(messageService.getMessage("proccess.Start", new String[] {"伝票・明細登録"}));
 		nailService.saveDenpyo(denpyoDto);
-		
-		String message = "伝票登録完了しました。";
+		logger.info(messageService.getMessage("proccess.End", new String[] {"伝票・明細登録"}));
+		String message = messageService.getMessage("insert.success", null);
 		model.addAttribute("next", "続けて登録する");
 		model.addAttribute("url", "/NewDenpyo");
 		model.addAttribute("headMessage", message);
@@ -174,35 +178,6 @@ public class NailController {
 		return "ItemIndex";
 	}
 	
-//	@RequestMapping(value = "/ItemIndex", method = {RequestMethod.POST})
-//	public String searchItem(SearchItemDto searchItemDto, Model model) {
-//		
-//		String message = null;
-//		
-//		List<ShohinEntity> shohinList = new ArrayList<>();
-//		SearchItemDto searchItem = new SearchItemDto();
-//		ResponseData<SearchItemDto> response = new ResponseData<SearchItemDto>();
-//		
-//		if(StringUtils.equals(searchItemDto.getSearchKbn(), "0")) {
-//			response = shohinService.searchItemList(searchItemDto);
-//			shohinList = shohinService.getSearchItemList(response.getData());
-//		} else if (StringUtils.equals(searchItemDto.getSearchKbn(), "1")) {
-//			shohinList = nailService.getShohinList();
-//		}
-//
-//		int count = shohinList.size();
-//		
-//		List<ShohinEntity> shohinCdList = nailService.getShohinList();
-//		
-//		model.addAttribute("shohinCdList", shohinCdList);
-//		model.addAttribute("message", message);
-//		model.addAttribute("count", "検索結果 : " + count + "件");
-//		model.addAttribute("searchItem", searchItem);
-//		model.addAttribute("shohinList", shohinList);
-//		
-//		return "ItemIndex";
-//	}
-	
 	@RequestMapping(value = "/NewItem", method = {RequestMethod.GET})
 	public String newItem(Model model) {
 		
@@ -221,7 +196,7 @@ public class NailController {
 
 		String result = shohinService.registryNewItem(shohinDto);
 		
-		model.addAttribute("headMessage", "正常に登録できました。");
+		model.addAttribute("headMessage", messageService.getMessage("insert.success", null));
 		model.addAttribute("itemMessage", "商品コード : " + result);
 		model.addAttribute("url", "/NewItem");
 		model.addAttribute("next", "続けて登録する");		
@@ -253,10 +228,10 @@ public class NailController {
 		String resultMessage = null;
 		if(StringUtils.equals(flag ,UpdateFlagEnum.UPDATE.getKey())) {
 			shohinService.updateItem(shohinDto);
-			resultMessage = "正常に更新できました。";
+			resultMessage = messageService.getMessage("update.success", null);
 		} else if(StringUtils.equals(flag, UpdateFlagEnum.DELETE.getKey())) {
 			shohinService.deleteItem(shohinDto);
-			resultMessage = "下記の商品を削除しました。";
+			resultMessage = messageService.getMessage("delete.success", null);
 		}
 		
 		model.addAttribute("headMessage", resultMessage);
@@ -328,12 +303,21 @@ public class NailController {
 		
 		model.addAttribute("searchShiire", new SearchShiireDto());
 		model.addAttribute("daiBunruiList", daiBunruiList);
+		model.addAttribute("test", false);
+		
 		
 		return "IndexShiire";
 	}
 
+	private final String limit = "3";
+	
+	private final int pageSize = 3;
+	
 	@RequestMapping(value = "/IndexShiire", method = {RequestMethod.POST})
-	public String searchShiire(SearchShiireDto searchShiireDto, RedirectAttributes redirectAttributes, Model model) {
+	public String searchShiire(SearchShiireDto searchShiireDto, RedirectAttributes redirectAttributes, 
+			Model model) {
+		
+		int currentNum = searchShiireDto.getNumber();
 		String message = null;
 		boolean isAfterResult = shohinService.dayService(searchShiireDto.getStartDate(), searchShiireDto.getEndDate());
 		if(isAfterResult) {
@@ -343,11 +327,15 @@ public class NailController {
 		}
 		List<BunruiNameDto> daiBunruiList = nailService.getDaiBunrui();
 		List<ShiireEntity> shiireList = shohinService.searchShiireList(searchShiireDto);
-		
-		model.addAttribute("count", "検索結果 : " + shiireList.size() + "件");
+		int totalPage = shohinService.countTotalPage(searchShiireDto);
+		model.addAttribute("currentNum", currentNum);
+		model.addAttribute("test", true);
+		model.addAttribute("totalPages", shohinService.getPageSize(totalPage));
+		model.addAttribute("count", "検索結果 : " + totalPage + "件");
 		model.addAttribute("shiireList", shiireList);
 		model.addAttribute("searchShiire", new SearchShiireDto());
 		model.addAttribute("daiBunruiList", daiBunruiList);
+		model.addAttribute("kensakuWords", searchShiireDto);
 		redirectAttributes.addFlashAttribute("message", message);
 		return "IndexShiire";
 	}

@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link href="style.css" rel="stylesheet" type="text/css">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="/js/itemIndex.js"></script>
     <title>R-ネイル | 商品一覧</title>
 </head>
 <body>
@@ -42,11 +44,11 @@
                 </div>
 			</div>
         	<div class="d-flex justify-content-between mt-3">
-	            <div class="col">
+	            <div class="col d-flex aligm-items-end">
 	              <span id="searchCount"></span>
 	            </div>
-				<div>
-					<input type="checkbox" id="ikkatsuDelete">一括削除
+				<div class="mb-3">
+					<button type="button" id="ikkatsuDelete" class="btn btn-outline-danger" disabled>一括削除</button>
 				</div>
 			</div>
             <div>
@@ -66,13 +68,29 @@
 	              <tbody id="itemBody">
 	              </tbody>
 	            </table>
+	            
             </div>
+            <div id="loading-ring"></div>
+		    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h1 class="modal-title fs-5" id="staticBackdropLabel"></h1>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+						<div class="modal-body" id="modal">
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="reloadButton">OK</button>
+						</div>
+					</div>
+				</div>
+			</div>
           </div>
         </main>
       </div>
     </div>
     
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js" integrity="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS" crossorigin="anonymous"></script>
     <script th:inline="javascript">
@@ -137,7 +155,6 @@
 					var newRow = $('<tr>');
 					var checkCell = $('<td>').html('<input type="checkbox" class="deleteInput">').attr('id', 'check_' + i);
 					newRow.append(checkCell);
-
 					var shohinCell = $(`
 						<td>
 							<a href="/EditItem/${data.shohinCd}">${data.shohinCd}</a>
@@ -150,20 +167,11 @@
 					newRow.append($('<td>').text(data.zeiGaku.toLocaleString('ja-JP')).attr('id', 'zeiGaku_' +i));
 					newRow.append($('<td>').text(data.zeikomiGaku.toLocaleString('ja-JP')).attr('id', 'zeikomiGaku_' + i));
 					newRow.append($('<td>').text(data.makeTime).attr('id', 'makeTime_' +i));
-		
 					tbody.append(newRow);
-					
 				}
 			};
-			
-			$('#ikkatsuDelete').on('change', function(){
-				if ($(this).is(":checked")){
-					
-				}else{
-					
-				}
-			});
 		});
+
 	  	function updateClock() {
 	      var now = new Date();
 	      var formattedTime = now.toLocaleString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });

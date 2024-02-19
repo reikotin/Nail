@@ -19,6 +19,7 @@ import com.reiko.nail.dto.SearchShiireDto;
 import com.reiko.nail.dto.ShiireDto;
 import com.reiko.nail.dto.ShohinDto;
 import com.reiko.nail.dto.ShohinIdDto;
+import com.reiko.nail.dto.ShohinRequest;
 import com.reiko.nail.dto.UpdateShohinDto;
 import com.reiko.nail.entity.ShiireEntity;
 import com.reiko.nail.entity.ShohinEntity;
@@ -59,12 +60,18 @@ public class ShohinService {
 
 
 	// 商品検索
-	public List<ShohinEntity> getSearchItemList(SearchItemDto data) {
+	public List<ShohinEntity> getSearchItemList(SearchItemDto searchItemDto) {
 		
-		if(StringUtils.equals(data.getSeasonCd(), Constants.ALL)){
-			data.setSeasonCd(null);
+		if(ObjectUtils.isEmpty(searchItemDto.getThemeType())) {
+			searchItemDto.setThemeType(null);
+			searchItemDto.setSeasonCd(null);
 		}
-		return shohinDao.searchItemList(data);
+		
+		if(StringUtils.equals(searchItemDto.getSeasonCd(), Constants.ALL)){
+			searchItemDto.setSeasonCd(null);
+		}
+		
+		return shohinDao.searchItemList(searchItemDto);
 	}
 
 	// 新商品の登録
@@ -132,8 +139,12 @@ public class ShohinService {
 
 	// 商品論理削除
 	public int deleteItem(UpdateShohinDto shohinDto) {
-		
 		return shohinDao.deleteShohin(shohinDto.getShohinCd());
+	}
+	
+	// 商品一括論理削除
+	public int ikkatsuDeleteShohin(List<ShohinRequest> requests) {
+		return shohinDao.ikkatsuDeleteShohin(requests);
 	}
 
 	// 該当の商品情報取得
@@ -236,23 +247,67 @@ public class ShohinService {
 		
 		return isAfter;
 	}
-	
-	// 仕入情報検索
-	public List<ShiireEntity> searchShiireList(SearchShiireDto searchShiireDto) {
+	// 仕入情報検索(仕入登録用)
+	public List<ShiireEntity> searchShiireForNewShiire(SearchShiireDto searchShiireDto) {
 		if(StringUtils.isEmpty(searchShiireDto.getDaiBunruiName())) {
 			searchShiireDto.setDaiBunruiName(null);
 		}
-		
 		if(StringUtils.isEmpty(searchShiireDto.getJanCd())) {
 			searchShiireDto.setJanCd(null);
 		}
+		if(StringUtils.equals(searchShiireDto.getShoBunruiName(), Constants.ALL) 
+				|| StringUtils.isEmpty(searchShiireDto.getShoBunruiName())){
+			searchShiireDto.setShoBunruiName(null);
+		}
+		return shiireDao.searchShiireForNewShiire(
+				searchShiireDto.getJanCd(), searchShiireDto.getDaiBunruiName(), 
+				searchShiireDto.getShoBunruiName(), searchShiireDto.getItemName());
+	}
+	
+	// 仕入情報検索(仕入一覧用)
+	public List<ShiireEntity> searchShiireList(SearchShiireDto searchShiireDto) {
 		
+		if(StringUtils.isEmpty(searchShiireDto.getDaiBunruiName())) {
+			searchShiireDto.setDaiBunruiName(null);
+		}
+		if(StringUtils.isEmpty(searchShiireDto.getJanCd())) {
+			searchShiireDto.setJanCd(null);
+		}
 		if(StringUtils.equals(searchShiireDto.getShoBunruiName(), Constants.ALL) 
 				|| StringUtils.isEmpty(searchShiireDto.getShoBunruiName())){
 			searchShiireDto.setShoBunruiName(null);
 		}
 		
-		return shiireDao.searchShiireItemList(searchShiireDto);
+		int x = 0;
+		if(searchShiireDto.getNumber() == 0 || searchShiireDto.getNumber() == 1) {
+			x = 0;
+		} else if(searchShiireDto.getNumber() > 1) {
+			x = searchShiireDto.getNumber() * 10 - 10;
+		}
+		return shiireDao.searchShiireItemList(searchShiireDto.getJanCd(), searchShiireDto.getDaiBunruiName(),
+				searchShiireDto.getShoBunruiName(), searchShiireDto.getItemName(), searchShiireDto.getStartDate(),
+				searchShiireDto.getEndDate(), x);
+	}
+	
+	
+	public int countTotalPage(SearchShiireDto searchShiireDto) {
+		if(StringUtils.isEmpty(searchShiireDto.getDaiBunruiName())) {
+			searchShiireDto.setDaiBunruiName(null);
+		}
+		if(StringUtils.isEmpty(searchShiireDto.getJanCd())) {
+			searchShiireDto.setJanCd(null);
+		}
+		if(StringUtils.equals(searchShiireDto.getShoBunruiName(), Constants.ALL) 
+				|| StringUtils.isEmpty(searchShiireDto.getShoBunruiName())){
+			searchShiireDto.setShoBunruiName(null);
+		}
+		 return shiireDao.countSearcShiireItemList(searchShiireDto.getJanCd(), searchShiireDto.getDaiBunruiName(),
+				searchShiireDto.getShoBunruiName(), searchShiireDto.getItemName(), searchShiireDto.getStartDate(),
+				searchShiireDto.getEndDate());
+	}
+	
+	public int getPageSize(int count) {
+		return (int) Math.ceil((double) count / 10);
 	}
 	
 	// 仕入情報取得（大分類がカラーと、パーツのみを取得）
@@ -265,13 +320,10 @@ public class ShohinService {
 	
 	// 仕入品名リストの取得
 	public List<ShiireEntity> getItemNameList(String daiBunruiName, String shoBunruiName){
-		
 		if(StringUtils.equals(shoBunruiName, Constants.ALL)) {
 			shoBunruiName = null;
 		}
-				
 		List<ShiireEntity> itemNameList = shiireDao.selectByItemNameList(daiBunruiName, shoBunruiName);
-		
 		return itemNameList;
 	}
 	

@@ -18,6 +18,8 @@ public class SalesEntity {
 	private LocalDate kounyuDate;
 	/** お客様CD */
 	private String customerCd;
+	/** 削除フラグ */
+	private String deleteFlag;
     /** 登録日 */
 	private LocalDate createDate;
 }

@@ -24,7 +24,8 @@
           </div>
           <div class="container r-w mtmb-2">
             <div>
-              <form method="POST" th:object="${searchShiire}" th:action="@{/IndexShiire}">
+              <form method="POST" th:object="${searchShiire}" th:action="@{/IndexShiire}" id="form">
+				<input type="hidden" th:field="*{number}">
                 <div class="d-flex mb-3">
                   <div class="col-sm-3 me-3">
                     <label for="daiBunruiName">大分類名</label>
@@ -97,6 +98,14 @@
                 </tr>
               </tbody>
             </table>
+		    <div th:if="${test}">
+		        <div id="pages">
+		        	<span th:each="pageNumber : ${#numbers.sequence(1, totalPages)}">
+		            	<button type="button" th:value="${pageNumber}" th:id="'pageNum_' + ${pageNumber}"
+						th:text="${pageNumber}" class="btn btn-outline-primary"></button>
+		        	</span>
+				</div>
+		    </div>
           </div>
         </main>
       </div>
@@ -115,13 +124,25 @@
 	  updateClock();
 	  setInterval(updateClock, 1000);
 	  
-	  var message = $('#message-container');
-	  if(message.innerText !== ''){
-            setTimeout(function () {
-                message.empty(); // メッセージをクリア
-            }, 5000);
-	  }
 	$(document).ready(function () {
+		
+		var btn = /*[[${currentNum}]]*/'';
+		if(btn === '' || btn === 0){
+			$('#pageNum_1').attr('class', 'btn btn-primary');
+		}
+		$('#pageNum_' + btn).attr('class', 'btn btn-primary');
+		
+		var kensakuWords = /*[[${kensakuWords}]]*/ []; 
+		$('#daiBunruiName').val(kensakuWords.daiBunruiName);
+		$('#shoBunruiName').val()
+		
+		$('#pages').on('click', 'button[id^="pageNum_"]', function(){
+			var num = $(this).attr('id').split('_')[1];
+			console.log(num);
+			$('#number').val(num);
+			$('#form').submit();
+		});
+		
 		$('#daiBunruiName').on('change', function(){
 			var selectDaiBunruiName = $(this).val();
 			if(selectDaiBunruiName === ''){

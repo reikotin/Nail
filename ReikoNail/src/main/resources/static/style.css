@@ -81,6 +81,19 @@
 .all-rounted {
 	border-radius: 5px;
 }
+select#daiBunruiName.form-control.border.border-secondary.text-center.no-rounted {
+	border-radius: 0;
+}
+
+input#itemName.form-control.border.border-secondary.text-center.no-rounted {
+	border-radius: 0;
+}
+input#shiireSaki.form-control.border.border-secondary.text-center.no-rounted {
+	border-radius: 0;
+}
+input#shiireMaker.form-control.border.border-secondary.text-center.no-rounted {
+	border-radius: 0;
+}
 
 .bg_test {
     background: linear-gradient(to top, rgba(217, 175, 217, 0.7) 0%, rgba(151, 217, 225, 0.7) 100%),url(/reikonailblue.png);  /* 背景画像指定 */
@@ -141,5 +154,25 @@ input[type=date]::-webkit-calendar-picker-indicator {
 	text-align: center;
 }
 
+
+#loading-ring {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top: 4px solid #3498db;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    z-index: 9999;
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
 
 

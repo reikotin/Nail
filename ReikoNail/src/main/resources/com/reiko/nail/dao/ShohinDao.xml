@@ -121,6 +121,18 @@
 		AND DELETE_FLAG = '0'
 	</update>
 	
+	<update id="ikkatsuDeleteShohin">
+		UPDATE N_SHOHIN
+		SET
+			DELETE_FLAG = '1'
+		WHERE
+			SHOHIN_CD IN
+		<foreach collection="requests" item="requests" open="(" close=")" separator=",">
+			#{requests.shohinCd}
+		</foreach>
+	
+	</update>
+	
 	<select id="findByShohin" resultMap="BaseMap">
 		SELECT *
 		FROM

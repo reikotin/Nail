@@ -8,7 +8,6 @@ public class ReikoNailApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(ReikoNailApplication.class, args);
-		
 	}
 
 }

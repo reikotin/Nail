@@ -8,6 +8,7 @@
 		<result column="SHOHIN_CD" property="shohinCd" />
 		<result column="KOUNYU_DATE" property="kounyuDate" />
 		<result column="CUSTOMER_CD" property="customerCd" />
+		<result column="DELETE_FLAG" property="deleteFlag" />
 		<result column="CREATE_DATE" property="createDate" />
 	</resultMap>
 
@@ -17,6 +18,7 @@
 			SHOHIN_CD,
 			KOUNYU_DATE,
 			CUSTOMER_CD,
+			DELETE_FLAG,
 			CREATE_DATE
 		) VALUES 
 	   <foreach collection="salesList" item="meisai" separator=",">
@@ -24,15 +26,19 @@
 	         #{meisai.shohinCd},
 	         #{meisai.kounyuDate},
 	         #{meisai.customerCd},
+	         '0',
 	         CURRENT_TIMESTAMP)
 	   </foreach>
 	</insert>
 	
-	<delete id="deleteMeisaiByPrimary">
-		DELETE FROM N_SALES
+	<update id="deleteMeisaiByPrimary">
+		UPDATE 
+			N_SALES
+		SET
+			DELETE_FLAG = '1'
 		WHERE
 			DENPYO_NO = #{denpyoNo}
-	</delete>
+	</update>
 	
 	
 </mapper>

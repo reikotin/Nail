@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.reiko.nail.dto.SearchItemDto;
+import com.reiko.nail.dto.ShohinRequest;
 import com.reiko.nail.dto.ShohinDto;
 import com.reiko.nail.entity.ShohinEntity;
 
@@ -51,6 +52,13 @@ public interface ShohinDao {
 	 * @return
 	 */
 	int deleteShohin(@Param("shohinCd") String shohinCd);
+	
+	/**
+	 * 商品一括論理削除
+	 * @param requests
+	 * @return 削除件数
+	 */
+	int ikkatsuDeleteShohin(List<ShohinRequest> requests);
 
 	/**
 	 * 商品情報の取得

@@ -104,8 +104,9 @@ public class CustomerService {
 		Long kounyuKingaku = sumPrice(denpyoDto.getShohinJoho());
 		
 		String customerCd = denpyoDto.getCustomerCd();
-		
+		logger.info(messageService.getMessage("proccess.Start", new String[] {"今回購入金額の登録"}));
 		customerDao.updateCustomerKingakuJoho(customerCd, kounyuKingaku);
+		logger.info(messageService.getMessage("insert.success", null));
 		logger.info(messageService.getMessage("customer.update.End", new String[] {denpyoDto.getCustomerCd()}));
 	}
 	

@@ -127,6 +127,36 @@
 		  </if>
 	
 	</select>-->
+	<select id="searchShiireForNewShiire" resultMap="BaseMap">
+		SELECT 
+			SHIIRE_ID,
+			JAN_CD,
+			DAI_BUNRUI_NAME,
+			SHO_BUNRUI_NAME,
+			ITEM_NAME,
+			SHIIRE_SAKI,
+			SHIIRE_MAKER,
+			ITEM_SIZE,
+			ZEIKOMIGAKU,
+			UPDATE_DATE
+		FROM
+			N_SHIIRE
+		WHERE
+			DELETE_FLAG = '0'
+		  <if test="janCd != null">
+		  	AND JAN_CD = #{janCd}
+		  </if>
+		  <if test="daiBunruiName != null">
+		    AND DAI_BUNRUI_NAME = #{daiBunruiName}
+		  </if>
+		  <if test="shoBunruiName != null">
+		    AND SHO_BUNRUI_NAME = #{shoBunruiName}
+		  </if>
+		  <if test="itemName != null">
+		    AND ITEM_NAME LIKE CONCAT('%','${itemName}' '%')
+		  </if>
+	</select>
+	
 	<select id="searchShiireItemList" resultMap="BaseMap">
 		SELECT 
 			SHIIRE_ID,
@@ -161,8 +191,36 @@
 		  <if test="endDate != null">
 		    AND UPDATE_DATE <![CDATA[ <= ]]> '${endDate}'
 		  </if>
-	
+		ORDER BY UPDATE_DATE DESC
+		LIMIT 10 OFFSET #{pageNumber}
 	</select>
+	<select id="countSearcShiireItemList" resultType="int">
+		SELECT 
+			COUNT(*)
+		FROM
+			N_SHIIRE
+		WHERE
+			DELETE_FLAG = '0'
+		  <if test="janCd != null">
+		  	AND JAN_CD = #{janCd}
+		  </if>
+		  <if test="daiBunruiName != null">
+		    AND DAI_BUNRUI_NAME = #{daiBunruiName}
+		  </if>
+		  <if test="shoBunruiName != null">
+		    AND SHO_BUNRUI_NAME = #{shoBunruiName}
+		  </if>
+		  <if test="itemName != null">
+		    AND ITEM_NAME LIKE CONCAT('%','${itemName}' '%')
+		  </if>
+		  <if test="startDate != null">
+		    AND UPDATE_DATE <![CDATA[ >= ]]> '${startDate}'
+		  </if>
+		  <if test="endDate != null">
+		    AND UPDATE_DATE <![CDATA[ <= ]]> '${endDate}'
+		  </if>
+	</select>
+	
 	<select id="countId" resultType="int">
 		SELECT 
 			COUNT(*)
