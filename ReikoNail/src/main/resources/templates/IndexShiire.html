@@ -36,7 +36,7 @@
                   </div>
                   <div class="col-sm-3 me-3" style="position: relative; left: 25px;">
 					<label for="shoBunruiName">小分類名</label>
-                    <select th:field="*{shoBunruiName}" class="form-select" disabled="true">
+                    <select th:field="*{shoBunruiName}" class="form-select">
 						<option value=''></option>
 						<option th:each="shoBunrui : ${shoBunruiList}" th:value="${shoBunrui.bunruiName}" th:text="${shoBunrui.bunruiName}"/>
 					</select>
@@ -99,7 +99,7 @@
               </tbody>
             </table>
 		    <div th:if="${test}">
-		        <div id="pages">
+		        <div id="pages" th:if="${totalPages > 0}">
 		        	<span th:each="pageNumber : ${#numbers.sequence(1, totalPages)}">
 		            	<button type="button" th:value="${pageNumber}" th:id="'pageNum_' + ${pageNumber}"
 						th:text="${pageNumber}" class="btn btn-outline-primary"></button>
@@ -134,7 +134,10 @@
 		
 		var kensakuWords = /*[[${kensakuWords}]]*/ []; 
 		$('#daiBunruiName').val(kensakuWords.daiBunruiName);
-		$('#shoBunruiName').val()
+		$('#shoBunruiName').val(kensakuWords.shoBunruiName);
+		$('#startDate').val(kensakuWords.startDate);
+		$('#endDate').val(kensakuWords.endDate);
+		$('#itemName').val(kensakuWords.itemName);
 		
 		$('#pages').on('click', 'button[id^="pageNum_"]', function(){
 			var num = $(this).attr('id').split('_')[1];

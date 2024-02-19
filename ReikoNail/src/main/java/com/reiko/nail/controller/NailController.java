@@ -308,10 +308,6 @@ public class NailController {
 		
 		return "IndexShiire";
 	}
-
-	private final String limit = "3";
-	
-	private final int pageSize = 3;
 	
 	@RequestMapping(value = "/IndexShiire", method = {RequestMethod.POST})
 	public String searchShiire(SearchShiireDto searchShiireDto, RedirectAttributes redirectAttributes, 
