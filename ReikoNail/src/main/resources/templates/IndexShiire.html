@@ -73,7 +73,7 @@
             <table class="table table-bordered text-center">
               <thead>
                   <tr>
-					  <th>仕入ID</th>
+					  <th>履歴ID</th>
                       <th>大分類名</th>
                       <th>小分類名</th>
                       <th>アイテム名</th>
@@ -85,8 +85,8 @@
               <tbody>
                 <tr th:each="shiire: ${shiireList}">
                   <td>
-                    <a class="text-decoration-none" th:href="@{/EditShiire/{id}(id=${shiire.shiireId})}">
-                      <span th:text="${shiire.shiireId}"></span>
+                    <a class="text-decoration-none" th:href="@{/EditShiire/{id}(id=${shiire.rirekiId})}">
+                      <span th:text="${shiire.rirekiId}"></span>
                     </a>
                   </td>
                   <td th:text="${shiire.daiBunruiName}"></td>

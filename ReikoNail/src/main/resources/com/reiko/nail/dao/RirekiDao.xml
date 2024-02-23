@@ -22,4 +22,23 @@
 			CURRENT_TIMESTAMP
 		)
 	</insert>
+	
+	<update id="updateRireki">
+		UPDATE 
+			SHIIRE_RIREKI
+		SET
+			SHIIRE_DATE = #{shiireDate},
+			SURYO = #{suryo},
+			CREATE_DATE = CURRENT_TIMESTAMP
+		WHERE
+			RIREKI_ID = '${rirekiId}'
+	</update>
+	
+	<delete id="deleteRireki">
+		DELETE 
+		FROM
+			SHIIRE_RIREKI
+		WHERE
+			RIREKI_ID = #{rirekiId}
+	</delete>
 </mapper>

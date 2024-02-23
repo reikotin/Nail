@@ -38,16 +38,11 @@ public class ShohinController {
 	
 	@RequestMapping(value = "/getShohinInfo", method = {RequestMethod.GET})
 	public ResponseEntity<ShohinDto> getShohinInfo(@RequestParam String shohinCd){
-		
 		if(StringUtils.isEmpty(shohinCd)) {
 			return ResponseEntity.ok(null);
-		}
-		
+		}		
 		ShohinDto shohinDto = shohinService.getShohinKingaku(shohinCd);
-		
-		
 		return new ResponseEntity<ShohinDto>(shohinDto, HttpStatus.OK);
-		
 	}
 	
 	@RequestMapping(value = "/GetShoBunrui", method = {RequestMethod.GET})
@@ -70,10 +65,7 @@ public class ShohinController {
 	
 	@RequestMapping(value = "/GetItemNameList", method = {RequestMethod.GET})
 	public ResponseEntity<List<ShiireEntity>> getItemName(@RequestParam String daiBunrui, String shoBunrui){
-		
-//		System.out.println("大 : " + daiBunrui + " 小 : " + shoBunrui);		
 		List<ShiireEntity> itemNameList = shohinService.getItemNameList(daiBunrui, shoBunrui);
-		
 		return new ResponseEntity<List<ShiireEntity>>(itemNameList, HttpStatus.OK);
 	}
 	

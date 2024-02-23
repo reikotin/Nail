@@ -9,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import com.reiko.nail.dto.EditShiireDto;
 import com.reiko.nail.entity.CustomerEntity;
 
 import jakarta.validation.ConstraintViolation;
@@ -23,7 +24,7 @@ public class ValidationService {
 	private final Validator validator;
 	private final MessageService messageService;
 	
-	public List<String> validateCustomer(Object obj){
+	public List<String> validate(Object obj){
 		logger.info(messageService.getMessage("proccess.Start", new String[] {"入力チェック"}));
 		List<String> messageList = new ArrayList<>();
 		
@@ -35,11 +36,49 @@ public class ValidationService {
 		if(obj instanceof CustomerEntity) {
 			customerErrorSort(messageList);
 		}
+		if (obj instanceof EditShiireDto) {
+			ShiireErrorSort(messageList);
+		}
 		
 		logger.info(messageService.getMessage("proccess.End", new String[] {"入力チェック"}));
 		logger.info("エラー件数: " + messageList.size() + "件");
 
 		return messageList;
+	}
+
+	private void ShiireErrorSort(List<String> messageList) {
+		messageList.sort(Comparator.comparingInt(str -> {
+			
+			switch (str) {
+			case "大分類が未入力です。": 
+				return 1;
+			case "小分類が未入力です。":
+				return 2;
+			case "税抜額を入力して下さい。":
+			case "税抜額は1以上で入力して下さい。":
+			case "税抜額は99999以下で入力してください。":
+				return 3;
+			case "税額を入力して下さい。":
+			case "税額は1以上で入力して下さい。":
+			case "税額は99999以下で入力してください。":
+				return 4;
+			case "税込額を入力して下さい。":
+			case "税込額は1以上で入力して下さい。":
+			case "税込額は99999以下で入力してください。":
+				return 5;
+			case "品名が未入力です。":
+			case "品名に「`!@#$%^&*()_+={}[]|:;\"'<>,.?/~」の記号は使用できません。":
+				return 6;
+			case "数量を入力して下さい。":
+			case "数量は1以上で入力して下さい。":
+			case "数量は99999以下で入力してください。":
+				return 7;
+			case "仕入日が未入力です。":
+				return 8;
+			}
+			return Integer.MAX_VALUE;
+		}));
+		
 	}
 
 	private void customerErrorSort(List<String> messageList) {

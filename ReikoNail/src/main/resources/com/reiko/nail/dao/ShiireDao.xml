@@ -157,67 +157,75 @@
 		  </if>
 	</select>
 	
-	<select id="searchShiireItemList" resultMap="BaseMap">
+	<select id="searchShiireItemList">
 		SELECT 
-			SHIIRE_ID,
-			JAN_CD,
-			DAI_BUNRUI_NAME,
-			SHO_BUNRUI_NAME,
-			ITEM_NAME,
-			SHIIRE_SAKI,
-			SHIIRE_MAKER,
-			ITEM_SIZE,
-			ZEIKOMIGAKU,
-			UPDATE_DATE
+			SR.RIREKI_ID AS RIREKI_ID,
+			NS.JAN_CD AS JAN_CD,
+			NS.DAI_BUNRUI_NAME AS DAI_BUNRUI_NAME,
+			NS.SHO_BUNRUI_NAME AS SHO_BUNRUI_NAME,
+			NS.ITEM_NAME AS ITEM_NAME,
+			NS.SHIIRE_SAKI AS SHIIRE_SAKI,
+			NS.SHIIRE_MAKER AS SHIIRE_MAKER,
+			NS.ITEM_SIZE AS ITEM_SIZE,
+			NS.ZEIKOMIGAKU AS ZEIKOMIGAKU,
+			NS.UPDATE_DATE AS UPDATE_DATE
 		FROM
-			N_SHIIRE
+			SHIIRE_RIREKI SR
+		INNER JOIN
+			N_SHIIRE NS
+		ON
+			SR.SHIIRE_ID = NS.SHIIRE_ID
 		WHERE
-			DELETE_FLAG = '0'
+			NS.DELETE_FLAG = '0'
 		  <if test="janCd != null">
-		  	AND JAN_CD = #{janCd}
+		  	AND NS.JAN_CD = #{janCd}
 		  </if>
 		  <if test="daiBunruiName != null">
-		    AND DAI_BUNRUI_NAME = #{daiBunruiName}
+		    AND NS.DAI_BUNRUI_NAME = #{daiBunruiName}
 		  </if>
 		  <if test="shoBunruiName != null">
-		    AND SHO_BUNRUI_NAME = #{shoBunruiName}
+		    AND NS.SHO_BUNRUI_NAME = #{shoBunruiName}
 		  </if>
 		  <if test="itemName != null">
-		    AND ITEM_NAME LIKE CONCAT('%','${itemName}' '%')
+		    AND NS.ITEM_NAME LIKE CONCAT('%','${itemName}' '%')
 		  </if>
 		  <if test="startDate != null">
-		    AND UPDATE_DATE <![CDATA[ >= ]]> '${startDate}'
+		    AND NS.UPDATE_DATE <![CDATA[ >= ]]> '${startDate}'
 		  </if>
 		  <if test="endDate != null">
-		    AND UPDATE_DATE <![CDATA[ <= ]]> '${endDate}'
+		    AND NS.UPDATE_DATE <![CDATA[ <= ]]> '${endDate}'
 		  </if>
-		ORDER BY UPDATE_DATE DESC
+		ORDER BY NS.UPDATE_DATE DESC
 		LIMIT 10 OFFSET #{pageNumber}
 	</select>
 	<select id="countSearcShiireItemList" resultType="int">
 		SELECT 
 			COUNT(*)
 		FROM
-			N_SHIIRE
+			SHIIRE_RIREKI SR
+		INNER JOIN
+			N_SHIIRE NS
+		ON
+			SR.SHIIRE_ID = NS.SHIIRE_ID
 		WHERE
 			DELETE_FLAG = '0'
 		  <if test="janCd != null">
-		  	AND JAN_CD = #{janCd}
+		  	AND NS.JAN_CD = #{janCd}
 		  </if>
 		  <if test="daiBunruiName != null">
-		    AND DAI_BUNRUI_NAME = #{daiBunruiName}
+		    AND NS.DAI_BUNRUI_NAME = #{daiBunruiName}
 		  </if>
 		  <if test="shoBunruiName != null">
-		    AND SHO_BUNRUI_NAME = #{shoBunruiName}
+		    AND NS.SHO_BUNRUI_NAME = #{shoBunruiName}
 		  </if>
 		  <if test="itemName != null">
-		    AND ITEM_NAME LIKE CONCAT('%','${itemName}' '%')
+		    AND NS.ITEM_NAME LIKE CONCAT('%','${itemName}' '%')
 		  </if>
 		  <if test="startDate != null">
-		    AND UPDATE_DATE <![CDATA[ >= ]]> '${startDate}'
+		    AND NS.UPDATE_DATE <![CDATA[ >= ]]> '${startDate}'
 		  </if>
 		  <if test="endDate != null">
-		    AND UPDATE_DATE <![CDATA[ <= ]]> '${endDate}'
+		    AND NS.UPDATE_DATE <![CDATA[ <= ]]> '${endDate}'
 		  </if>
 	</select>
 	
@@ -276,9 +284,55 @@
 			DELETE_FLAG = '0'
 		AND
 			SHIIRE_ID IN
-		<foreach collection="list" item="shiireId" open="(" close=")" separator=",">
+		<foreach collection="shiireIdList" item="shiireId" open="(" close=")" separator=",">
 			#{shiireId}
 		</foreach>
 	</select>
-
+	
+	<select id="selectByShiire">
+		SELECT
+			NS.SHIIRE_ID,
+			NS.DAI_BUNRUI_NAME,
+			NS.SHO_BUNRUI_NAME,
+			NS.ITEM_NAME,
+			NS.ZEINUKIGAKU,
+			NS.ZEIGAKU,
+			NS.ZEIKOMIGAKU,
+			NS.SHIIRE_SAKI,
+			NS.SHIIRE_MAKER,
+			NS.ITEM_SIZE,
+			NS.JAN_CD,
+			SR.RIREKI_ID,
+			SR.SURYO,
+			SR.SHIIRE_DATE
+		FROM
+			N_SHIIRE NS
+		INNER JOIN
+			SHIIRE_RIREKI SR
+		ON 
+			NS.SHIIRE_ID = SR.SHIIRE_ID
+		WHERE
+			NS.DELETE_FLAG = '0'
+			AND SR.RIREKI_ID = #{rirekiId}
+	</select>
+	
+	<update id="updateShiire">
+		UPDATE
+			N_SHIIRE
+		SET
+			DAI_BUNRUI_NAME = #{daiBunruiName},
+			SHO_BUNRUI_NAME = #{shoBunruiName},
+			ITEM_NAME = #{itemName},
+			ZEINUKIGAKU = #{zeinukiGaku},
+			ZEIGAKU = #{zeiGaku},
+			ZEIKOMIGAKU = #{zeikomiGaku},
+			SHIIRE_SAKI = #{shiireSaki},
+			SHIIRE_MAKER = #{shiireMaker},
+			ITEM_SIZE = #{itemSize},
+			JAN_CD = #{janCd},
+			UPDATE_DATE = CURRENT_TIMESTAMP
+		WHERE
+			SHIIRE_ID = #{shiireId}
+			
+	</update>
 </mapper>

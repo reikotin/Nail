@@ -73,7 +73,7 @@ public class CustomerController {
 		
 		ResponseData<List<String>> response = new ResponseData<List<String>>();
 		// バリデーションチェック
-		List<String> errorMessageList = validationService.validateCustomer(customerEntity);
+		List<String> errorMessageList = validationService.validate(customerEntity);
 		if(errorMessageList.size() != 0) {
 			response.setData(errorMessageList);
 			response.setHasError(true);
@@ -126,7 +126,7 @@ public class CustomerController {
 		logger.info(messageService.getMessage("customer.update.Start", new String[] {customerEntity.getCustomerCd()}));
 		ResponseData<List<String>> response = new ResponseData<List<String>>();
 		// バリデーションチェック
-		List<String> errorMessageList = validationService.validateCustomer(customerEntity);
+		List<String> errorMessageList = validationService.validate(customerEntity);
 		if(errorMessageList.size() != 0) {
 			response.setData(errorMessageList);
 			response.setHasError(true);

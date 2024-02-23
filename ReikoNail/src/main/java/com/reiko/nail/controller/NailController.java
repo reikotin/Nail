@@ -8,22 +8,27 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.reiko.nail.dto.BunruiDto;
 import com.reiko.nail.dto.BunruiNameDto;
 import com.reiko.nail.dto.DenpyoDto;
 import com.reiko.nail.dto.EditDenpyoDto;
+import com.reiko.nail.dto.EditShiireDto;
 import com.reiko.nail.dto.ExportDenpyo;
 import com.reiko.nail.dto.SearchItemDto;
 import com.reiko.nail.dto.SearchShiireDto;
 import com.reiko.nail.dto.ShiireDto;
+import com.reiko.nail.dto.ShiireRirekiDto;
 import com.reiko.nail.dto.ShohinDto;
 import com.reiko.nail.dto.UpdateShohinDto;
 import com.reiko.nail.entity.CustomerEntity;
@@ -67,6 +72,7 @@ public class NailController {
 	
 	@RequestMapping(value = "/Kanryo", method = {RequestMethod.GET})
 	public String kanryo(HttpSession session, Model model) {
+
 		String headMessage = (String) session.getAttribute("headMessage");
 		String itemMessage = (String) session.getAttribute("itemMessage1");
 		String itemMessage2 = (String) session.getAttribute("itemMessage2");
@@ -292,7 +298,7 @@ public class NailController {
 		model.addAttribute("headMessage", result.getMessage());
 		model.addAttribute("itemMessage", "品名 : " + result.getData().getItemName());
 		model.addAttribute("url", "/NewShiire");
-		model.addAttribute("next", "続けて登録する");		
+		model.addAttribute("next", "続けて登録する");
 		return "Kanryo";
 	}
 	
@@ -322,7 +328,7 @@ public class NailController {
 			return "redirect:/IndexShiire";
 		}
 		List<BunruiNameDto> daiBunruiList = nailService.getDaiBunrui();
-		List<ShiireEntity> shiireList = shohinService.searchShiireList(searchShiireDto);
+		List<ShiireRirekiDto> shiireList = shohinService.searchShiireList(searchShiireDto);
 		int totalPage = shohinService.countTotalPage(searchShiireDto);
 		model.addAttribute("currentNum", currentNum);
 		model.addAttribute("test", true);
@@ -336,11 +342,61 @@ public class NailController {
 		return "IndexShiire";
 	}
 	
-	@RequestMapping(value = "/EditShiire/{shiireId}", method = {RequestMethod.GET})
-	public String editShiire(@PathVariable String shiireCd, Model model) {
-		// TODO
+	@RequestMapping(value = "/EditShiire/{rirekiId}", method = {RequestMethod.GET})
+	public String editShiire(@PathVariable String rirekiId, Model model) {
+		EditShiireDto res = new EditShiireDto();
+		res = nailService.findByShiire(rirekiId);
+		String daiBunrui = res.getDaiBunruiName();
+		List<BunruiNameDto> daiBunruiList = nailService.getDaiBunrui();
+		List<BunruiNameDto> shoBunruiList = shohinService.getShoBunruiList(daiBunrui, "3");
+		
+		
+		model.addAttribute("shiireItem", res);
+		model.addAttribute("minDate", nailService.minDate());
+		model.addAttribute("editShiireDto", new EditShiireDto());
+		model.addAttribute("daiBunruiList", daiBunruiList);
+		model.addAttribute("shoBunruiList", shoBunruiList);
 		
 		return "EditShiire";
+	}
+	
+	@RequestMapping(value = "/UpdateShiire", method = {RequestMethod.POST})
+	public String updateShiire(@ModelAttribute EditShiireDto editShiireDto, Model model) {
+		logger.info(messageService.getMessage("proccess.Start", new String[] {"仕入情報更新"}));
+		ResponseData<String> res = new ResponseData<>();
+		try {
+			res = nailService.updateShiireJoho(editShiireDto);
+		} catch (Exception e) {
+			res.setHasError(true);
+			res.setMessage(messageService.getMessage("update.Warn", null));
+			logger.info(e.getMessage());
+		}
+		
+		model.addAttribute("headMessage", res.getMessage());
+		model.addAttribute("itemMessage", "更新仕入ID : " + editShiireDto.getShiireId());
+		model.addAttribute("itemMessage2", "更新履歴ID : " + editShiireDto.getRirekiId());
+		
+		logger.info(messageService.getMessage("proccess.End", new String[] {"仕入情報更新"}));
+		return "Kanryo";
+	}
+	
+	@RequestMapping(value = "/DeleteShiire", method = {RequestMethod.POST})
+	public ResponseEntity<ResponseData<List<String>>> deleteShiire(@RequestParam String rirekiId, HttpSession session) {
+		logger.info(messageService.getMessage("proccess.Start", new String[] {"仕入履歴削除"}));
+		
+		ResponseData<List<String>> res = nailService.deleteShiireJoho(rirekiId);
+		
+		String itemMessage = res.getData().get(0);
+		session.setAttribute("headMessage", res.getMessage());
+		session.setAttribute("itemMessage1", itemMessage);
+		session.setAttribute("itemMessage2", "");
+		session.setAttribute("next", "");
+		session.setAttribute("url", "/");
+		
+		
+		
+		logger.info(messageService.getMessage("proccess.End", new String[] {"仕入履歴削除"}));
+		return new ResponseEntity<ResponseData<List<String>>>(res, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/Export/{denpyoNo}", method = {RequestMethod.GET})

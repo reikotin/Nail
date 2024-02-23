@@ -4,6 +4,7 @@ package com.reiko.nail.service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -15,12 +16,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.reiko.nail.dao.BunruiDao;
 import com.reiko.nail.dao.DenpyoDao;
+import com.reiko.nail.dao.RirekiDao;
 import com.reiko.nail.dao.SalesDao;
+import com.reiko.nail.dao.ShiireDao;
 import com.reiko.nail.dao.ShohinDao;
 import com.reiko.nail.dto.BunruiDto;
 import com.reiko.nail.dto.BunruiNameDto;
 import com.reiko.nail.dto.DenpyoDto;
 import com.reiko.nail.dto.EditDenpyoDto;
+import com.reiko.nail.dto.EditShiireDto;
 import com.reiko.nail.dto.ExportDenpyo;
 import com.reiko.nail.entity.BunruiEntity;
 import com.reiko.nail.entity.DenpyoEntity;
@@ -42,6 +46,8 @@ public class NailService {
 	private final ShohinDao shohinDao;
 	private final SalesDao salesDao;
 	private final BunruiDao bunruiDao;
+	private final ShiireDao shiireDao;
+	private final RirekiDao rirekiDao;
 	private final MessageService messageService;
 
 	// 伝票情報の取得
@@ -342,4 +348,63 @@ public class NailService {
 		
 		return resulData;
 	}
+	
+	public EditShiireDto findByShiire(String shiireId) {
+		return shiireDao.selectByShiire(shiireId);
+	}
+	
+	/**
+	 * 仕入情報更新
+	 * @param editShiireDto
+	 * @return {@code ResponseData<String>}仕入情報の更新結果メッセージ
+	 */
+	@Transactional(rollbackFor = Exception.class)
+	public ResponseData<String> updateShiireJoho(EditShiireDto editShiireDto) throws Exception {
+		logger.info(messageService.getMessage("proccess.Start", new String[] {"仕入商品情報更新"}));
+		int result = shiireDao.updateShiire(
+				editShiireDto.getDaiBunruiName(), 
+				editShiireDto.getShoBunruiName(), 
+				editShiireDto.getItemName(), 
+				editShiireDto.getZeinukiGaku(), 
+				editShiireDto.getZeiGaku(),
+				editShiireDto.getZeikomiGaku(), 
+				editShiireDto.getItemSize(), 
+				editShiireDto.getJanCd(), 
+				editShiireDto.getShiireId(),
+				editShiireDto.getShiireSaki(), 
+				editShiireDto.getShiireMaker());
+		ResponseData<String> response = new ResponseData<>();
+		if (result != 1) {
+			throw new Exception(messageService.getMessage("update.shiire.Warn", new String[] {"仕入ID", editShiireDto.getShiireId()}));
+		}
+		logger.info(messageService.getMessage("update.shiire.Info", new String[] {"仕入ID", editShiireDto.getShiireId()}));
+		logger.info(messageService.getMessage("proccess.End", new String[] {"仕入商品情報更新"}));
+		logger.info(messageService.getMessage("proccess.Start", new String[] {"仕入履歴更新"}));
+		int rirekiResult = rirekiDao.updateRireki(editShiireDto.getRirekiId(), editShiireDto.getShiireDate(), editShiireDto.getSuryo());
+		if (rirekiResult != 1) {
+			throw new Exception(messageService.getMessage("update.shiire.Warn", new String[] {"履歴ID", editShiireDto.getRirekiId()}));
+		}
+		
+		logger.info(messageService.getMessage("update.shiire.Info", new String[] {"履歴ID", editShiireDto.getRirekiId()}));
+		logger.info(messageService.getMessage("proccess.End", new String[] {"仕入履歴更新"}));
+		response.setMessage(messageService.getMessage("update.success", null));
+		
+		return response;
+	}
+	
+	public ResponseData<List<String>> deleteShiireJoho(String rirekiId) {
+		ResponseData<List<String>> res = new ResponseData<>();
+		
+		int deleteCount = rirekiDao.deleteRireki(rirekiId);
+		if (deleteCount != 1) {
+			res.setHasError(true);
+			res.setData(Arrays.asList("履歴ID : " + rirekiId + "の削除に失敗しました。"));
+			res.setMessage(messageService.getMessage("delete.Warn", new String[] {"仕入履歴"}));
+			return res;
+		}
+		res.setData(Arrays.asList("削除履歴ID : " + rirekiId));
+		res.setMessage(messageService.getMessage("delete.success", null));
+		return res;
+	}
+
 }

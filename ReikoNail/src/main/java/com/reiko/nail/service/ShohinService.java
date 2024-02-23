@@ -17,6 +17,7 @@ import com.reiko.nail.dto.BunruiNameDto;
 import com.reiko.nail.dto.SearchItemDto;
 import com.reiko.nail.dto.SearchShiireDto;
 import com.reiko.nail.dto.ShiireDto;
+import com.reiko.nail.dto.ShiireRirekiDto;
 import com.reiko.nail.dto.ShohinDto;
 import com.reiko.nail.dto.ShohinIdDto;
 import com.reiko.nail.dto.ShohinRequest;
@@ -191,11 +192,14 @@ public class ShohinService {
 		
 	}
 	
-	
+	/**
+	 * 大分類名に紐ずく小分類リストを取得
+	 * @param daiBunruiName 大分類名称
+	 * @param searchKbn "3"の場合、取得したリストをそのまま返す.それ以外は先頭に「全て」を追加して返す。
+	 * @return {@code List<BunruiNameDto>} 小分類リスト
+	 */
 	public List<BunruiNameDto> getShoBunruiList(String daiBunruiName, String searchKbn) {
-		
 		List<BunruiNameDto> dtoList = bunruiDao.relationByDaiBunrui(daiBunruiName);
-		
 		if(StringUtils.equals(searchKbn, "3")){
 			return dtoList;
 		}
@@ -247,7 +251,12 @@ public class ShohinService {
 		
 		return isAfter;
 	}
-	// 仕入情報検索(仕入登録用)
+
+	/**
+	 * 仕入情報検索(仕入登録用)
+	 * @param searchShiireDto 仕入検索用クラス
+	 * @return {@code List<ShiireEntity>} 仕入情報リスト
+	 */
 	public List<ShiireEntity> searchShiireForNewShiire(SearchShiireDto searchShiireDto) {
 		if(StringUtils.isEmpty(searchShiireDto.getDaiBunruiName())) {
 			searchShiireDto.setDaiBunruiName(null);
@@ -265,7 +274,7 @@ public class ShohinService {
 	}
 	
 	// 仕入情報検索(仕入一覧用)
-	public List<ShiireEntity> searchShiireList(SearchShiireDto searchShiireDto) {
+	public List<ShiireRirekiDto> searchShiireList(SearchShiireDto searchShiireDto) {
 		
 		if(StringUtils.isEmpty(searchShiireDto.getDaiBunruiName())) {
 			searchShiireDto.setDaiBunruiName(null);
