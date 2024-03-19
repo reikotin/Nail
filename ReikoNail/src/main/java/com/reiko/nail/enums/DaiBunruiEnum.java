@@ -9,7 +9,8 @@ public enum DaiBunruiEnum {
 	BRUSH("ブラシ", "BR"),
 	YASURI("ヤスリ", "YA"),
 	LED("LED", "LE"),
-	CLEANER("クリーナー", "CL")
+	CLEANER("クリーナー", "CL"),
+	KAKOUDOUGU("加工道具","KA")
 	;
 	
 

@@ -59,9 +59,7 @@
 			SHOHIN_CD
 		FROM
 			N_SHOHIN
-		WHERE 
-			DELETE_FLAG = '0'
-		AND
+		WHERE
 			THEME_TYPE = #{themeType}
 		AND
 			SEASON = #{seasonCd}
