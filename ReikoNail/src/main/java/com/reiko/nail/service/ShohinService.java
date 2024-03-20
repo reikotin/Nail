@@ -90,7 +90,7 @@ public class ShohinService {
 		int zeiGaku = calcZeigaku(zeinukiGaku);
 		
 		String shiireIdList = null;
-		if(shohinDto.getIdList().size() > 0 ){
+		if(ObjectUtils.isNotEmpty(shohinDto.getIdList())){
 			shiireIdList = createIdList(shohinDto.getIdList());
 		}
 		
