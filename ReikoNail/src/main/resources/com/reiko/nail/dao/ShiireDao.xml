@@ -195,7 +195,7 @@
 		  <if test="endDate != null">
 		    AND SR.SHIIRE_DATE <![CDATA[ <= ]]> '${endDate}'
 		  </if>
-		ORDER BY NS.UPDATE_DATE DESC
+		ORDER BY SR.SHIIRE_DATE DESC
 		LIMIT 10 OFFSET #{pageNumber}
 	</select>
 	<select id="countSearcShiireItemList" resultType="int">
