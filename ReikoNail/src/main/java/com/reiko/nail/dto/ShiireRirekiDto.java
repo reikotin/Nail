@@ -23,7 +23,7 @@ public class ShiireRirekiDto {
 	
 	private Integer zeikomiGaku;
 	
-	private LocalDate updateDate;
+	private LocalDate shiireDate;
 	/**
 	SR.RIREKI_ID AS RIREKI_ID,
 	NS.JAN_CD AS JAN_CD,

@@ -168,7 +168,7 @@
 			NS.SHIIRE_MAKER AS SHIIRE_MAKER,
 			NS.ITEM_SIZE AS ITEM_SIZE,
 			NS.ZEIKOMIGAKU AS ZEIKOMIGAKU,
-			NS.UPDATE_DATE AS UPDATE_DATE
+			SR.SHIIRE_DATE AS SHIIRE_DATE
 		FROM
 			SHIIRE_RIREKI SR
 		INNER JOIN
@@ -190,10 +190,10 @@
 		    AND NS.ITEM_NAME LIKE CONCAT('%','${itemName}' '%')
 		  </if>
 		  <if test="startDate != null">
-		    AND NS.UPDATE_DATE <![CDATA[ >= ]]> '${startDate}'
+		    AND SR.SHIIRE_DATE <![CDATA[ >= ]]> '${startDate}'
 		  </if>
 		  <if test="endDate != null">
-		    AND NS.UPDATE_DATE <![CDATA[ <= ]]> '${endDate}'
+		    AND SR.SHIIRE_DATE <![CDATA[ <= ]]> '${endDate}'
 		  </if>
 		ORDER BY NS.UPDATE_DATE DESC
 		LIMIT 10 OFFSET #{pageNumber}
@@ -222,10 +222,10 @@
 		    AND NS.ITEM_NAME LIKE CONCAT('%','${itemName}' '%')
 		  </if>
 		  <if test="startDate != null">
-		    AND NS.UPDATE_DATE <![CDATA[ >= ]]> '${startDate}'
+		    AND SR.SHIIRE_DATE <![CDATA[ >= ]]> '${startDate}'
 		  </if>
 		  <if test="endDate != null">
-		    AND NS.UPDATE_DATE <![CDATA[ <= ]]> '${endDate}'
+		    AND SR.SHIIRE_DATE <![CDATA[ <= ]]> '${endDate}'
 		  </if>
 	</select>
 	
