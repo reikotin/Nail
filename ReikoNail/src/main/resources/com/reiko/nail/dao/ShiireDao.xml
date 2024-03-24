@@ -229,11 +229,13 @@
 		  </if>
 	</select>
 	
-	<select id="countId" resultType="int">
+	<select id="countId" resultType="string">
 		SELECT 
-			COUNT(*)
+			SHIIRE_ID 
 		FROM 
-			N_SHIIRE
+			N_SHIIRE 
+		ORDER BY SHIIRE_ID DESC 
+		LIMIT 1
 	</select>
 	
 	<select id="findShiireJohoByJanCd" resultMap="BaseMap">

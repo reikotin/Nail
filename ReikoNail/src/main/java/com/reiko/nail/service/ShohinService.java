@@ -232,7 +232,7 @@ public class ShohinService {
 			
 		// 仕入IDもJAN_CDでも同じものがない場合(新規仕入情報登録となる)
 		} else {
-			String newShiireId = String.format("%05d", shiireDao.countId() + 1);
+			String newShiireId = String.format("%05d", Integer.parseInt(shiireDao.countId()) + 1);
 			shiireDto.setShiireId(newShiireId);
 			response = shiireRepository.registoryShiire(shiireDto);
 			return response;

@@ -62,7 +62,7 @@ public interface ShiireDao {
 	 * 削除済み含む仕入総数
 	 * @return 仕入総数(削除含む)
 	 */
-	int countId();
+	String countId();
 	
 	/**
 	 *  品番で一致する仕入情報
