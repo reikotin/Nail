@@ -213,6 +213,7 @@ public class ShohinService {
 	public ResponseData<ShiireEntity> saveShiireItem(ShiireDto shiireDto) {
 		
 		ResponseData<ShiireEntity> response = new ResponseData<>();
+		ShiireEntity entity = shiireDao.findShiireJohoByJanCd(shiireDto.getJanCd());
 		
 		// 仕入IDがある場合は更新処理
 		if(StringUtils.isNotEmpty(shiireDto.getShiireId())) {
@@ -221,9 +222,8 @@ public class ShohinService {
 			
 			return response;
 		} 
-		ShiireEntity entity = shiireDao.findShiireJohoByJanCd(shiireDto.getJanCd());
 		// 仕入IDがないが、登録済みのJAN_CDがある場合
-		if(ObjectUtils.isNotEmpty(entity)) {
+		else if(ObjectUtils.isNotEmpty(entity) && StringUtils.isEmpty(shiireDto.getShiireId())) {
 				
 			response.setHasShiire(true);
 			response.setData(entity);
